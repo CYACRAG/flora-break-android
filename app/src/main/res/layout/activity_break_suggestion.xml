@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F4F7F3">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="18dp">
+
+        <!-- Kopfbereich -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="18dp">
+
+            <Button
+                android:id="@+id/backButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:text="←"
+                android:textSize="22sp"
+                android:textColor="#173522"
+                android:backgroundTint="#E8EFE8" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stress erkannt"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#06140C"
+                android:layout_marginStart="12dp" />
+        </LinearLayout>
+
+        <!-- Stress-Level Karte -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#FFFFFF"
+            android:padding="22dp"
+            android:elevation="4dp"
+            android:layout_marginBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Stress-Level"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sehr gestresst"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="#E8787E" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="7.6"
+                android:textSize="52sp"
+                android:textStyle="bold"
+                android:textColor="#E8787E"
+                android:gravity="center"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0        5        10"
+                android:textSize="16sp"
+                android:textColor="#7A8F80"
+                android:gravity="center"
+                android:layout_marginBottom="10dp" />
+
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="12dp"
+                android:progress="76"
+                android:max="100"
+                style="?android:attr/progressBarStyleHorizontal" />
+        </LinearLayout>
+
+        <!-- Strecken Überschrift -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Empfohlene Strecken"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#06140C"
+            android:layout_marginBottom="14dp" />
+
+        <!-- Strecke 1 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:orientation="vertical"
+            android:background="#FFFFFF"
+            android:elevation="4dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="95dp"
+                android:gravity="center"
+                android:text="🌳  Naturroute"
+                android:textSize="24sp"
+                android:textColor="#FFFFFF"
+                android:background="#2F6B45" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="75dp"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Stadtpark Süd"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginBottom="6dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📍 380 m   ⏱ 18 Min"
+                    android:textSize="14sp"
+                    android:textColor="#637568" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Strecke 2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:orientation="vertical"
+            android:background="#FFFFFF"
+            android:elevation="4dp"
+            android:layout_marginBottom="28dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="95dp"
+                android:gravity="center"
+                android:text="🌲  Ruhiger Waldweg"
+                android:textSize="24sp"
+                android:textColor="#FFFFFF"
+                android:background="#6B8F71" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="75dp"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Flussufer Nord"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginBottom="6dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📍 520 m   ⏱ 20 Min"
+                    android:textSize="14sp"
+                    android:textColor="#637568" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Pause starten -->
+        <Button
+            android:id="@+id/startBreakButton"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:text="🌿  Pause starten"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#2F6B45" />
+
+    </LinearLayout>
+</ScrollView>
