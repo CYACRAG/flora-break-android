@@ -114,14 +114,6 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="#06140C"
-            android:layout_marginBottom="6dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Basierend auf deinem Stress-Level und deiner aktuellen Position."
-            android:textSize="14sp"
-            android:textColor="#637568"
             android:layout_marginBottom="16dp" />
 
         <!-- Route 1 Card -->
