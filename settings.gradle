@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "FloraBreak"
+rootProject.name = "Flora Break"
 include ':app'
