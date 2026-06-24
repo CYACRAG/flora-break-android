@@ -38,6 +38,7 @@
 
         <!-- Datum und Begrüßung -->
         <TextView
+            android:id="@+id/dateText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Montag, 8. Juni 2026"
@@ -46,6 +47,7 @@
             android:layout_marginBottom="6dp" />
 
         <TextView
+            android:id="@+id/greetingText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Hallo Lisa 👋"
@@ -74,6 +76,7 @@
                 android:layout_marginBottom="10dp" />
 
             <TextView
+                android:id="@+id/stressLabelText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sehr gestresst"
@@ -84,6 +87,7 @@
 
             <!-- Vereinfachter Tacho-Ersatz -->
             <TextView
+                android:id="@+id/stressScoreText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="7.6"

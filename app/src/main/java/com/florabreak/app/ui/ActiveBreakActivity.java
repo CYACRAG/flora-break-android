@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.florabreak.R;
+import com.florabreak.app.R;
 
 public class ActiveBreakActivity extends AppCompatActivity {
 

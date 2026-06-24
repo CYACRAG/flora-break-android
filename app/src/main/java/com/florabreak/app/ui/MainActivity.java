@@ -7,7 +7,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.florabreak.R;
+import com.florabreak.app.R;
 
 public class MainActivity extends AppCompatActivity {
 
