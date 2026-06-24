@@ -1,5 +1,6 @@
 package com.florabreak.app.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Button;
@@ -51,7 +52,9 @@ public class ActiveBreakActivity extends AppCompatActivity {
         // Beim Klick auf "Beenden" wird der Timer gestoppt
         finishBreakButton.setOnClickListener(view -> {
             timerRunning = false;
-            finish();
+
+            Intent intent = new Intent(ActiveBreakActivity.this, BreakFeedbackActivity.class);
+            startActivity(intent);
         });
     }
 

@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FloraBreak">
+        <activity android:name="com.florabreak.app.ui.BreakFeedbackActivity" />
         <activity
             android:name="com.florabreak.app.ui.BreakSuggestionActivity"
             android:exported="false" />

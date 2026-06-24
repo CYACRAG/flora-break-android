@@ -15,7 +15,6 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
     private Button backButton;
     private Button startBreakButton;
-
     private TextView suggestionStressScoreText;
     private TextView suggestionStressLabelText;
 
@@ -41,6 +40,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         // Stress-Anzeige aus dem Layout holen
         suggestionStressScoreText = findViewById(R.id.suggestionStressScoreText);
         suggestionStressLabelText = findViewById(R.id.suggestionStressLabelText);
+
 
         // Routen-Anzeigen aus dem Layout holen
         routeOneNameText = findViewById(R.id.routeOneNameText);
