@@ -13,19 +13,18 @@
         <activity android:name="com.florabreak.app.ui.BreakFeedbackActivity" />
 
         <activity
-            android:name=".ui.ActiveBreakActivity"
+            android:name="com.florabreak.app.ui.ActiveBreakActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ui.BreakSuggestionActivity"
+            android:name="com.florabreak.app.ui.BreakSuggestionActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.florabreak.app.ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
