@@ -47,7 +47,12 @@ public class ActiveBreakActivity extends AppCompatActivity {
         timerText = findViewById(R.id.timerText);
         finishBreakButton = findViewById(R.id.finishBreakButton);
         proofCameraPlaceholder = findViewById(R.id.proofCameraPlaceholder);
-
+        /*
+         * Öffnet den Streckenbeweis-Placeholder.
+         *
+         * Aktuell wird noch keine echte Kamera verwendet.
+         * Der Screen zeigt nur, wo später die Kamera-Funktion eingebaut werden kann.
+         */
         proofCameraPlaceholder.setOnClickListener(view -> {
             Intent intent = new Intent(ActiveBreakActivity.this, RouteProofActivity.class);
             startActivity(intent);
@@ -57,6 +62,10 @@ public class ActiveBreakActivity extends AppCompatActivity {
         handler.postDelayed(timerRunnable, 1000);
 
         // Beim Klick auf "Beenden" wird der Timer gestoppt
+        /*
+         * Beendet die aktive Pause und öffnet die Feedback-Seite.
+         * Die angezeigten Werte auf der Feedback-Seite sind aktuell Mock-Daten.
+         */
         finishBreakButton.setOnClickListener(view -> {
             timerRunning = false;
 
