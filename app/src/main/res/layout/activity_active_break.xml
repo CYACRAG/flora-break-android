@@ -1,264 +1,299 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#F4F7F3">
 
-    <!-- MAP-BEREICH -->
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="390dp"
-        android:background="@drawable/bg_map">
-
-        <!-- helle Straße horizontal -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="34dp"
-            android:layout_gravity="center"
-            android:background="#FFFFFF" />
-
-        <!-- helle Straße vertikal links -->
-        <View
-            android:layout_width="34dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:layout_marginStart="22dp"
-            android:background="#FFFFFF" />
-
-        <!-- Diagonale Route -->
-        <View
-            android:layout_width="460dp"
-            android:layout_height="8dp"
-            android:layout_gravity="center"
-            android:rotation="-24"
-            android:background="#9DBAAF" />
-
-        <!-- Parkfläche -->
-        <TextView
-            android:layout_width="285dp"
-            android:layout_height="155dp"
-            android:layout_gravity="top|center_horizontal"
-            android:layout_marginTop="82dp"
-            android:gravity="center"
-            android:text="Stadtpark Süd"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#2F6B45"
-            android:background="#BFE8C6" />
-
-        <!-- Parkpunkte -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="●"
-            android:textSize="28sp"
-            android:textColor="#91D19A"
-            android:layout_gravity="top|center_horizontal"
-            android:layout_marginTop="108dp"
-            android:layout_marginEnd="100dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="●"
-            android:textSize="28sp"
-            android:textColor="#91D19A"
-            android:layout_gravity="top|center_horizontal"
-            android:layout_marginTop="128dp"
-            android:layout_marginStart="100dp" />
-
-        <!-- Teich -->
-        <TextView
-            android:layout_width="170dp"
-            android:layout_height="58dp"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="58dp"
-            android:gravity="center"
-            android:text="Teich"
-            android:textSize="15sp"
-            android:textColor="#31748F"
-            android:background="#A7D8E8" />
-
-        <!-- Ziel-Badge oben -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="42dp"
-            android:layout_gravity="top|start"
-            android:layout_marginStart="18dp"
-            android:layout_marginTop="28dp"
-            android:gravity="center"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:text="📍  Stadtpark Süd"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="#173522"
-            android:background="@drawable/bg_badge"
-            android:elevation="6dp" />
-
-        <!-- Streckenbeweis-Badge -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:layout_gravity="bottom|end"
-            android:layout_marginEnd="18dp"
-            android:layout_marginBottom="32dp"
-            android:gravity="center"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:text="📷  Streckenbeweis"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="#173522"
-            android:background="@drawable/bg_badge"
-            android:elevation="6dp" />
-
-    </FrameLayout>
-
-    <!-- UNTERER BEREICH -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:paddingStart="22dp"
-        android:paddingEnd="22dp"
-        android:paddingTop="18dp"
-        android:paddingBottom="16dp"
-        android:background="#F4F7F3">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <!-- Start/Ziel -->
+        <!-- Navigation Header -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="14dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Start"
-                android:textSize="14sp"
-                android:textColor="#637568" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="18 Min Ziel"
-                android:textSize="14sp"
-                android:textColor="#637568" />
-        </LinearLayout>
-
-        <!-- Pausendauer -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="PAUSENDAUER"
-            android:textSize="13sp"
-            android:textColor="#637568"
-            android:gravity="center"
-            android:letterSpacing="0.15"
-            android:layout_marginBottom="0dp" />
-
-        <TextView
-            android:id="@+id/timerText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="00:00"
-            android:textSize="58sp"
-            android:textStyle="bold"
-            android:textColor="#173522"
-            android:gravity="center"
-            android:layout_marginBottom="18dp" />
-
-        <!-- Statistik Cards -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="105dp"
-            android:orientation="horizontal"
-            android:layout_marginBottom="24dp">
+            android:layout_height="118dp"
+            android:orientation="vertical"
+            android:background="#2F6B45"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="22dp"
+            android:paddingBottom="14dp">
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@drawable/bg_stat_card"
-                android:elevation="2dp"
-                android:layout_marginEnd="8dp">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="54dp"
+                    android:layout_height="54dp"
+                    android:gravity="center"
+                    android:text="↱"
+                    android:textSize="38sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginEnd="14dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="In 100 m"
+                        android:textSize="32sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="rechts in den Parkweg"
+                        android:textSize="15sp"
+                        android:textColor="#DCEBDE" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Map-Bereich als Hauptfokus -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="#E8E5DA">
+
+            <!-- Kartenflächen -->
+            <View
+                android:layout_width="170dp"
+                android:layout_height="120dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="44dp"
+                android:background="#D6E8C9" />
+
+            <View
+                android:layout_width="155dp"
+                android:layout_height="100dp"
+                android:layout_marginStart="184dp"
+                android:layout_marginTop="92dp"
+                android:background="#CFE4C1" />
+
+            <View
+                android:layout_width="120dp"
+                android:layout_height="70dp"
+                android:layout_marginStart="118dp"
+                android:layout_marginTop="210dp"
+                android:background="#A7D9E8" />
+
+            <!-- Straßen -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="12dp"
+                android:layout_marginTop="180dp"
+                android:rotation="-25"
+                android:background="#FFFFFF" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_marginTop="260dp"
+                android:rotation="28"
+                android:background="#FFFFFF" />
+
+            <!-- Routen-Platzhalter -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="140dp"
+                android:gravity="center"
+                android:text="● ━━━━━━━ ● ━━━━━━━ ●"
+                android:textSize="26sp"
+                android:textColor="#2F6B45"
+                android:rotation="-22" />
+
+            <!-- aktueller Standort -->
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="●"
+                android:textSize="34sp"
+                android:textColor="#E8787E"
+                android:background="@drawable/bg_warning_pill" />
+
+            <!-- Zielchip -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:layout_marginStart="22dp"
+                android:layout_marginTop="18dp"
+                android:gravity="center"
+                android:text="📍 Grünfläche in der Nähe"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#06140C"
+                android:background="@drawable/bg_soft_card"
+                android:elevation="4dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp" />
+
+            <!-- Streckenbeweis Kamera-Placeholder -->
+            <TextView
+                android:id="@+id/proofCameraPlaceholder"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:layout_gravity="end|bottom"
+                android:layout_marginEnd="18dp"
+                android:layout_marginBottom="18dp"
+                android:gravity="center"
+                android:text="📷 Streckenbeweis"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#06140C"
+                android:background="@drawable/bg_soft_card"
+                android:elevation="5dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
+
+        </FrameLayout>
+
+        <!-- Bottom Sheet kompakt -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#F4F7F3"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="34dp">
+
+            <!-- Timer und Restzeit -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="78dp"
+                android:orientation="horizontal"
+                android:paddingBottom="4dp"
+                android:layout_marginBottom="8dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_soft_card"
+                    android:elevation="3dp"
+                    android:layout_marginEnd="7dp">
+
+                    <TextView
+                        android:id="@+id/timerText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="00:00"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="#173522" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pausendauer"
+                        android:textSize="12sp"
+                        android:textColor="#637568" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_soft_card"
+                    android:elevation="3dp"
+                    android:layout_marginStart="7dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="18 Min"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:textColor="#173522" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="bis zum Ziel"
+                        android:textSize="12sp"
+                        android:textColor="#637568" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Distanz kompakt -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_soft_card"
+                android:elevation="3dp"
+                android:paddingStart="18dp"
+                android:paddingEnd="18dp"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:gravity="center"
                     android:text="📍"
-                    android:textSize="24sp"
-                    android:layout_marginBottom="8dp" />
+                    android:textSize="20sp"
+                    android:background="@drawable/bg_green_pill"
+                    android:layout_marginEnd="14dp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Zurückgelegte Distanz"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0.00 km"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="#06140C" />
+                    android:textColor="#2F6B45" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Distanz"
-                    android:textSize="13sp"
-                    android:textColor="#637568" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@drawable/bg_stat_card"
-                android:elevation="2dp"
-                android:layout_marginStart="8dp">
+            <!-- Finish Button -->
+            <Button
+                android:id="@+id/finishBreakButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="■  Pause beenden"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#2F6B45" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="♡"
-                    android:textSize="30sp"
-                    android:textColor="#E8787E"
-                    android:layout_marginBottom="8dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="70 bpm"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#06140C" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Herzrate"
-                    android:textSize="13sp"
-                    android:textColor="#637568" />
-            </LinearLayout>
         </LinearLayout>
-
-        <!-- Button -->
-        <Button
-            android:id="@+id/finishBreakButton"
-            android:layout_width="match_parent"
-            android:layout_height="58dp"
-            android:text="■  Beenden"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:background="@drawable/bg_green_button" />
 
     </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>
