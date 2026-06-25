@@ -14,6 +14,7 @@ public class ActiveBreakActivity extends AppCompatActivity {
 
     private TextView timerText;
     private Button finishBreakButton;
+    private TextView proofCameraPlaceholder;
 
     private Handler handler = new Handler();
     private int seconds = 0;
@@ -45,6 +46,12 @@ public class ActiveBreakActivity extends AppCompatActivity {
 
         timerText = findViewById(R.id.timerText);
         finishBreakButton = findViewById(R.id.finishBreakButton);
+        proofCameraPlaceholder = findViewById(R.id.proofCameraPlaceholder);
+
+        proofCameraPlaceholder.setOnClickListener(view -> {
+            Intent intent = new Intent(ActiveBreakActivity.this, RouteProofActivity.class);
+            startActivity(intent);
+        });
 
         // Timer startet automatisch
         handler.postDelayed(timerRunnable, 1000);
