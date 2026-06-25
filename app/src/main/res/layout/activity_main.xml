@@ -160,152 +160,16 @@
                 android:textColor="#1F5E3B" />
         </LinearLayout>
 
-        <!-- Pause 1 -->
-        <LinearLayout
+        <TextView
+            android:id="@+id/recentBreaksText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="#FFFFFF"
+            android:text="Noch keine gespeicherten Pausen"
+            android:textSize="14sp"
+            android:textColor="#637568"
+            android:background="@drawable/bg_soft_card"
             android:padding="16dp"
-            android:elevation="3dp"
-            android:layout_marginBottom="12dp">
-
-            <TextView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:gravity="center"
-                android:text="🌿"
-                android:textSize="24sp"
-                android:background="#E8F1EA" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginStart="14dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Stadtpark Süd"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#06140C" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Heute, 11:24 · 18 Min"
-                    android:textSize="13sp"
-                    android:textColor="#637568" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🔴 → 🟢"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <!-- Pause 2 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="#FFFFFF"
-            android:padding="16dp"
-            android:elevation="3dp"
-            android:layout_marginBottom="12dp">
-
-            <TextView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:gravity="center"
-                android:text="🌿"
-                android:textSize="24sp"
-                android:background="#E8F1EA" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginStart="14dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Flussufer Nord"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#06140C" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Gestern, 14:10 · 15 Min"
-                    android:textSize="13sp"
-                    android:textColor="#637568" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🟠 → 🟢"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <!-- Pause 3 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="#FFFFFF"
-            android:padding="16dp"
-            android:elevation="3dp"
-            android:layout_marginBottom="24dp">
-
-            <TextView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:gravity="center"
-                android:text="🌿"
-                android:textSize="24sp"
-                android:background="#E8F1EA" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginStart="14dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Botanischer Garten"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#06140C" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="07.06., 09:55 · 20 Min"
-                    android:textSize="13sp"
-                    android:textColor="#637568" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🔴 → 🟠"
-                android:textSize="14sp" />
-        </LinearLayout>
+            android:layout_marginBottom="24dp" />
 
         <!-- Einfache Bottom Navigation als Mock -->
         <LinearLayout

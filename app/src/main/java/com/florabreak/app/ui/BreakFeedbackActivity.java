@@ -49,7 +49,10 @@ public class BreakFeedbackActivity extends AppCompatActivity {
 
         backToBreakButton.setOnClickListener(view -> finish());
 
-        saveBreakButton.setOnClickListener(view -> {String message;
+        saveBreakButton.setOnClickListener(view -> {
+            MockUiDataProvider.saveCompletedBreak();
+
+            String message;
 
             if (selectedRating > 0) {
                 message = "Pause gespeichert: " + selectedRating + " Sterne";
