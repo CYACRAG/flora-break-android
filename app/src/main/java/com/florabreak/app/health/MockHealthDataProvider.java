@@ -17,9 +17,16 @@ public class MockHealthDataProvider implements HealthDataProvider {
      * Für die erste Demo nutzen wir hohe Stresswerte,
      * damit die App direkt eine Pausenempfehlung anzeigen kann.
      */
+    private String scenario = "HIGH";
     @Override
     public StressData getCurrentHealthData() {
-        return getHighStressData();
+        if ("LOW".equals(scenario)) {
+            return getLowStressData();
+        } else if ("MEDIUM".equals(scenario)) {
+            return getMediumStressData();
+        } else {
+            return getHighStressData();
+        }
     }
 
     /**
