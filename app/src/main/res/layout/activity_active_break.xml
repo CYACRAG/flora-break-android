@@ -131,6 +131,7 @@
 
             <!-- Zielchip -->
             <TextView
+                android:id="@+id/selectedRouteNameText"
                 android:layout_width="wrap_content"
                 android:layout_height="42dp"
                 android:layout_marginStart="22dp"

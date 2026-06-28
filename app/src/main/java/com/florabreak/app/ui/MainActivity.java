@@ -14,7 +14,13 @@ public class MainActivity extends AppCompatActivity {
 
     private Button showBreakButton;
     private Button refreshButton;
+
+    private TextView stressScoreText;
+    private TextView stressLabelText;
+    private TextView recentBreakTitleText;
     private TextView recentBreaksText;
+
+    private StressGaugeView stressGaugeView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +28,23 @@ public class MainActivity extends AppCompatActivity {
 
         // Verbindet diese Java-Datei mit dem Layout activity_main.xml
         setContentView(R.layout.activity_main);
+        showBreakButton = findViewById(R.id.showBreakButton);
+        refreshButton = findViewById(R.id.refreshButton);
+
+        stressGaugeView = findViewById(R.id.stressGaugeView);
+        stressScoreText = findViewById(R.id.stressScoreText);
+        stressLabelText = findViewById(R.id.stressLabelText);
+        recentBreakTitleText = findViewById(R.id.recentBreakTitleText);
+        recentBreaksText = findViewById(R.id.recentBreaksText);
+
+// Mock-Werte für die Vorschau
+        float mockStress = 7.6f;
+
+        stressGaugeView.setStressScore(mockStress);
+        stressScoreText.setText(String.format(java.util.Locale.US, "%.1f", mockStress));
+        stressLabelText.setText("Sehr gestresst");
+
+        updateRecentBreaks();
 
         // Buttons aus dem Layout holen
         showBreakButton = findViewById(R.id.showBreakButton);
@@ -43,19 +66,14 @@ public class MainActivity extends AppCompatActivity {
     }
     private void updateRecentBreaks() {
         if (MockUiDataProvider.getSavedBreaks().isEmpty()) {
+            recentBreakTitleText.setText("Keine Pause gespeichert");
             recentBreaksText.setText("Noch keine gespeicherten Pausen");
             return;
         }
 
-        StringBuilder builder = new StringBuilder();
-
-        for (UiSavedBreak savedBreak : MockUiDataProvider.getSavedBreaks()) {
-            builder.append(savedBreak.getTitle())
-                    .append("\n")
-                    .append(savedBreak.getDetails())
-                    .append("\n\n");
-        }
-
-        recentBreaksText.setText(builder.toString().trim());
+        UiSavedBreak savedBreak = MockUiDataProvider.getSavedBreaks().get(0);
+        recentBreakTitleText.setText(savedBreak.getTitle());
+        recentBreaksText.setText(savedBreak.getDetails());
     }
+
 }

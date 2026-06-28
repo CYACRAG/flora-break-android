@@ -2,26 +2,55 @@ package com.florabreak.app.ui;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.Shader;
+import android.graphics.SweepGradient;
 import android.util.AttributeSet;
 import android.view.View;
 
 public class StressGaugeView extends View {
 
-    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private float score = 7.6f;
+    private final Paint basePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint progressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint thumbPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    private float stressScore = 7.6f;
+    private final float maxScore = 10f;
 
     public StressGaugeView(Context context) {
         super(context);
+        init();
     }
 
     public StressGaugeView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
-    public void setScore(float score) {
-        this.score = score;
+    public StressGaugeView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    private void init() {
+        basePaint.setStyle(Paint.Style.STROKE);
+        basePaint.setStrokeCap(Paint.Cap.ROUND);
+        basePaint.setStrokeWidth(22f);
+        basePaint.setColor(Color.parseColor("#F3E8EA"));
+
+        progressPaint.setStyle(Paint.Style.STROKE);
+        progressPaint.setStrokeCap(Paint.Cap.ROUND);
+        progressPaint.setStrokeWidth(22f);
+
+        thumbPaint.setStyle(Paint.Style.FILL);
+        thumbPaint.setColor(Color.parseColor("#FF3B3B"));
+    }
+
+    public void setStressScore(float value) {
+        stressScore = Math.max(0f, Math.min(value, maxScore));
         invalidate();
     }
 
@@ -29,57 +58,50 @@ public class StressGaugeView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        float strokeWidth = 22f;
-        float padding = 28f;
+        float w = getWidth();
+        float h = getHeight();
 
-        float width = getWidth();
-        float height = getHeight();
+        float cx = w / 2f;
+        float cy = h * 0.80f;
+        float radius = Math.min(w * 0.43f, h * 0.60f);
 
         RectF arcRect = new RectF(
-                padding,
-                padding,
-                width - padding,
-                height * 2f - padding
+                cx - radius,
+                cy - radius,
+                cx + radius,
+                cy + radius
         );
 
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(strokeWidth);
-        paint.setStrokeCap(Paint.Cap.ROUND);
+        float startAngle = 150f;
+        float totalSweep = 240f;
+        float progressSweep = (stressScore / maxScore) * totalSweep;
 
-        // Hintergrundbogen
-        paint.setColor(0xFFE3E9E1);
-        canvas.drawArc(arcRect, 180, 180, false, paint);
+        // Blasser kompletter Hintergrundbogen
+        canvas.drawArc(arcRect, startAngle, totalSweep, false, basePaint);
 
-        // Grün
-        paint.setColor(0xFF8BCB8F);
-        canvas.drawArc(arcRect, 180, 60, false, paint);
+        // Farbverlauf für aktiven Teil
+        int[] colors = {
+                Color.parseColor("#5DBB00"),
+                Color.parseColor("#E5D200"),
+                Color.parseColor("#FF8A00"),
+                Color.parseColor("#FF3B3B")
+        };
 
-        // Gelb
-        paint.setColor(0xFFF3C96B);
-        canvas.drawArc(arcRect, 240, 60, false, paint);
+        float[] positions = {0f, 0.45f, 0.75f, 1f};
 
-        // Rot
-        paint.setColor(0xFFE8787E);
-        canvas.drawArc(arcRect, 300, 60, false, paint);
+        SweepGradient sweepGradient = new SweepGradient(cx, cy, colors, positions);
+        Matrix matrix = new Matrix();
+        matrix.postRotate(startAngle - 90f, cx, cy);
+        sweepGradient.setLocalMatrix(matrix);
+        progressPaint.setShader(sweepGradient);
 
-        // Zeigerpunkt
-        float angle = 180f + (score / 10f) * 180f;
-        double radians = Math.toRadians(angle);
+        canvas.drawArc(arcRect, startAngle, progressSweep, false, progressPaint);
 
-        float radiusX = arcRect.width() / 2f;
-        float radiusY = arcRect.height() / 2f;
-        float centerX = arcRect.centerX();
-        float centerY = arcRect.centerY();
+        // Punkt am aktuellen Wert
+        double angleRad = Math.toRadians(startAngle + progressSweep);
+        float thumbX = (float) (cx + radius * Math.cos(angleRad));
+        float thumbY = (float) (cy + radius * Math.sin(angleRad));
 
-        float dotX = centerX + (float) Math.cos(radians) * radiusX;
-        float dotY = centerY + (float) Math.sin(radians) * radiusY;
-
-        paint.setStyle(Paint.Style.FILL);
-
-        paint.setColor(0xFFFFFFFF);
-        canvas.drawCircle(dotX, dotY, 15f, paint);
-
-        paint.setColor(0xFFE8787E);
-        canvas.drawCircle(dotX, dotY, 10f, paint);
+        canvas.drawCircle(thumbX, thumbY, 13f, thumbPaint);
     }
 }

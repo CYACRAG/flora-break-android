@@ -13,6 +13,7 @@ import com.florabreak.app.R;
 public class ActiveBreakActivity extends AppCompatActivity {
 
     private TextView timerText;
+    private TextView selectedRouteNameText;
     private Button finishBreakButton;
     private TextView proofCameraPlaceholder;
 
@@ -45,8 +46,15 @@ public class ActiveBreakActivity extends AppCompatActivity {
         setContentView(R.layout.activity_active_break);
 
         timerText = findViewById(R.id.timerText);
+        selectedRouteNameText = findViewById(R.id.selectedRouteNameText);
         finishBreakButton = findViewById(R.id.finishBreakButton);
         proofCameraPlaceholder = findViewById(R.id.proofCameraPlaceholder);
+
+        String selectedRouteName = getIntent().getStringExtra("selectedRouteName");
+
+        if (selectedRouteName != null && !selectedRouteName.isEmpty()) {
+            selectedRouteNameText.setText("📍 " + selectedRouteName);
+        }
         /*
          * Öffnet den Streckenbeweis-Placeholder.
          *

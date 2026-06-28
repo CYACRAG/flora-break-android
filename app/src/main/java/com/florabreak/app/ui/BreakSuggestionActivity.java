@@ -1,5 +1,7 @@
 package com.florabreak.app.ui;
 
+import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -25,6 +27,10 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     private TextView routeTwoNameText;
     private TextView routeTwoInfoText;
     private TextView routeTwoTypeText;
+    private LinearLayout routeOneCard;
+    private LinearLayout routeTwoCard;
+
+    private int selectedRouteIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,8 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         routeTwoNameText = findViewById(R.id.routeTwoNameText);
         routeTwoInfoText = findViewById(R.id.routeTwoInfoText);
         routeTwoTypeText = findViewById(R.id.routeTwoTypeText);
+        routeOneCard = findViewById(R.id.routeOneCard);
+        routeTwoCard = findViewById(R.id.routeTwoCard);
 
         // Mock-Daten laden.
         // Später kommen diese Werte aus Stress Engine und Maps/OSM.
@@ -78,14 +86,44 @@ public class BreakSuggestionActivity extends AppCompatActivity {
                 routeTwoTypeText.setText("🌲  " + routeTwo.getRouteType());
             }
         }
+        routeOneCard.setOnClickListener(view -> {
+            selectedRouteIndex = 0;
+            updateSelectedRoute();
+        });
 
+        routeTwoCard.setOnClickListener(view -> {
+            selectedRouteIndex = 1;
+            updateSelectedRoute();
+        });
+
+        updateSelectedRoute();
         // Zurück zum Dashboard
         backButton.setOnClickListener(view -> finish());
 
-        // Öffnet den aktiven Pausen-Screen
+
         startBreakButton.setOnClickListener(view -> {
+            String selectedRouteName;
+
+            if (selectedRouteIndex == 0) {
+                selectedRouteName = routeOneNameText.getText().toString();
+            } else {
+                selectedRouteName = routeTwoNameText.getText().toString();
+            }
+
+            Toast.makeText(this, selectedRouteName + " ausgewählt", Toast.LENGTH_SHORT).show();
+
             Intent intent = new Intent(BreakSuggestionActivity.this, ActiveBreakActivity.class);
+            intent.putExtra("selectedRouteName", selectedRouteName);
             startActivity(intent);
         });
+    }
+    private void updateSelectedRoute() {
+        if (selectedRouteIndex == 0) {
+            routeOneCard.setBackgroundResource(R.drawable.bg_route_selected);
+            routeTwoCard.setBackgroundResource(R.drawable.bg_soft_card);
+        } else {
+            routeOneCard.setBackgroundResource(R.drawable.bg_soft_card);
+            routeTwoCard.setBackgroundResource(R.drawable.bg_route_selected);
+        }
     }
 }
