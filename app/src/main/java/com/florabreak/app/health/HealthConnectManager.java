@@ -49,4 +49,13 @@ public class HealthConnectManager implements HealthDataProvider {
     public boolean isHealthConnectAvailable() {
         return false;
     }
+    /**
+     * Gibt zurück, ob aktuell Mock-Daten verwendet werden.
+     *
+     * In Version 1 ist das immer true,
+     * weil echte Health-Connect-Daten noch nicht aktiv sind.
+     */
+    public boolean isUsingMockData() {
+        return true;
+    }
 }
