@@ -58,4 +58,18 @@ public class HealthConnectManager implements HealthDataProvider {
     public boolean isUsingMockData() {
         return true;
     }
+    /**
+     * Gibt einen kurzen Status-Text für die UI zurück.
+     *
+     * Die UI kann damit anzeigen, ob echte Health-Connect-Daten
+     * oder aktuell Mock-Daten verwendet werden.
+     */
+    public String getHealthDataStatusText() {
+        if (isHealthConnectAvailable()) {
+            return "Health Connect verfügbar";
+        } else {
+            return "Demo-Daten aktiv";
+        }
+    }
+    
 }
