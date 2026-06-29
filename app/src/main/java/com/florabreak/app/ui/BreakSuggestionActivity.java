@@ -12,10 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.health.connect.client.contracts.HealthPermissionsRequestContract;
 
 import com.florabreak.app.R;
-import com.florabreak.app.data.HealthDataProvider;
 import com.florabreak.app.health.HealthConnectDataProvider;
-import com.florabreak.app.health.MockHealthDataProvider;
-import com.florabreak.app.model.StressData;
 
 import java.util.List;
 import java.util.Set;
@@ -118,9 +115,11 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     }
 
     private void loadHealthConnectData() {
-        HealthDataProvider healthProvider = new HealthConnectDataProvider(this);
+        HealthConnectDataProvider healthProvider = new HealthConnectDataProvider(this);
 
-        StressData stressData = healthProvider.getCurrentStressData();
+        // Ruft echte Health-Connect-Daten ab.
+        // Die UI nutzt aktuell noch Mock-Stressanzeige als stabile Zwischenlösung.
+        healthProvider.getCurrentStressData();
 
         UiStressState stressState = MockUiDataProvider.getCurrentStressState();
         List<UiRouteSuggestion> routes = MockUiDataProvider.getRouteSuggestions();
@@ -132,10 +131,6 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     }
 
     private void loadMockData() {
-        HealthDataProvider healthProvider = new MockHealthDataProvider();
-
-        StressData stressData = healthProvider.getCurrentStressData();
-
         UiStressState stressState = MockUiDataProvider.getCurrentStressState();
         List<UiRouteSuggestion> routes = MockUiDataProvider.getRouteSuggestions();
 
