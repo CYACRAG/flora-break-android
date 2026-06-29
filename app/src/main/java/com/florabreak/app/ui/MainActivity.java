@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
 import android.widget.TextView;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,6 +14,9 @@ import com.florabreak.app.R;
 public class MainActivity extends AppCompatActivity {
 
     private Button showBreakButton;
+    private LinearLayout navHistoryButton;
+    private LinearLayout navStatsButton;
+    private LinearLayout navProfileButton;
     private Button refreshButton;
 
     private TextView stressScoreText;
@@ -50,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
         showBreakButton = findViewById(R.id.showBreakButton);
         refreshButton = findViewById(R.id.refreshButton);
         recentBreaksText = findViewById(R.id.recentBreaksText);
+        navHistoryButton = findViewById(R.id.navHistoryButton);
+        navStatsButton = findViewById(R.id.navStatsButton);
+        navProfileButton = findViewById(R.id.navProfileButton);
         updateRecentBreaks();
 
         // Wenn auf "Pause ansehen" geklickt wird,
@@ -58,10 +65,23 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, BreakSuggestionActivity.class);
             startActivity(intent);
         });
+        navHistoryButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+            startActivity(intent);
+        });
 
+        navStatsButton.setOnClickListener(view ->
+                Toast.makeText(this, "Statistik wird später ergänzt", Toast.LENGTH_SHORT).show()
+        );
+
+        navProfileButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        });
         // Beim Klick auf "Daten aktualisieren" zeigen wir erstmal nur eine Meldung.
         refreshButton.setOnClickListener(view -> {
             Toast.makeText(this, "Mock-Daten wurden aktualisiert", Toast.LENGTH_SHORT).show();
+
         });
     }
     private void updateRecentBreaks() {

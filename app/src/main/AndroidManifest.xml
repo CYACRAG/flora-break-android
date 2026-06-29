@@ -12,6 +12,8 @@
         android:theme="@style/Theme.FloraBreak">
         <activity android:name="com.florabreak.app.ui.RouteProofActivity" />
         <activity android:name="com.florabreak.app.ui.BreakFeedbackActivity" />
+        <activity android:name="com.florabreak.app.ui.HistoryActivity" />
+        <activity android:name="com.florabreak.app.ui.ProfileActivity" />
 
         <activity
             android:name="com.florabreak.app.ui.ActiveBreakActivity"
@@ -27,6 +29,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
         </activity>
 

@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    Verlauf-Screen für Flora Break.
+
+    Wichtig:
+    Dieser Screen ist aktuell ein UI-Prototyp.
+    Die angezeigten Pausen kommen noch NICHT aus einer echten Datenbank.
+    Später kann hier eine echte Liste aus dem data-Modul / Backend angebunden werden.
+
+    Aufbau:
+    - Root ist ein vertikales LinearLayout.
+    - Der Inhalt liegt in einer ScrollView.
+    - Die Bottom Navigation liegt außerhalb der ScrollView und bleibt unten sichtbar.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_feedback_forest">
+
+    <!--
+        Scrollbarer Inhaltsbereich.
+        layout_weight="1" sorgt dafür, dass die Bottom Navigation unten stehen bleibt.
+    -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="18dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="20dp">
+
+            <!-- Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="22dp">
+
+                <!-- Zurück-Button: führt zurück zum vorherigen Screen -->
+                <TextView
+                    android:id="@+id/backFromHistoryButton"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:gravity="center"
+                    android:text="‹"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:textColor="#173522"
+                    android:background="@drawable/bg_green_pill" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Verlauf"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginStart="14dp" />
+            </LinearLayout>
+
+            <!--
+                Abschnitt für gespeicherte Pausen.
+
+                Später:
+                Hier könnte eine RecyclerView eingebaut werden, wenn mehrere Pausen
+                aus einer echten Datenbank angezeigt werden sollen.
+            -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Letzte Pausen"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#06140C"
+                android:layout_marginBottom="10dp" />
+
+            <!--
+                Pause-Karte.
+                Aktuell wird nur eine gespeicherte Mock-Pause angezeigt.
+                Später wird diese Karte dynamisch aus Datenbankdaten erzeugt.
+            -->
+            <LinearLayout
+                android:id="@+id/historyBreakCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_soft_card"
+                android:elevation="3dp"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="54dp"
+                    android:layout_height="54dp"
+                    android:gravity="center"
+                    android:text="🌿"
+                    android:textSize="26sp"
+                    android:background="@drawable/bg_green_pill" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="14dp">
+
+                    <!-- Platzhalter-Titel: später z.B. Route / Park / Urban Walk aus Maps API -->
+                    <TextView
+                        android:id="@+id/historyBreakTitleText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Naturpause gespeichert"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        android:textColor="#06140C" />
+
+                    <!-- Platzhalter-Details: später Dauer und Distanz aus Tracking / Maps -->
+                    <TextView
+                        android:id="@+id/historyBreakDetailsText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12 Min · 520 m"
+                        android:textSize="14sp"
+                        android:textColor="#637568"
+                        android:layout_marginTop="3dp" />
+
+                    <!-- Platzhalter: später aus Feedback-Screen / Datenbank -->
+                    <TextView
+                        android:id="@+id/historyBreakRatingText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="★★★★☆"
+                        android:textSize="15sp"
+                        android:textColor="#D79B1E"
+                        android:layout_marginTop="4dp" />
+
+                    <!-- Platzhalter-Stressdaten: später aus Stress Engine / Health Connect -->
+                    <TextView
+                        android:id="@+id/historyBreakStressText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Stress reduziert: 7.6 → 4.8"
+                        android:textSize="14sp"
+                        android:textColor="#2F6B45"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!--
+                Leere Anzeige.
+                Wird angezeigt, wenn noch keine Pause gespeichert wurde.
+                Später kann diese Logik aus einer echten Datenbank kommen.
+            -->
+            <LinearLayout
+                android:id="@+id/historyEmptyCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/bg_soft_card"
+                android:elevation="2dp"
+                android:padding="20dp"
+                android:layout_marginBottom="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Noch keine gespeicherten Pausen vorhanden."
+                    android:textSize="14sp"
+                    android:textColor="#637568"
+                    android:gravity="center" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!--
+        Feste Bottom Navigation.
+        Diese liegt außerhalb der ScrollView und bleibt dadurch unten am Bildschirm.
+    -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="86dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@drawable/bg_soft_card"
+        android:elevation="4dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp">
+
+        <!-- Home -->
+        <LinearLayout
+            android:id="@+id/navHomeFromHistory"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⌂"
+                android:textSize="20sp"
+                android:textColor="#8A8D96" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Home"
+                android:textSize="12sp"
+                android:textColor="#8A8D96" />
+        </LinearLayout>
+
+        <!-- Verlauf aktiv -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="↗"
+                android:textSize="20sp"
+                android:textColor="#1E7A43" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Verlauf"
+                android:textSize="12sp"
+                android:textColor="#1E7A43" />
+        </LinearLayout>
+
+        <!-- Statistik bleibt Platzhalter -->
+        <LinearLayout
+            android:id="@+id/navStatsFromHistory"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="▮▮"
+                android:textSize="18sp"
+                android:textColor="#8A8D96" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Statistik"
+                android:textSize="12sp"
+                android:textColor="#8A8D96" />
+        </LinearLayout>
+
+        <!-- Profil -->
+        <LinearLayout
+            android:id="@+id/navProfileFromHistory"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="◠"
+                android:textSize="20sp"
+                android:textColor="#8A8D96" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Profil"
+                android:textSize="12sp"
+                android:textColor="#8A8D96" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

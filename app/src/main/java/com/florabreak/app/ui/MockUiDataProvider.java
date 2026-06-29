@@ -149,10 +149,18 @@ public class MockUiDataProvider {
         return savedBreaks;
     }
 
-    public static void saveCompletedBreak() {
+    /**
+     * Speichert eine abgeschlossene Pause im UI-Mock-Speicher.
+     *
+     * Wichtig:
+     * Das ist noch keine echte Datenbank.
+     * Später kann diese Methode durch eine Repository-/Datenbank-Funktion ersetzt werden.
+     */
+    public static void saveCompletedBreak(int rating) {
         savedBreaks.add(0, new UiSavedBreak(
                 "🌿 Heute",
-                "12 Min · 520 m · Stress -2.8"
+                "12 Min · 520 m · Stress -2.8",
+                rating
         ));
     }
 }

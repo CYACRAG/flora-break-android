@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    Profil-Screen für Flora Break.
+
+    Wichtig:
+    Dieser Screen ist aktuell ein UI-Prototyp.
+    Die Nutzerdaten kommen noch NICHT aus einer echten Datenbank.
+    Später können Name, Arbeitszeit, Smartwatch-Status und Stress-Basiswerte
+    aus Datenbank, Health Connect oder einem Backend geladen werden.
+
+    Aufbau:
+    - Root ist ein vertikales LinearLayout.
+    - Der Inhalt liegt in einer ScrollView.
+    - Die Bottom Navigation liegt außerhalb der ScrollView und bleibt unten sichtbar.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_feedback_forest">
+
+    <!--
+        Scrollbarer Inhalt.
+        layout_weight="1" sorgt dafür, dass die Bottom Navigation unten bleibt.
+    -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="18dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="20dp">
+
+            <!-- Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="22dp">
+
+                <!-- Zurück-Button -->
+                <TextView
+                    android:id="@+id/backFromProfileButton"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:gravity="center"
+                    android:text="‹"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:textColor="#173522"
+                    android:background="@drawable/bg_green_pill" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Profil"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginStart="14dp" />
+            </LinearLayout>
+
+            <!--
+                Profilkopf.
+                Später können Name und Profilbild aus einer Datenbank kommen.
+            -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_soft_card"
+                android:elevation="3dp"
+                android:padding="18dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:gravity="center"
+                    android:text="🌿"
+                    android:textSize="30sp"
+                    android:background="@drawable/bg_green_pill" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="16dp">
+
+                    <!-- Platzhalter-Name: später aus Nutzerprofil / Datenbank -->
+                    <TextView
+                        android:id="@+id/profileNameText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lisa"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="#06140C" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Flora Break Nutzerprofil"
+                        android:textSize="14sp"
+                        android:textColor="#637568"
+                        android:layout_marginTop="3dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!--
+                Gesundheitsdaten-Karte.
+                Platzhalter für spätere Health Connect / Smartwatch API.
+            -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_soft_card"
+                android:elevation="3dp"
+                android:padding="18dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Gesundheitsdaten"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginBottom="14dp" />
+
+                <!-- Smartwatch / Health Connect Status -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="⌚ Smartwatch / Health Connect"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C" />
+
+                <TextView
+                    android:id="@+id/healthConnectStatusText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Platzhalter: Verbindung wird später vom Health-Modul übernommen."
+                    android:textSize="14sp"
+                    android:textColor="#637568"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="14dp" />
+
+                <!-- Stress-Basiswert -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Stress-Basiswert"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C" />
+
+                <TextView
+                    android:id="@+id/stressBaselineText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Wird später aus HRV, Puls und weiteren Gesundheitsdaten berechnet."
+                    android:textSize="14sp"
+                    android:textColor="#637568"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <!--
+                Arbeitsprofil-Karte.
+                Platzhalter für spätere Nutzerangaben.
+            -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_soft_card"
+                android:elevation="3dp"
+                android:padding="18dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Arbeitsprofil"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginBottom="14dp" />
+
+                <!-- Später aus Profil-Datenbank -->
+                <TextView
+                    android:id="@+id/workTimeText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Arbeitszeit: 09:00–17:00"
+                    android:textSize="15sp"
+                    android:textColor="#06140C"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Später aus Nutzerpräferenzen -->
+                <TextView
+                    android:id="@+id/breakGoalText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Pausenziel: 2 Naturpausen pro Tag"
+                    android:textSize="15sp"
+                    android:textColor="#06140C"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Später durch Stress Engine / Nutzereingabe -->
+                <TextView
+                    android:id="@+id/workloadText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Belastung: mittel bis hoch"
+                    android:textSize="15sp"
+                    android:textColor="#06140C" />
+            </LinearLayout>
+
+            <!--
+                Button bleibt erstmal Platzhalter.
+                Später kann hier ein echter Profil-Bearbeiten-Screen geöffnet werden.
+            -->
+            <Button
+                android:id="@+id/editProfileButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Profil bearbeiten"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#2F6B45"
+                android:layout_marginBottom="20dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!--
+        Feste Bottom Navigation.
+        Liegt außerhalb der ScrollView und bleibt unten am Bildschirm.
+    -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="86dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@drawable/bg_soft_card"
+        android:elevation="4dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp">
+
+        <!-- Home -->
+        <LinearLayout
+            android:id="@+id/navHomeFromProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⌂"
+                android:textSize="20sp"
+                android:textColor="#8A8D96" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Home"
+                android:textSize="12sp"
+                android:textColor="#8A8D96" />
+        </LinearLayout>
+
+        <!-- Verlauf -->
+        <LinearLayout
+            android:id="@+id/navHistoryFromProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="↗"
+                android:textSize="20sp"
+                android:textColor="#8A8D96" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Verlauf"
+                android:textSize="12sp"
+                android:textColor="#8A8D96" />
+        </LinearLayout>
+
+        <!-- Statistik bleibt Platzhalter -->
+        <LinearLayout
+            android:id="@+id/navStatsFromProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="▮▮"
+                android:textSize="18sp"
+                android:textColor="#8A8D96" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Statistik"
+                android:textSize="12sp"
+                android:textColor="#8A8D96" />
+        </LinearLayout>
+
+        <!-- Profil aktiv -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="◠"
+                android:textSize="20sp"
+                android:textColor="#1E7A43" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Profil"
+                android:textSize="12sp"
+                android:textColor="#1E7A43" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -50,7 +50,9 @@ public class BreakFeedbackActivity extends AppCompatActivity {
         backToBreakButton.setOnClickListener(view -> finish());
 
         saveBreakButton.setOnClickListener(view -> {
-            MockUiDataProvider.saveCompletedBreak();
+            // Speichert die Pause inklusive der ausgewählten Sternebewertung.
+// Später kann diese Bewertung in einer echten Datenbank gespeichert werden.
+            MockUiDataProvider.saveCompletedBreak(selectedRating);
 
             String message;
 
