@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#06140C">
+
+    <!-- Kamera-Placeholder Hintergrund -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="84dp"
+        android:paddingStart="22dp"
+        android:paddingEnd="22dp"
+        android:paddingBottom="150dp"
+        android:background="#143B22">
+
+        <!-- Großer Kamera-/Scanbereich -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="#102D1B"
+            android:padding="22dp">
+
+            <TextView
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:gravity="center"
+                android:text="🌿"
+                android:textSize="48sp"
+                android:background="@drawable/bg_green_pill"
+                android:layout_marginBottom="18dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kamera-Placeholder"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hier erscheint später die echte Kameraansicht."
+                android:textSize="15sp"
+                android:textColor="#DDEBDE"
+                android:gravity="center"
+                android:layout_marginBottom="24dp" />
+
+            <TextView
+                android:layout_width="220dp"
+                android:layout_height="46dp"
+                android:gravity="center"
+                android:text="Naturmoment erfassen"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#DDEBDE"
+                android:background="#224E31" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Header Overlay -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="84dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:paddingTop="18dp"
+        android:background="#AA06140C">
+
+        <TextView
+            android:id="@+id/backFromProofButton"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:gravity="center"
+            android:text="‹"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="#173522"
+            android:background="@drawable/bg_green_pill" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Streckenbeweis"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_marginStart="14dp" />
+
+    </LinearLayout>
+
+    <!-- Bottom Controls -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="28dp"
+        android:background="#CC06140C">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fotografiere kurz einen Naturmoment auf deiner Route."
+            android:textSize="14sp"
+            android:textColor="#DDEBDE"
+            android:gravity="center"
+            android:layout_marginBottom="14dp" />
+
+        <Button
+            android:id="@+id/captureProofButton"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:text="📷  Foto aufnehmen"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#2F6B45" />
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -1,5 +1,6 @@
 package com.florabreak.app.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Button;
@@ -12,7 +13,9 @@ import com.florabreak.app.R;
 public class ActiveBreakActivity extends AppCompatActivity {
 
     private TextView timerText;
+    private TextView selectedRouteNameText;
     private Button finishBreakButton;
+    private TextView proofCameraPlaceholder;
 
     private Handler handler = new Handler();
     private int seconds = 0;
@@ -43,15 +46,39 @@ public class ActiveBreakActivity extends AppCompatActivity {
         setContentView(R.layout.activity_active_break);
 
         timerText = findViewById(R.id.timerText);
+        selectedRouteNameText = findViewById(R.id.selectedRouteNameText);
         finishBreakButton = findViewById(R.id.finishBreakButton);
+        proofCameraPlaceholder = findViewById(R.id.proofCameraPlaceholder);
+
+        String selectedRouteName = getIntent().getStringExtra("selectedRouteName");
+
+        if (selectedRouteName != null && !selectedRouteName.isEmpty()) {
+            selectedRouteNameText.setText("📍 " + selectedRouteName);
+        }
+        /*
+         * Öffnet den Streckenbeweis-Placeholder.
+         *
+         * Aktuell wird noch keine echte Kamera verwendet.
+         * Der Screen zeigt nur, wo später die Kamera-Funktion eingebaut werden kann.
+         */
+        proofCameraPlaceholder.setOnClickListener(view -> {
+            Intent intent = new Intent(ActiveBreakActivity.this, RouteProofActivity.class);
+            startActivity(intent);
+        });
 
         // Timer startet automatisch
         handler.postDelayed(timerRunnable, 1000);
 
         // Beim Klick auf "Beenden" wird der Timer gestoppt
+        /*
+         * Beendet die aktive Pause und öffnet die Feedback-Seite.
+         * Die angezeigten Werte auf der Feedback-Seite sind aktuell Mock-Daten.
+         */
         finishBreakButton.setOnClickListener(view -> {
             timerRunning = false;
-            finish();
+
+            Intent intent = new Intent(ActiveBreakActivity.this, BreakFeedbackActivity.class);
+            startActivity(intent);
         });
     }
 

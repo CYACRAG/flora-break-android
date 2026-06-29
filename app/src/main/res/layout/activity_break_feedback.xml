@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_feedback_forest"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="12dp">
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/backToBreakButton"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:gravity="center"
+                android:text="‹"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:textColor="#173522"
+                android:background="@drawable/bg_green_pill" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pause abgeschlossen"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#06140C"
+                android:layout_marginStart="12dp" />
+
+        </LinearLayout>
+
+        <!-- Hero -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_soft_card"
+            android:elevation="4dp"
+            android:padding="16dp"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="62dp"
+                android:layout_height="62dp"
+                android:gravity="center"
+                android:text="🌿"
+                android:textSize="34sp"
+                android:background="@drawable/bg_green_pill"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Schön, dass du da warst!"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#06140C"
+                android:gravity="center"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Deine Pause wurde erfolgreich beendet."
+                android:textSize="13sp"
+                android:textColor="#637568"
+                android:gravity="center"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="92dp"
+                android:gravity="center"
+                android:text="🍃"
+                android:textSize="46sp"
+                android:background="#EAF3EC"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Naturmoment gesammelt"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#06140C"
+                android:gravity="center"
+                android:layout_marginBottom="2dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Platzhalter für späteren Pflanzen- oder Pausennachweis"
+                android:textSize="12sp"
+                android:textColor="#637568"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+        <!-- Result Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_soft_card"
+            android:elevation="4dp"
+            android:padding="16dp"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Deine Pause"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#06140C"
+                android:layout_marginBottom="12dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="14dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12"
+                        android:textSize="27sp"
+                        android:textStyle="bold"
+                        android:textColor="#2F6B45" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Minuten"
+                        android:textSize="12sp"
+                        android:textColor="#637568" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="520 m"
+                        android:textSize="27sp"
+                        android:textStyle="bold"
+                        android:textColor="#2F6B45" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Strecke"
+                        android:textSize="12sp"
+                        android:textColor="#637568" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-2.8"
+                        android:textSize="27sp"
+                        android:textStyle="bold"
+                        android:textColor="#2F6B45" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Stress"
+                        android:textSize="12sp"
+                        android:textColor="#637568" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#F4F7F3"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Stress-Level"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Vorher: 7.6"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="#E8787E" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="→"
+                        android:textSize="20sp"
+                        android:textColor="#7A8F80"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Nachher: 4.8"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="#2F6B45"
+                        android:gravity="end" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Feedback Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_soft_card"
+            android:elevation="3dp"
+            android:padding="16dp"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Strecke bewerten"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:textColor="#06140C"
+                android:gravity="center"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Wie hat dir die Naturpause gefallen?"
+                android:textSize="13sp"
+                android:textColor="#637568"
+                android:gravity="center"
+                android:layout_marginBottom="10dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_marginBottom="6dp">
+
+                <TextView
+                    android:id="@+id/star1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="☆"
+                    android:textSize="32sp"
+                    android:textColor="#C7D1C9"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:id="@+id/star2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="☆"
+                    android:textSize="32sp"
+                    android:textColor="#C7D1C9"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:id="@+id/star3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="☆"
+                    android:textSize="32sp"
+                    android:textColor="#C7D1C9"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:id="@+id/star4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="☆"
+                    android:textSize="32sp"
+                    android:textColor="#C7D1C9"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:id="@+id/star5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="☆"
+                    android:textSize="32sp"
+                    android:textColor="#C7D1C9"
+                    android:padding="4dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/ratingHintText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tippe auf die Sterne"
+                android:textSize="13sp"
+                android:textColor="#637568"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+
+        <!-- Buttons -->
+        <Button
+            android:id="@+id/saveBreakButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="🌿  Pause speichern"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#2F6B45"
+            android:layout_marginBottom="8dp" />
+
+        <Button
+            android:id="@+id/backHomeButton"
+            android:layout_marginBottom="28dp"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:text="Zurück zur Übersicht"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#2F6B45"
+            android:backgroundTint="#E8F1EA" />
+
+    </LinearLayout>
+</ScrollView>
