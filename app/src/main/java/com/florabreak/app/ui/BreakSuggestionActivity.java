@@ -6,15 +6,16 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.View;
+
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.health.connect.client.contracts.HealthPermissionsRequestContract;
 
 import com.florabreak.app.R;
-import com.florabreak.app.data.FloraBreakController;
-import com.florabreak.app.health.MockHealthDataProvider;
-import com.florabreak.app.maps.MockRouteProvider;
-import com.florabreak.app.model.BreakRecommendation;
-import com.florabreak.app.model.StressResult;
+import com.florabreak.app.health.HealthConnectDataProvider;
+
+import java.util.List;
+import java.util.Set;
 
 public class BreakSuggestionActivity extends AppCompatActivity {
 
@@ -37,13 +38,12 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
     private int selectedRouteIndex = 0;
 
-    private FloraBreakController controller;
-    private StressResult stressResult;
-    private BreakRecommendation recommendation;
+    private ActivityResultLauncher<Set<? extends String>> healthPermissionLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_break_suggestion);
 
         backButton = findViewById(R.id.backButton);
@@ -63,12 +63,25 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         routeOneCard = findViewById(R.id.routeOneCard);
         routeTwoCard = findViewById(R.id.routeTwoCard);
 
-        controller = new FloraBreakController(
-                new MockHealthDataProvider(),
-                new MockRouteProvider()
+        healthPermissionLauncher = registerForActivityResult(
+                new HealthPermissionsRequestContract(),
+                grantedPermissions -> {
+                    if (grantedPermissions.containsAll(HealthConnectDataProvider.getRequiredPermissions())) {
+                        Toast.makeText(this, "Health Connect verbunden", Toast.LENGTH_SHORT).show();
+                        loadHealthConnectData();
+                    } else {
+                        Toast.makeText(this, "Health Connect Berechtigung fehlt - Mock-Daten werden genutzt", Toast.LENGTH_LONG).show();
+                        loadMockData();
+                    }
+                }
         );
 
-        loadControllerData();
+        if (HealthConnectDataProvider.isAvailable(this)) {
+            healthPermissionLauncher.launch(HealthConnectDataProvider.getRequiredPermissions());
+        } else {
+            Toast.makeText(this, "Health Connect nicht verfügbar - Mock-Daten werden genutzt", Toast.LENGTH_LONG).show();
+            loadMockData();
+        }
 
         routeOneCard.setOnClickListener(view -> {
             selectedRouteIndex = 0;
@@ -101,32 +114,50 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         });
     }
 
-    private void loadControllerData() {
-        stressResult = controller.getCurrentStressResult();
-        recommendation = controller.getCurrentBreakRecommendation();
+    private void loadHealthConnectData() {
+        HealthConnectDataProvider healthProvider = new HealthConnectDataProvider(this);
 
-        suggestionStressScoreText.setText(stressResult.getScore() + " / 6");
-        suggestionStressLabelText.setText(stressResult.getLabel());
+        // Ruft echte Health-Connect-Daten ab.
+        // Die UI nutzt aktuell noch Mock-Stressanzeige als stabile Zwischenlösung.
+        healthProvider.getCurrentStressData();
 
-        routeOneNameText.setText(recommendation.getTitle());
-        routeOneInfoText.setText("⏱ " + recommendation.getDurationMinutes() + " Minuten");
-        routeOneTypeText.setText(getTypeLabel(recommendation.getType()));
+        UiStressState stressState = MockUiDataProvider.getCurrentStressState();
+        List<UiRouteSuggestion> routes = MockUiDataProvider.getRouteSuggestions();
 
-        routeTwoNameText.setText("Indoor-Pause");
-        routeTwoInfoText.setText("⏱ 5 Minuten");
-        routeTwoTypeText.setText("🏠 Alternative Pause");
+        suggestionStressScoreText.setText(String.valueOf(stressState.getStressScore()));
+        suggestionStressLabelText.setText(stressState.getStressLabel() + " - Health Connect aktiv");
+
+        showRoutes(routes);
     }
 
-    private String getTypeLabel(String type) {
-        if ("URBAN_WALK".equals(type)) {
-            return "🌳 Urban Walk";
-        }
+    private void loadMockData() {
+        UiStressState stressState = MockUiDataProvider.getCurrentStressState();
+        List<UiRouteSuggestion> routes = MockUiDataProvider.getRouteSuggestions();
 
-        if ("INDOOR_BREAK".equals(type)) {
-            return "🏠 Indoor Break";
-        }
+        suggestionStressScoreText.setText(String.valueOf(stressState.getStressScore()));
+        suggestionStressLabelText.setText(stressState.getStressLabel() + " - Mock-Daten");
 
-        return "🌿 Pause";
+        showRoutes(routes);
+    }
+
+    private void showRoutes(List<UiRouteSuggestion> routes) {
+        if (routes.size() >= 2) {
+            UiRouteSuggestion routeOne = routes.get(0);
+            UiRouteSuggestion routeTwo = routes.get(1);
+
+            routeOneNameText.setText(routeOne.getRouteName());
+            routeOneInfoText.setText(routeOne.getDistance() + "   " + routeOne.getDuration());
+            routeOneTypeText.setText(routeOne.getRouteType());
+
+            routeTwoNameText.setText(routeTwo.getRouteName());
+            routeTwoInfoText.setText(routeTwo.getDistance() + "   " + routeTwo.getDuration());
+
+            if (routeTwo.isUrbanFallback()) {
+                routeTwoTypeText.setText("Fallback: " + routeTwo.getRouteType());
+            } else {
+                routeTwoTypeText.setText(routeTwo.getRouteType());
+            }
+        }
     }
 
     private void updateSelectedRoute() {
