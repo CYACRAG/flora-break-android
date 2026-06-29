@@ -40,6 +40,8 @@ buildFeatures {
 }
 
 dependencies {
+    implementation "androidx.health.connect:connect-client:1.2.0-alpha01"
+
     implementation libs.play.services.maps
     implementation libs.play.services.location
     implementation libs.places
