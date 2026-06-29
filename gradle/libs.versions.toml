@@ -16,7 +16,9 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version = "19.2.0" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version = "21.3.0" }
+places = { module = "com.google.android.libraries.places:places", version = "4.3.1" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 
