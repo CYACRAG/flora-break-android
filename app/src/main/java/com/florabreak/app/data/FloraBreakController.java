@@ -1,5 +1,10 @@
 package com.florabreak.app.data;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import com.florabreak.app.maps.RealMapsBreakService;
 import com.florabreak.app.model.BreakRecommendation;
 import com.florabreak.app.model.RouteResult;
 import com.florabreak.app.model.StressData;
@@ -8,6 +13,9 @@ import com.florabreak.app.stress.StressDecisionEngine;
 
 public class FloraBreakController {
 
+    public interface BreakRecommendationCallback {
+        void onRecommendationReady(com.florabreak.app.model.BreakRecommendation recommendation);
+    }
     private final HealthDataProvider healthDataProvider;
     private final RouteProvider routeProvider;
     private final StressDecisionEngine stressDecisionEngine;
@@ -52,6 +60,39 @@ public class FloraBreakController {
                 "Indoor-Pause empfohlen",
                 "Aktuell wurde kein geeigneter Grünbereich in 15 Minuten Gehzeit gefunden.",
                 5
+        );
+    }
+    public void getCurrentBreakRecommendationWithRealMaps(
+            @NonNull Context context,
+            @NonNull BreakRecommendationCallback callback
+    ) {
+        StressResult stressResult = getCurrentStressResult();
+
+        if (!stressResult.isBreakRecommended()) {
+            callback.onRecommendationReady(
+                    new BreakRecommendation(
+                            "NONE",
+                            "Keine Pause notwendig",
+                            stressResult.getExplanation(),
+                            0
+                    )
+            );
+            return;
+        }
+
+        RealMapsBreakService realMapsBreakService = new RealMapsBreakService(context);
+
+        realMapsBreakService.getBreakDecision(
+                (recommendationTitle, recommendationText, routeResult, usedRealLocation, foundRealPlace, usedRealRoute) -> {
+                    BreakRecommendation recommendation = new BreakRecommendation(
+                            routeResult.isReachable() ? "URBAN_WALK" : "INDOOR_BREAK",
+                            recommendationTitle,
+                            recommendationText,
+                            routeResult.isReachable() ? routeResult.getWalkingTimeMinutes() : 5
+                    );
+
+                    callback.onRecommendationReady(recommendation);
+                }
         );
     }
 }

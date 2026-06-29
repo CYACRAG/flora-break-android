@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.florabreak.app.R;
 
 import java.util.List;
+import com.florabreak.app.maps.RealMapsBreakService;
+import com.florabreak.app.model.RouteResult;
 
 public class BreakSuggestionActivity extends AppCompatActivity {
 
@@ -54,30 +56,56 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         // Mock-Daten laden.
         // Später kommen diese Werte aus Stress Engine und Maps/OSM.
         UiStressState stressState = MockUiDataProvider.getCurrentStressState();
-        List<UiRouteSuggestion> routes = MockUiDataProvider.getRouteSuggestions();
+
 
         // Stresswerte anzeigen
         suggestionStressScoreText.setText(String.valueOf(stressState.getStressScore()));
         suggestionStressLabelText.setText(stressState.getStressLabel());
 
-        // Routenvorschläge anzeigen
-        if (routes.size() >= 2) {
-            UiRouteSuggestion routeOne = routes.get(0);
-            UiRouteSuggestion routeTwo = routes.get(1);
+        // Echte Maps-Empfehlung laden.
+// Der Ablauf ist:
+// Standort holen -> Grünfläche suchen -> Gehzeit berechnen -> Empfehlung anzeigen.
+        routeOneNameText.setText("Route wird berechnet...");
+        routeOneInfoText.setText("Standort, Grünfläche und Gehzeit werden geprüft.");
+        routeOneTypeText.setText("🗺️ Google Maps");
 
-            routeOneNameText.setText(routeOne.getRouteName());
-            routeOneInfoText.setText("📍 " + routeOne.getDistance() + "   ⏱ " + routeOne.getDuration());
-            routeOneTypeText.setText("🌳  " + routeOne.getRouteType());
+        routeTwoNameText.setText("Fallback bereit");
+        routeTwoInfoText.setText("Falls Google Maps keine Daten liefert, nutzt Flora Break eine sichere Ersatzempfehlung.");
+        routeTwoTypeText.setText("🌿 / 🏠");
 
-            routeTwoNameText.setText(routeTwo.getRouteName());
-            routeTwoInfoText.setText("📍 " + routeTwo.getDistance() + "   ⏱ " + routeTwo.getDuration());
+        RealMapsBreakService realMapsBreakService = new RealMapsBreakService(this);
 
-            if (routeTwo.isUrbanFallback()) {
-                routeTwoTypeText.setText("🏙️  " + routeTwo.getRouteType());
-            } else {
-                routeTwoTypeText.setText("🌲  " + routeTwo.getRouteType());
-            }
-        }
+        realMapsBreakService.getBreakDecision(
+                (recommendationTitle, recommendationText, routeResult, usedRealLocation, foundRealPlace, usedRealRoute) -> {
+                    runOnUiThread(() -> {
+                        routeOneNameText.setText(recommendationTitle);
+                        routeOneInfoText.setText(recommendationText);
+
+                        if (routeResult != null && routeResult.isReachable()) {
+                            routeOneTypeText.setText("🌿 Urban Walk");
+                        } else {
+                            routeOneTypeText.setText("🏠 Indoor-Pause");
+                        }
+
+                        if (routeResult != null) {
+                            routeTwoNameText.setText(routeResult.getDestinationName());
+                            routeTwoInfoText.setText(
+                                    "Gehzeit: "
+                                            + routeResult.getWalkingTimeMinutes()
+                                            + " Minuten | Standort: "
+                                            + (usedRealLocation ? "echt" : "Fallback")
+                                            + " | Ort: "
+                                            + (foundRealPlace ? "Google Places" : "Fallback")
+                            );
+                            routeTwoTypeText.setText(usedRealRoute ? "✅ Echte Route" : "🧪 Fallback-Route");
+                        } else {
+                            routeTwoNameText.setText("Keine Route verfügbar");
+                            routeTwoInfoText.setText("Es konnte keine Route berechnet werden.");
+                            routeTwoTypeText.setText("Fallback");
+                        }
+                    });
+                }
+        );
 
         // Zurück zum Dashboard
         backButton.setOnClickListener(view -> finish());
