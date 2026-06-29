@@ -16,6 +16,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FloraBreak">
+        <activity android:name="com.florabreak.app.ui.RouteProofActivity" />
+        <activity android:name="com.florabreak.app.ui.BreakFeedbackActivity" />
+        <activity android:name="com.florabreak.app.ui.HistoryActivity" />
+        <activity android:name="com.florabreak.app.ui.ProfileActivity" />
 
         <!-- Google Maps API Key: kommt später aus local.properties / Gradle -->
         <meta-data
@@ -36,6 +40,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
         </activity>
 
