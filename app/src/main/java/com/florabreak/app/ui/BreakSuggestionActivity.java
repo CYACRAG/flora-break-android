@@ -6,7 +6,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.florabreak.app.R;
