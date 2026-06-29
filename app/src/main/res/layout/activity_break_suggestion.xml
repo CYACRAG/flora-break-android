@@ -47,12 +47,13 @@
             android:elevation="4dp"
             android:layout_marginBottom="24dp">
 
+            <!-- Obere Zeile -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="14dp">
+                android:layout_marginBottom="18dp">
 
                 <TextView
                     android:layout_width="0dp"
@@ -76,34 +77,59 @@
                     android:paddingEnd="12dp"
                     android:paddingTop="6dp"
                     android:paddingBottom="6dp" />
+
             </LinearLayout>
 
             <TextView
                 android:id="@+id/suggestionStressScoreText"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="7.6"
-                android:textSize="56sp"
+                android:textSize="50sp"
                 android:textStyle="bold"
                 android:textColor="#E8787E"
-                android:gravity="center"
-                android:layout_marginBottom="2dp" />
+                android:layout_gravity="center"
+                android:layout_marginBottom="-4dp" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0        5        10"
-                android:textSize="15sp"
+                android:text="von 10"
+                android:textSize="13sp"
                 android:textColor="#7A8F80"
-                android:gravity="center"
-                android:layout_marginBottom="8dp" />
+                android:layout_gravity="center"
+                android:layout_marginBottom="14dp" />
 
-            <ProgressBar
-                android:layout_width="match_parent"
-                android:layout_height="10dp"
-                android:progress="76"
-                android:max="100"
-                style="?android:attr/progressBarStyleHorizontal" />
+            <FrameLayout
+                android:layout_width="240dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="6dp">
+
+                <View
+                    android:layout_width="240dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_stress_gradient_bar" />
+
+                <View
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="start|center_vertical"
+                    android:layout_marginStart="178dp"
+                    android:background="@drawable/bg_stress_marker" />
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="240dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="0                         5                         10"
+                android:textSize="12sp"
+                android:textColor="#7A8F80"
+                android:gravity="center" />
+
         </LinearLayout>
 
         <!-- Section Title -->
@@ -114,18 +140,11 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="#06140C"
-            android:layout_marginBottom="6dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Basierend auf deinem Stress-Level und deiner aktuellen Position."
-            android:textSize="14sp"
-            android:textColor="#637568"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="4dp" />
 
         <!-- Route 1 Card -->
         <LinearLayout
+            android:id="@+id/routeOneCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -197,6 +216,7 @@
 
         <!-- Route 2 Card -->
         <LinearLayout
+            android:id="@+id/routeTwoCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"

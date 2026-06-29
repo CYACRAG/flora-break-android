@@ -1,8 +1,9 @@
-
 package com.florabreak.app.ui;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,11 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     private TextView routeTwoInfoText;
     private TextView routeTwoTypeText;
 
+    private LinearLayout routeOneCard;
+    private LinearLayout routeTwoCard;
+
+    private int selectedRouteIndex = 0;
+
     private ActivityResultLauncher<Set<? extends String>> healthPermissionLauncher;
 
     @Override
@@ -57,6 +63,9 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         routeTwoInfoText = findViewById(R.id.routeTwoInfoText);
         routeTwoTypeText = findViewById(R.id.routeTwoTypeText);
 
+        routeOneCard = findViewById(R.id.routeOneCard);
+        routeTwoCard = findViewById(R.id.routeTwoCard);
+
         healthPermissionLauncher = registerForActivityResult(
                 new HealthPermissionsRequestContract(),
                 grantedPermissions -> {
@@ -77,10 +86,33 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             loadMockData();
         }
 
+        routeOneCard.setOnClickListener(view -> {
+            selectedRouteIndex = 0;
+            updateSelectedRoute();
+        });
+
+        routeTwoCard.setOnClickListener(view -> {
+            selectedRouteIndex = 1;
+            updateSelectedRoute();
+        });
+
+        updateSelectedRoute();
+
         backButton.setOnClickListener(view -> finish());
 
         startBreakButton.setOnClickListener(view -> {
+            String selectedRouteName;
+
+            if (selectedRouteIndex == 0) {
+                selectedRouteName = routeOneNameText.getText().toString();
+            } else {
+                selectedRouteName = routeTwoNameText.getText().toString();
+            }
+
+            Toast.makeText(this, selectedRouteName + " ausgewählt", Toast.LENGTH_SHORT).show();
+
             Intent intent = new Intent(BreakSuggestionActivity.this, ActiveBreakActivity.class);
+            intent.putExtra("selectedRouteName", selectedRouteName);
             startActivity(intent);
         });
     }
@@ -90,19 +122,11 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
         StressData stressData = healthProvider.getCurrentStressData();
 
-        /*
-         * Wichtig:
-         * Health Connect ist jetzt wirklich angeschlossen.
-         * Weil wir nicht sicher wissen, welche Getter eure StressData-Klasse hat,
-         * nutzen wir für die UI-Anzeige erstmal weiterhin den bestehenden UI-Mock.
-         * Der echte HealthConnectDataProvider wird aber hier bereits ausgeführt.
-         */
-
         UiStressState stressState = MockUiDataProvider.getCurrentStressState();
         List<UiRouteSuggestion> routes = MockUiDataProvider.getRouteSuggestions();
 
         suggestionStressScoreText.setText(String.valueOf(stressState.getStressScore()));
-        suggestionStressLabelText.setText(stressState.getStressLabel() + " • Health Connect aktiv");
+        suggestionStressLabelText.setText(stressState.getStressLabel() + " - Health Connect aktiv");
 
         showRoutes(routes);
     }
@@ -116,7 +140,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         List<UiRouteSuggestion> routes = MockUiDataProvider.getRouteSuggestions();
 
         suggestionStressScoreText.setText(String.valueOf(stressState.getStressScore()));
-        suggestionStressLabelText.setText(stressState.getStressLabel() + " • Mock-Daten");
+        suggestionStressLabelText.setText(stressState.getStressLabel() + " - Mock-Daten");
 
         showRoutes(routes);
     }
@@ -138,6 +162,16 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             } else {
                 routeTwoTypeText.setText(routeTwo.getRouteType());
             }
+        }
+    }
+
+    private void updateSelectedRoute() {
+        if (selectedRouteIndex == 0) {
+            routeOneCard.setBackgroundResource(R.drawable.bg_route_selected);
+            routeTwoCard.setBackgroundResource(R.drawable.bg_soft_card);
+        } else {
+            routeOneCard.setBackgroundResource(R.drawable.bg_soft_card);
+            routeTwoCard.setBackgroundResource(R.drawable.bg_route_selected);
         }
     }
 }

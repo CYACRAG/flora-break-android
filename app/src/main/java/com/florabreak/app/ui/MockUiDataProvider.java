@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MockUiDataProvider {
+    private static final List<UiSavedBreak> savedBreaks = new ArrayList<>();
 
     /*
      * Dieser Provider enthält nur Mock-Daten für die UI.
@@ -143,5 +144,15 @@ public class MockUiDataProvider {
 
     public static String getAfterBreakStressLabel() {
         return "Leicht gestresst";
+    }
+    public static List<UiSavedBreak> getSavedBreaks() {
+        return savedBreaks;
+    }
+
+    public static void saveCompletedBreak() {
+        savedBreaks.add(0, new UiSavedBreak(
+                "🌿 Heute",
+                "12 Min · 520 m · Stress -2.8"
+        ));
     }
 }
