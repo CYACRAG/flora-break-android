@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:background="#06140C">
 
-    <!-- Kamera-Placeholder Hintergrund -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,7 +14,6 @@
         android:paddingBottom="150dp"
         android:background="#143B22">
 
-        <!-- Großer Kamera-/Scanbereich -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -24,49 +22,40 @@
             android:background="#102D1B"
             android:padding="22dp">
 
-            <TextView
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:gravity="center"
-                android:text="🌿"
-                android:textSize="48sp"
-                android:background="@drawable/bg_green_pill"
+            <ImageView
+                android:id="@+id/proofImagePreview"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:scaleType="centerCrop"
+                android:background="#0B2013"
+                android:contentDescription="Streckenbeweis Foto"
                 android:layout_marginBottom="18dp" />
 
             <TextView
+                android:id="@+id/proofStatusText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Kamera-Placeholder"
-                android:textSize="22sp"
+                android:text="Noch kein Foto aufgenommen"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="#FFFFFF"
                 android:gravity="center"
                 android:layout_marginBottom="8dp" />
 
             <TextView
+                android:id="@+id/proofPathText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Hier erscheint später die echte Kameraansicht."
-                android:textSize="15sp"
+                android:text="Das Foto wird komprimiert und lokal mit der Pause gespeichert."
+                android:textSize="14sp"
                 android:textColor="#DDEBDE"
-                android:gravity="center"
-                android:layout_marginBottom="24dp" />
-
-            <TextView
-                android:layout_width="220dp"
-                android:layout_height="46dp"
-                android:gravity="center"
-                android:text="Naturmoment erfassen"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                android:textColor="#DDEBDE"
-                android:background="#224E31" />
+                android:gravity="center" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-    <!-- Header Overlay -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="84dp"
@@ -100,7 +89,6 @@
 
     </LinearLayout>
 
-    <!-- Bottom Controls -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="150dp"
