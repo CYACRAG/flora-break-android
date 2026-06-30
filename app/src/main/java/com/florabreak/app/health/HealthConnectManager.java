@@ -37,7 +37,7 @@ public class HealthConnectManager implements HealthDataProvider {
      */
     @Override
     public StressData getCurrentHealthData() {
-        return fallbackProvider.getCurrentHealthData();
+        return fallbackProvider.getCurrentStressData();
     }
 
     /**

@@ -1,25 +1,35 @@
 package com.florabreak.app.health;
 
+import com.florabreak.app.data.HealthDataProvider;
 import com.florabreak.app.model.StressData;
 
 /**
  * Liefert simulierte Gesundheitsdaten für den Prototyp.
  *
- * Diese Klasse wird genutzt, solange keine echte Smartwatch
- * oder Health Connect verfügbar ist.
+ * Diese Klasse wird genutzt, solange keine echte Smartwatch,
+ * kein Demo-Regler oder Health Connect verfügbar ist.
  */
 public class MockHealthDataProvider implements HealthDataProvider {
+
+    private String scenario = "HIGH";
+
+    public MockHealthDataProvider() {
+    }
+
+    public MockHealthDataProvider(String scenario) {
+        this.scenario = scenario;
+    }
+
+    public void setScenario(String scenario) {
+        this.scenario = scenario;
+    }
 
     /**
      * Diese Methode kommt aus dem Interface HealthDataProvider.
      * Sie gibt die aktuellen Gesundheitsdaten zurück.
-     *
-     * Für die erste Demo nutzen wir hohe Stresswerte,
-     * damit die App direkt eine Pausenempfehlung anzeigen kann.
      */
-    private String scenario = "HIGH";
     @Override
-    public StressData getCurrentHealthData() {
+    public StressData getCurrentStressData() {
         if ("LOW".equals(scenario)) {
             return getLowStressData();
         } else if ("MEDIUM".equals(scenario)) {
@@ -29,23 +39,17 @@ public class MockHealthDataProvider implements HealthDataProvider {
         }
     }
 
-    /**
-     * Beispielwerte für niedrigen Stress.
-     */
     public StressData getLowStressData() {
         return new StressData(
-                50.0, // currentHrv
-                50.0, // normalHrv
-                72,   // heartRate
-                120,  // systolicBloodPressure
-                80,   // diastolicBloodPressure
+                50.0,
+                50.0,
+                72,
+                120,
+                80,
                 System.currentTimeMillis()
         );
     }
 
-    /**
-     * Beispielwerte für mittleren Stress.
-     */
     public StressData getMediumStressData() {
         return new StressData(
                 58.0,
@@ -57,9 +61,6 @@ public class MockHealthDataProvider implements HealthDataProvider {
         );
     }
 
-    /**
-     * Beispielwerte für hohen Stress.
-     */
     public StressData getHighStressData() {
         return new StressData(
                 65.0,
