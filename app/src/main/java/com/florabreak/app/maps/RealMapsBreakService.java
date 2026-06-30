@@ -108,7 +108,10 @@ public class RealMapsBreakService {
             return;
         }
 
-        realMapsRouteProvider.getRecommendedWalkingRoute(
+        realMapsRouteProvider.getRecommendedWalkingRouteFromLocation(
+		latitude,
+		longitude,
+		isRealLocation,
                 (routeResult, usedRealLocation, foundRealPlace, usedRealRoute) -> {
                     CachedRoute cachedRoute = createCachedRouteFromResult(
                             routeResult,
