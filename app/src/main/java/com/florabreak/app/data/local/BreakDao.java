@@ -8,7 +8,7 @@ import androidx.room.Update;
 import java.util.List;
 
 /**
- * Datenbankzugriff für Pausen.
+ * Datenbankzugriff für gespeicherte Pausen.
  */
 @Dao
 public interface BreakDao {
@@ -18,6 +18,21 @@ public interface BreakDao {
 
     @Update
     void updateBreak(BreakEntity breakEntity);
+
+    @Query("SELECT * FROM breaks WHERE id = :breakId LIMIT 1")
+    BreakEntity getBreakById(long breakId);
+
+    @Query("UPDATE breaks SET endedAt = :endedAt, durationMinutes = :durationMinutes, rating = :rating, feedbackText = :feedbackText WHERE id = :breakId")
+    void finishBreak(
+            long breakId,
+            long endedAt,
+            int durationMinutes,
+            int rating,
+            String feedbackText
+    );
+
+    @Query("UPDATE breaks SET photoProofPath = :photoProofPath, photoProofTaken = 1 WHERE id = :breakId")
+    void updatePhotoProof(long breakId, String photoProofPath);
 
     @Query("SELECT * FROM breaks ORDER BY startedAt DESC")
     List<BreakEntity> getAllBreaks();

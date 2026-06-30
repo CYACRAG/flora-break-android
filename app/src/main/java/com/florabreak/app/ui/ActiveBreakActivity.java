@@ -1,27 +1,28 @@
 package com.florabreak.app.ui;
 
+import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.Manifest;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
-
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.florabreak.app.R;
+import com.florabreak.app.data.repository.BreakSessionRepository;
 
 public class ActiveBreakActivity extends AppCompatActivity {
+
+    private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 44;
 
     private TextView timerText;
     private TextView selectedRouteNameText;
@@ -29,25 +30,30 @@ public class ActiveBreakActivity extends AppCompatActivity {
     private TextView navigationSubText;
     private TextView remainingTimeText;
     private TextView distanceText;
-
-    private Button openMapsButton;
-
-    private double selectedLatitude = 0.0;
-    private double selectedLongitude = 0.0;
-    private boolean reminderScheduled = false;
-
-    private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 44;
-
-    private Button finishBreakButton;
     private TextView proofCameraPlaceholder;
 
+    private Button openMapsButton;
+    private Button finishBreakButton;
+
     private final Handler handler = new Handler();
+
+    private BreakSessionRepository breakSessionRepository;
+
     private int seconds = 0;
     private boolean timerRunning = true;
+    private boolean reminderScheduled = false;
+
+    private long breakSessionId = -1L;
 
     private String selectedRouteName = "Grünfläche in der Nähe";
     private int selectedWalkingTimeMinutes = 0;
     private String selectedRouteType = "ROUTE";
+
+    private double selectedLatitude = 0.0;
+    private double selectedLongitude = 0.0;
+
+    private int stressScore = 0;
+    private String stressLabel = "Unbekannt";
 
     private final Runnable timerRunnable = new Runnable() {
         @Override
@@ -58,7 +64,7 @@ public class ActiveBreakActivity extends AppCompatActivity {
                 int minutes = seconds / 60;
                 int remainingSeconds = seconds % 60;
 
-                String time = String.format("%02d:%02d", minutes, remainingSeconds);
+                String time = String.format(java.util.Locale.GERMANY, "%02d:%02d", minutes, remainingSeconds);
                 timerText.setText(time);
 
                 handler.postDelayed(this, 1000);
@@ -71,8 +77,11 @@ public class ActiveBreakActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_break);
 
+        breakSessionRepository = new BreakSessionRepository(this);
+
         bindViews();
         readIntentData();
+        startBreakSessionIfNeeded();
         updateRouteUi();
         setupButtons();
 
@@ -95,6 +104,7 @@ public class ActiveBreakActivity extends AppCompatActivity {
     private void readIntentData() {
         String routeNameExtra = getIntent().getStringExtra("selectedRouteName");
         String routeTypeExtra = getIntent().getStringExtra("selectedRouteType");
+        String stressLabelExtra = getIntent().getStringExtra("stressLabel");
 
         if (routeNameExtra != null && !routeNameExtra.trim().isEmpty()) {
             selectedRouteName = routeNameExtra;
@@ -104,9 +114,36 @@ public class ActiveBreakActivity extends AppCompatActivity {
             selectedRouteType = routeTypeExtra;
         }
 
+        if (stressLabelExtra != null && !stressLabelExtra.trim().isEmpty()) {
+            stressLabel = stressLabelExtra;
+        }
+
         selectedWalkingTimeMinutes = getIntent().getIntExtra("selectedWalkingTimeMinutes", 0);
         selectedLatitude = getIntent().getDoubleExtra("selectedLatitude", 0.0);
         selectedLongitude = getIntent().getDoubleExtra("selectedLongitude", 0.0);
+        stressScore = getIntent().getIntExtra("stressScore", 0);
+    }
+
+    private void startBreakSessionIfNeeded() {
+        if (breakSessionId > 0) {
+            return;
+        }
+
+        int plannedDuration = selectedWalkingTimeMinutes;
+
+        if (plannedDuration <= 0) {
+            plannedDuration = 5;
+        }
+
+        breakSessionId = breakSessionRepository.startBreak(
+                selectedRouteName,
+                selectedRouteType,
+                selectedLatitude,
+                selectedLongitude,
+                plannedDuration,
+                stressScore,
+                stressLabel
+        );
     }
 
     private void updateRouteUi() {
@@ -120,12 +157,12 @@ public class ActiveBreakActivity extends AppCompatActivity {
 
         if ("REAL_URBAN_WALK".equals(selectedRouteType)) {
             navigationMainText.setText("Urban Walk aktiv");
-            navigationSubText.setText("Echte Google-Route bis " + selectedRouteName);
+            navigationSubText.setText("Route bis " + selectedRouteName);
             distanceText.setText("Route aktiv");
         } else if ("REAL_ROUTE_TOO_FAR".equals(selectedRouteType)) {
-            navigationMainText.setText("Route ist zu lang");
-            navigationSubText.setText("Für den Prototyp wird sie trotzdem angezeigt.");
-            distanceText.setText("zu weit");
+            navigationMainText.setText("Längere Route aktiv");
+            navigationSubText.setText("Gehe deine ausgewählte Route bis " + selectedRouteName);
+            distanceText.setText("Route aktiv");
         } else if ("FALLBACK_URBAN_WALK".equals(selectedRouteType)
                 || "FALLBACK_ROUTE_INFO".equals(selectedRouteType)) {
             navigationMainText.setText("Urban Walk aktiv");
@@ -144,8 +181,10 @@ public class ActiveBreakActivity extends AppCompatActivity {
             scheduleBreakReminder();
             openRouteInGoogleMaps();
         });
+
         proofCameraPlaceholder.setOnClickListener(view -> {
             Intent intent = new Intent(ActiveBreakActivity.this, RouteProofActivity.class);
+            intent.putExtra("breakSessionId", breakSessionId);
             startActivity(intent);
         });
 
@@ -153,11 +192,23 @@ public class ActiveBreakActivity extends AppCompatActivity {
             timerRunning = false;
 
             Intent intent = new Intent(ActiveBreakActivity.this, BreakFeedbackActivity.class);
+            intent.putExtra("breakSessionId", breakSessionId);
             intent.putExtra("selectedRouteName", selectedRouteName);
             intent.putExtra("selectedWalkingTimeMinutes", selectedWalkingTimeMinutes);
             intent.putExtra("selectedRouteType", selectedRouteType);
+            intent.putExtra("elapsedDurationMinutes", getElapsedDurationMinutes());
             startActivity(intent);
         });
+    }
+
+    private int getElapsedDurationMinutes() {
+        int elapsedMinutes = Math.max(1, seconds / 60);
+
+        if (selectedWalkingTimeMinutes > 0) {
+            return Math.max(elapsedMinutes, selectedWalkingTimeMinutes);
+        }
+
+        return elapsedMinutes;
     }
 
     private void requestNotificationPermissionIfNeeded() {
@@ -174,60 +225,61 @@ public class ActiveBreakActivity extends AppCompatActivity {
     }
 
     private void scheduleBreakReminder() {
-	    if (reminderScheduled) {
-	        return;
-	    }
+        if (reminderScheduled) {
+            return;
+        }
 
-	    int reminderMinutes = selectedWalkingTimeMinutes;
+        int reminderMinutes = selectedWalkingTimeMinutes;
 
-	    if (reminderMinutes <= 0) {
-	        reminderMinutes = 5;
-	    }
+        if (reminderMinutes <= 0) {
+            reminderMinutes = 5;
+        }
 
-	    int halfTimeMinutes = Math.max(1, reminderMinutes / 2);
+        int halfTimeMinutes = Math.max(1, reminderMinutes / 2);
 
-	    scheduleSingleReminder(
-	            halfTimeMinutes,
-	            BreakReminderReceiver.TYPE_PHOTO_PROOF,
-	            2027
-	    );
+        scheduleSingleReminder(
+                halfTimeMinutes,
+                BreakReminderReceiver.TYPE_PHOTO_PROOF,
+                2027
+        );
 
-	    scheduleSingleReminder(
-	            reminderMinutes,
-	            BreakReminderReceiver.TYPE_END_BREAK,
-	            2028
-	    );
+        scheduleSingleReminder(
+                reminderMinutes,
+                BreakReminderReceiver.TYPE_END_BREAK,
+                2028
+        );
 
-	    reminderScheduled = true;
-	}
+        reminderScheduled = true;
+    }
 
-	private void scheduleSingleReminder(
-	        int minutesFromNow,
-	        String reminderType,
-	        int requestCode
-	) {
-	    Intent intent = new Intent(this, BreakReminderReceiver.class);
-	    intent.putExtra(BreakReminderReceiver.EXTRA_REMINDER_TYPE, reminderType);
+    private void scheduleSingleReminder(
+            int minutesFromNow,
+            String reminderType,
+            int requestCode
+    ) {
+        Intent intent = new Intent(this, BreakReminderReceiver.class);
+        intent.putExtra(BreakReminderReceiver.EXTRA_REMINDER_TYPE, reminderType);
+        intent.putExtra("breakSessionId", breakSessionId);
 
-	    PendingIntent pendingIntent = PendingIntent.getBroadcast(
-	            this,
-	            requestCode,
-	            intent,
-	            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-	    );
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this,
+                requestCode,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
 
-	    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-	    if (alarmManager != null) {
-	        long triggerAtMillis = System.currentTimeMillis() + minutesFromNow * 60L * 1000L;
+        if (alarmManager != null) {
+            long triggerAtMillis = System.currentTimeMillis() + minutesFromNow * 60L * 1000L;
 
-	        alarmManager.setAndAllowWhileIdle(
-	                AlarmManager.RTC_WAKEUP,
-	                triggerAtMillis,
-	                pendingIntent
-	        );
-	    }
-	}
+            alarmManager.setAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    triggerAtMillis,
+                    pendingIntent
+            );
+        }
+    }
 
     private void openRouteInGoogleMaps() {
         if (selectedLatitude == 0.0 && selectedLongitude == 0.0) {

@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Repository für echte gespeicherte Pausen.
  *
- * Dient als zentrale Schnittstelle für:
+ * Zentrale Schnittstelle für:
  * - ActiveBreakActivity
  * - Feedback
  * - History
@@ -25,6 +25,60 @@ public class BreakSessionRepository {
     public BreakSessionRepository(Context context) {
         FloraBreakDatabase database = FloraBreakDatabase.getInstance(context);
         this.breakDao = database.breakDao();
+    }
+
+    public long startBreak(
+            String routeName,
+            String routeType,
+            double routeLatitude,
+            double routeLongitude,
+            int plannedDurationMinutes,
+            int stressScore,
+            String stressLabel
+    ) {
+        long now = System.currentTimeMillis();
+
+        BreakEntity breakEntity = new BreakEntity(
+                now,
+                0L,
+                plannedDurationMinutes,
+                routeName,
+                routeType,
+                routeLatitude,
+                routeLongitude,
+                stressScore,
+                stressLabel,
+                0,
+                "",
+                "",
+                false,
+                now
+        );
+
+        return breakDao.insertBreak(breakEntity);
+    }
+
+    public void finishBreak(
+            long breakId,
+            int durationMinutes,
+            int rating,
+            String feedbackText
+    ) {
+        breakDao.finishBreak(
+                breakId,
+                System.currentTimeMillis(),
+                durationMinutes,
+                rating,
+                feedbackText
+        );
+    }
+
+    public void savePhotoProof(long breakId, String photoProofPath) {
+        breakDao.updatePhotoProof(breakId, photoProofPath);
+    }
+
+    public BreakEntity getBreakById(long breakId) {
+        return breakDao.getBreakById(breakId);
     }
 
     public long saveBreak(BreakEntity breakEntity) {

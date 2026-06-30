@@ -10,13 +10,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.florabreak.app.R;
-import com.florabreak.app.data.FloraBreakController;
-import com.florabreak.app.data.FloraBreakControllerFactory;
-import com.florabreak.app.data.repository.BreakHistoryRepository;
-import com.florabreak.app.model.BreakRecommendation;
-import com.florabreak.app.model.FloraBreakSessionResult;
-import com.florabreak.app.model.SavedBreak;
-import com.florabreak.app.model.StressResult;
+import com.florabreak.app.data.repository.BreakSessionRepository;
 
 public class BreakFeedbackActivity extends AppCompatActivity {
 
@@ -32,21 +26,31 @@ public class BreakFeedbackActivity extends AppCompatActivity {
     private TextView ratingHintText;
 
     private int selectedRating = 0;
+    private long breakSessionId = -1L;
+    private int elapsedDurationMinutes = 5;
 
-    private BreakHistoryRepository breakHistoryRepository;
-    private FloraBreakController floraBreakController;
+    private BreakSessionRepository breakSessionRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_break_feedback);
 
-        breakHistoryRepository = new BreakHistoryRepository(this);
-        floraBreakController = FloraBreakControllerFactory.create(this);
+        breakSessionRepository = new BreakSessionRepository(this);
 
+        readIntentData();
         bindViews();
         setupRatingStars();
         setupButtons();
+    }
+
+    private void readIntentData() {
+        breakSessionId = getIntent().getLongExtra("breakSessionId", -1L);
+        elapsedDurationMinutes = getIntent().getIntExtra("elapsedDurationMinutes", 5);
+
+        if (elapsedDurationMinutes <= 0) {
+            elapsedDurationMinutes = 5;
+        }
     }
 
     private void bindViews() {
@@ -93,37 +97,38 @@ public class BreakFeedbackActivity extends AppCompatActivity {
     }
 
     private void saveCompletedBreak() {
-        FloraBreakSessionResult sessionResult =
-                floraBreakController.evaluateCurrentSituation();
-
-        StressResult stressResult = sessionResult.getStressResult();
-        BreakRecommendation recommendation = sessionResult.getBreakRecommendation();
-
-        String routeName = getIntent().getStringExtra("selectedRouteName");
-
-        if (routeName == null || routeName.trim().isEmpty()) {
-            routeName = recommendation.getTitle();
+        if (breakSessionId <= 0) {
+            Toast.makeText(
+                    this,
+                    "Keine aktive Pause gefunden. Feedback konnte nicht gespeichert werden.",
+                    Toast.LENGTH_LONG
+            ).show();
+            return;
         }
 
-        int durationMinutes = recommendation.getDurationMinutes();
-
-        if (durationMinutes <= 0) {
-            durationMinutes = 5;
-        }
-
-        SavedBreak savedBreak = new SavedBreak(
-                System.currentTimeMillis(),
-                "Abgeschlossene Pause",
-                recommendation.getType(),
-                durationMinutes,
-                stressResult.getScore(),
-                stressResult.getLabel(),
-                routeName,
+        breakSessionRepository.finishBreak(
+                breakSessionId,
+                elapsedDurationMinutes,
                 selectedRating,
-                true
+                getFeedbackTextForRating(selectedRating)
         );
+    }
 
-        breakHistoryRepository.saveCompletedBreak(savedBreak);
+    private String getFeedbackTextForRating(int rating) {
+        switch (rating) {
+            case 1:
+                return "Eher nicht erholsam";
+            case 2:
+                return "War okay";
+            case 3:
+                return "Ganz gut";
+            case 4:
+                return "Hat gut getan";
+            case 5:
+                return "Richtig erholsam";
+            default:
+                return "Keine Bewertung abgegeben";
+        }
     }
 
     private void goBackHome() {
@@ -173,4 +178,3 @@ public class BreakFeedbackActivity extends AppCompatActivity {
         }
     }
 }
-
