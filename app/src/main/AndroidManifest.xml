@@ -31,6 +31,10 @@
             android:name=".ui.ActiveBreakActivity"
             android:exported="false" />
 
+	<activity
+	    android:name=".ui.StatsActivity"
+	    android:exported="false" />
+
         <activity
             android:name=".ui.BreakSuggestionActivity"
             android:exported="false" />

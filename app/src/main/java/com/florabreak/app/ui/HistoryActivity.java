@@ -5,22 +5,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.florabreak.app.R;
-import com.florabreak.app.data.repository.BreakHistoryRepository;
-import com.florabreak.app.model.SavedBreak;
+import com.florabreak.app.data.local.BreakEntity;
+import com.florabreak.app.data.repository.BreakSessionRepository;
 
 /**
  * Verlauf-Screen für gespeicherte Pausen.
  *
- * Aktuell speichert der Prototyp die letzte abgeschlossene Pause
- * über BreakHistoryRepository in SharedPreferences.
- *
- * Später kann dieses Repository durch Room oder Firebase ersetzt werden,
- * um mehrere Pausen dauerhaft zu speichern.
+ * Nutzt jetzt die lokale Room-Datenbank.
  */
 public class HistoryActivity extends AppCompatActivity {
 
@@ -38,14 +33,14 @@ public class HistoryActivity extends AppCompatActivity {
     private TextView historyBreakRatingText;
     private TextView historyBreakStressText;
 
-    private BreakHistoryRepository breakHistoryRepository;
+    private BreakSessionRepository breakSessionRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        breakHistoryRepository = new BreakHistoryRepository(this);
+        breakSessionRepository = new BreakSessionRepository(this);
 
         bindViews();
         updateHistory();
@@ -77,9 +72,10 @@ public class HistoryActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        navStatsFromHistory.setOnClickListener(view ->
-                Toast.makeText(this, "Statistik wird später ergänzt", Toast.LENGTH_SHORT).show()
-        );
+        navStatsFromHistory.setOnClickListener(view -> {
+            Intent intent = new Intent(HistoryActivity.this, StatsActivity.class);
+            startActivity(intent);
+        });
 
         navProfileFromHistory.setOnClickListener(view -> {
             Intent intent = new Intent(HistoryActivity.this, ProfileActivity.class);
@@ -88,9 +84,9 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     private void updateHistory() {
-        SavedBreak savedBreak = breakHistoryRepository.getLatestBreak();
+        BreakEntity latestBreak = breakSessionRepository.getLatestBreak();
 
-        if (savedBreak == null) {
+        if (latestBreak == null) {
             historyBreakCard.setVisibility(View.GONE);
             historyEmptyCard.setVisibility(View.VISIBLE);
             return;
@@ -99,24 +95,53 @@ public class HistoryActivity extends AppCompatActivity {
         historyBreakCard.setVisibility(View.VISIBLE);
         historyEmptyCard.setVisibility(View.GONE);
 
-        historyBreakTitleText.setText(savedBreak.getTitle());
+        historyBreakTitleText.setText("Abgeschlossene Pause");
 
         String details =
-                savedBreak.getDurationMinutes()
+                latestBreak.durationMinutes
                         + " Min · "
-                        + savedBreak.getRouteName()
+                        + safeText(latestBreak.routeName, "Route")
                         + " · "
-                        + savedBreak.getType();
+                        + formatRouteType(latestBreak.routeType);
 
         historyBreakDetailsText.setText(details);
-        historyBreakRatingText.setText(createStarRating(savedBreak.getRating()));
+        historyBreakRatingText.setText(createStarRating(latestBreak.rating));
+
+        String photoText = latestBreak.photoProofTaken
+                ? " · Foto-Beweis vorhanden"
+                : " · Kein Foto-Beweis";
 
         historyBreakStressText.setText(
-                "Stress beim Speichern: "
-                        + savedBreak.getStressScore()
+                "Stress: "
+                        + latestBreak.stressScore
                         + "/10 · "
-                        + savedBreak.getStressLabel()
+                        + safeText(latestBreak.stressLabel, "Unbekannt")
+                        + photoText
         );
+    }
+
+    private String safeText(String value, String fallback) {
+        if (value == null || value.trim().isEmpty()) {
+            return fallback;
+        }
+
+        return value;
+    }
+
+    private String formatRouteType(String routeType) {
+        if (routeType == null) {
+            return "Aktive Pause";
+        }
+
+        if (routeType.contains("PARK")) {
+            return "Parkroute";
+        }
+
+        if (routeType.contains("URBAN")) {
+            return "Urban Walk";
+        }
+
+        return "Aktive Pause";
     }
 
     private String createStarRating(int rating) {

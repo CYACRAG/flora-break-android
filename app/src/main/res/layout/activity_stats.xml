@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_feedback_forest">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="18dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="22dp">
+
+                <TextView
+                    android:id="@+id/backFromStatsButton"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:gravity="center"
+                    android:text="‹"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:textColor="#173522"
+                    android:background="@drawable/bg_green_pill" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Statistik"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginStart="14dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_soft_card"
+                android:elevation="3dp"
+                android:padding="18dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Letzte 7 Tage"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginBottom="14dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Gespeicherte Pausen"
+                    android:textSize="14sp"
+                    android:textColor="#637568" />
+
+                <TextView
+                    android:id="@+id/breakCountText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="0 Pausen"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginBottom="14dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Aktive Pausenzeit"
+                    android:textSize="14sp"
+                    android:textColor="#637568" />
+
+                <TextView
+                    android:id="@+id/totalMinutesText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="0 Minuten"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginBottom="14dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Ø Stress beim Start"
+                    android:textSize="14sp"
+                    android:textColor="#637568" />
+
+                <TextView
+                    android:id="@+id/averageStressText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="0.0/10"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginBottom="14dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Ø Bewertung"
+                    android:textSize="14sp"
+                    android:textColor="#637568" />
+
+                <TextView
+                    android:id="@+id/averageRatingText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="0.0/5"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginBottom="14dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Streckenbeweise"
+                    android:textSize="14sp"
+                    android:textColor="#637568" />
+
+                <TextView
+                    android:id="@+id/photoProofCountText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="0 Foto-Beweise"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_soft_card"
+                android:elevation="3dp"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="HR-Dashboard vorbereitet"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Die Statistik basiert auf lokal gespeicherten Pausen. Foto-Beweise, Stresswerte, Dauer und Bewertung liegen strukturiert in der Datenbank vor."
+                    android:textSize="14sp"
+                    android:textColor="#637568" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="86dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@drawable/bg_soft_card"
+        android:elevation="4dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp">
+
+        <LinearLayout
+            android:id="@+id/navHomeFromStats"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⌂"
+                android:textSize="20sp"
+                android:textColor="#8A8D96" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Home"
+                android:textSize="12sp"
+                android:textColor="#8A8D96" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navHistoryFromStats"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="↺"
+                android:textSize="20sp"
+                android:textColor="#8A8D96" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Verlauf"
+                android:textSize="12sp"
+                android:textColor="#8A8D96" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navProfileFromStats"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="☻"
+                android:textSize="20sp"
+                android:textColor="#8A8D96" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Profil"
+                android:textSize="12sp"
+                android:textColor="#8A8D96" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

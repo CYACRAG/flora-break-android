@@ -384,9 +384,10 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        navStatsFromProfile.setOnClickListener(view ->
-                Toast.makeText(this, "Statistik wird später ergänzt", Toast.LENGTH_SHORT).show()
-        );
+        navStatsFromProfile.setOnClickListener(view -> {
+	    Intent intent = new Intent(ProfileActivity.this, StatsActivity.class);
+	    startActivity(intent);
+	});
     }
 
     @Override
