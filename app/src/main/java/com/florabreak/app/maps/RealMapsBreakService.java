@@ -39,9 +39,9 @@ public class RealMapsBreakService {
                                 + routeResult.getDestinationName()
                                 + ".";
                     } else {
-                        title = "Indoor-Pause empfohlen";
-                        text = "In 10–15 Minuten wurde keine passende Grünfläche erreicht. "
-                                + "Für diese Situation wird eine kurze Indoor-Pause empfohlen.";
+                        title = "Urban Walk empfohlen";
+                        text = "Es wurde keine passende Grünfläche innerhalb von 20 Minuten Gesamtweg gefunden. "
+                                + "Flora Break empfiehlt deshalb einen kurzen Urban Walk in der Umgebung.";
                     }
 
                     callback.onBreakDecisionReady(

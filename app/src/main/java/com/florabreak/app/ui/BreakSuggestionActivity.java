@@ -230,7 +230,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
                     routeResult.getDestinationName()
                             + " ist ca. "
                             + routeResult.getWalkingTimeMinutes()
-                            + " Minuten entfernt. Ziel sind 10–15 Minuten."
+                            + " Minuten entfernt. Ziel sind maximal 20 Minuten Gesamtweg."
             );
             routeOneTypeText.setText("⚠️ Echte Route zu lang");
         } else if (routeResult.isReachable()) {

@@ -1,27 +1,20 @@
 package com.florabreak.app.maps;
 
-import com.florabreak.app.model.RouteResult;
-
 /**
- * Entscheidet, ob ein Urban Walk oder eine Indoor-Pause empfohlen wird.
+ * Entscheidet, ob ein Parkziel erreichbar ist oder alternativ
+ * ein Urban Walk empfohlen wird.
+ *
+ * Für Nutzer wird keine Indoor-/Fallback-Logik angezeigt.
+ * Wenn keine passende Grünfläche erreichbar ist, empfiehlt Flora Break
+ * einen kurzen Urban Walk in der Umgebung.
  */
 public class FallbackBreakService {
 
-    public String getRecommendation(RouteResult routeResult) {
-
-        if (routeResult.isReachable()) {
-            return "Urban Walk empfohlen";
-        } else {
-            return "Indoor-Pause empfohlen";
+    public String getRecommendation(boolean parkReachable) {
+        if (parkReachable) {
+            return "Parkroute empfohlen";
         }
-    }
 
-    /**
-     * Erstellt einen kurzen Text, den die UI später anzeigen kann.
-     */
-    public String getRouteSummary(RouteResult routeResult) {
-        return routeResult.getDestinationName()
-                + "\n" + routeResult.getWalkingTimeMinutes() + " Min zu Fuß"
-                + "\n" + getRecommendation(routeResult);
+        return "Urban Walk empfohlen";
     }
 }

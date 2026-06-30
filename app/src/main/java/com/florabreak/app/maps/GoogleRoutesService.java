@@ -27,7 +27,7 @@ public class GoogleRoutesService {
     private static final String ROUTES_API_URL =
             "https://routes.googleapis.com/directions/v2:computeRoutes";
 
-    private static final int MAX_WALKING_TIME_MINUTES = 15;
+    private static final int MAX_TOTAL_WALKING_TIME_MINUTES = 20;
 
     private final Context context;
 
@@ -96,7 +96,8 @@ public class GoogleRoutesService {
                 }
 
                 int walkingTimeMinutes = parseWalkingTimeMinutes(responseText);
-                boolean reachable = walkingTimeMinutes <= MAX_WALKING_TIME_MINUTES;
+                int totalWalkingTimeMinutes = walkingTimeMinutes * 2;
+                boolean reachable = totalWalkingTimeMinutes <= MAX_TOTAL_WALKING_TIME_MINUTES;
 
                 RouteResult routeResult = new RouteResult(
                         destinationName,
@@ -204,8 +205,9 @@ public class GoogleRoutesService {
             double destinationLatitude,
             double destinationLongitude
     ) {
-        int fallbackWalkingTimeMinutes = 12;
-        boolean reachable = fallbackWalkingTimeMinutes <= MAX_WALKING_TIME_MINUTES;
+        int fallbackWalkingTimeMinutes = 8;
+        int totalWalkingTimeMinutes = fallbackWalkingTimeMinutes * 2;
+        boolean reachable = totalWalkingTimeMinutes <= MAX_TOTAL_WALKING_TIME_MINUTES;
 
         return new RouteResult(
                 destinationName,
