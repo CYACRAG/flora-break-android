@@ -3,6 +3,7 @@ package com.florabreak.app.maps;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+
 import com.florabreak.app.R;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
@@ -24,17 +25,25 @@ public class NearbyGreenSpaceService {
 
     private final Context context;
     private final PlacesClient placesClient;
+    private final boolean placesAvailable;
 
     public NearbyGreenSpaceService(@NonNull Context context) {
         this.context = context.getApplicationContext();
 
         String apiKey = this.context.getString(R.string.google_maps_key);
 
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            this.placesClient = null;
+            this.placesAvailable = false;
+            return;
+        }
+
         if (!Places.isInitialized()) {
             Places.initialize(this.context, apiKey);
         }
 
         this.placesClient = Places.createClient(this.context);
+        this.placesAvailable = true;
     }
 
     public void findNearbyGreenSpace(
@@ -42,6 +51,11 @@ public class NearbyGreenSpaceService {
             double userLongitude,
             @NonNull GreenSpaceCallback callback
     ) {
+        if (!placesAvailable || placesClient == null) {
+            useFallbackGreenSpace(callback);
+            return;
+        }
+
         LatLng center = new LatLng(userLatitude, userLongitude);
         CircularBounds searchArea = CircularBounds.newInstance(center, SEARCH_RADIUS_METERS);
 
