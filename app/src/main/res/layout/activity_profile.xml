@@ -176,6 +176,78 @@
                     android:textSize="14sp"
                     android:textColor="#637568"
                     android:layout_marginTop="4dp" />
+		<!-- Demo-Modus für den Emulator / Prototyp -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Demo-Stresswerte"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginTop="18dp" />
+
+                <Switch
+                    android:id="@+id/demoModeSwitch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Demo-Modus aktivieren"
+                    android:textSize="14sp"
+                    android:textColor="#06140C"
+                    android:layout_marginTop="8dp" />
+
+                <TextView
+                    android:id="@+id/currentHrvValueText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Aktuelle HRV: 65"
+                    android:textSize="14sp"
+                    android:textColor="#06140C"
+                    android:layout_marginTop="12dp" />
+
+                <SeekBar
+                    android:id="@+id/currentHrvSeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="60" />
+
+                <TextView
+                    android:id="@+id/normalHrvValueText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Normale HRV: 50"
+                    android:textSize="14sp"
+                    android:textColor="#06140C"
+                    android:layout_marginTop="12dp" />
+
+                <SeekBar
+                    android:id="@+id/normalHrvSeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="60" />
+
+                <TextView
+                    android:id="@+id/heartRateValueText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Puls: 95 bpm"
+                    android:textSize="14sp"
+                    android:textColor="#06140C"
+                    android:layout_marginTop="12dp" />
+
+                <SeekBar
+                    android:id="@+id/heartRateSeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="80" />
+
+                <TextView
+                    android:id="@+id/demoStressPreviewText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Demo-Vorschau wird nach dem Speichern aktualisiert."
+                    android:textSize="14sp"
+                    android:textColor="#637568"
+                    android:layout_marginTop="12dp" />
             </LinearLayout>
 
             <!--
