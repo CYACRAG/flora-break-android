@@ -52,6 +52,9 @@ buildFeatures {
 dependencies {
     implementation "androidx.health.connect:connect-client:1.2.0-alpha01"
 
+    implementation "androidx.room:room-runtime:2.6.1"
+    annotationProcessor "androidx.room:room-compiler:2.6.1"
+
     implementation libs.play.services.maps
     implementation libs.play.services.location
     implementation libs.places
