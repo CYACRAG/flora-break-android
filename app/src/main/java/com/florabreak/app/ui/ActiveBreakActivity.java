@@ -174,39 +174,60 @@ public class ActiveBreakActivity extends AppCompatActivity {
     }
 
     private void scheduleBreakReminder() {
-        if (reminderScheduled) {
-            return;
-        }
+	    if (reminderScheduled) {
+	        return;
+	    }
 
-        int reminderMinutes = selectedWalkingTimeMinutes;
+	    int reminderMinutes = selectedWalkingTimeMinutes;
 
-        if (reminderMinutes <= 0) {
-            reminderMinutes = 5;
-        }
+	    if (reminderMinutes <= 0) {
+	        reminderMinutes = 5;
+	    }
 
-        Intent intent = new Intent(this, BreakReminderReceiver.class);
+	    int halfTimeMinutes = Math.max(1, reminderMinutes / 2);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                this,
-                2026,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
+	    scheduleSingleReminder(
+	            halfTimeMinutes,
+	            BreakReminderReceiver.TYPE_PHOTO_PROOF,
+	            2027
+	    );
 
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+	    scheduleSingleReminder(
+	            reminderMinutes,
+	            BreakReminderReceiver.TYPE_END_BREAK,
+	            2028
+	    );
 
-        if (alarmManager != null) {
-            long triggerAtMillis = System.currentTimeMillis() + reminderMinutes * 60L * 1000L;
+	    reminderScheduled = true;
+	}
 
-            alarmManager.setAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    triggerAtMillis,
-                    pendingIntent
-            );
+	private void scheduleSingleReminder(
+	        int minutesFromNow,
+	        String reminderType,
+	        int requestCode
+	) {
+	    Intent intent = new Intent(this, BreakReminderReceiver.class);
+	    intent.putExtra(BreakReminderReceiver.EXTRA_REMINDER_TYPE, reminderType);
 
-            reminderScheduled = true;
-        }
-    }
+	    PendingIntent pendingIntent = PendingIntent.getBroadcast(
+	            this,
+	            requestCode,
+	            intent,
+	            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+	    );
+
+	    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+	    if (alarmManager != null) {
+	        long triggerAtMillis = System.currentTimeMillis() + minutesFromNow * 60L * 1000L;
+
+	        alarmManager.setAndAllowWhileIdle(
+	                AlarmManager.RTC_WAKEUP,
+	                triggerAtMillis,
+	                pendingIntent
+	        );
+	    }
+	}
 
     private void openRouteInGoogleMaps() {
         if (selectedLatitude == 0.0 && selectedLongitude == 0.0) {

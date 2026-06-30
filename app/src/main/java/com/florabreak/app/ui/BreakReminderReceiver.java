@@ -16,16 +16,23 @@ import androidx.core.content.ContextCompat;
 import com.florabreak.app.R;
 
 /**
- * Lokaler Reminder nach Ablauf der geplanten Pausen-/Gehzeit.
+ * Lokale Benachrichtigungen für aktive Flora-Break-Pausen.
  *
- * Wird über AlarmManager aus ActiveBreakActivity gestartet.
- * Der Nutzer wird daran erinnert, zu Flora Break zurückzukehren
- * und die Pause zu beenden bzw. Feedback zu geben.
+ * Unterstützte Reminder:
+ * - Halbzeit: Foto-/Streckenbeweis aufnehmen
+ * - Ende: Pause beenden und Feedback geben
  */
 public class BreakReminderReceiver extends BroadcastReceiver {
 
+    public static final String EXTRA_REMINDER_TYPE = "reminderType";
+
+    public static final String TYPE_PHOTO_PROOF = "PHOTO_PROOF";
+    public static final String TYPE_END_BREAK = "END_BREAK";
+
     private static final String CHANNEL_ID = "flora_break_reminder_channel";
-    private static final int NOTIFICATION_ID = 2026;
+
+    private static final int NOTIFICATION_ID_PHOTO_PROOF = 2027;
+    private static final int NOTIFICATION_ID_END_BREAK = 2028;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -38,29 +45,71 @@ public class BreakReminderReceiver extends BroadcastReceiver {
             }
         }
 
+        String reminderType = intent.getStringExtra(EXTRA_REMINDER_TYPE);
+
+        if (TYPE_PHOTO_PROOF.equals(reminderType)) {
+            showPhotoProofNotification(context);
+        } else {
+            showEndBreakNotification(context);
+        }
+    }
+
+    private void showPhotoProofNotification(Context context) {
         Intent openAppIntent = new Intent(context, ActiveBreakActivity.class);
         openAppIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        openAppIntent.putExtra("openPhotoProof", true);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context,
-                0,
+                NOTIFICATION_ID_PHOTO_PROOF,
                 openAppIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("Flora Break")
-                .setContentText("Deine geplante Pause ist vorbei. Möchtest du sie beenden?")
+                .setContentTitle("Flora Break Halbzeit")
+                .setContentText("Halbzeit erreicht. Nimm jetzt ein Foto als Streckenbeweis auf.")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
 
+        showNotification(context, NOTIFICATION_ID_PHOTO_PROOF, builder);
+    }
+
+    private void showEndBreakNotification(Context context) {
+        Intent openAppIntent = new Intent(context, ActiveBreakActivity.class);
+        openAppIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        openAppIntent.putExtra("openFeedback", true);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                context,
+                NOTIFICATION_ID_END_BREAK,
+                openAppIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle("Flora Break beendet")
+                .setContentText("Deine geplante Pause ist vorbei. Beenden und Feedback geben?")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent);
+
+        showNotification(context, NOTIFICATION_ID_END_BREAK, builder);
+    }
+
+    private void showNotification(
+            Context context,
+            int notificationId,
+            NotificationCompat.Builder builder
+    ) {
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (notificationManager != null) {
-            notificationManager.notify(NOTIFICATION_ID, builder.build());
+            notificationManager.notify(notificationId, builder.build());
         }
     }
 
@@ -72,7 +121,7 @@ public class BreakReminderReceiver extends BroadcastReceiver {
                     NotificationManager.IMPORTANCE_HIGH
             );
 
-            channel.setDescription("Erinnert daran, eine aktive Flora-Break-Pause zu beenden.");
+            channel.setDescription("Erinnert an Foto-Beweis und Pausenende während einer Flora Break.");
 
             NotificationManager notificationManager =
                     context.getSystemService(NotificationManager.class);
