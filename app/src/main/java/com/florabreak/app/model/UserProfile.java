@@ -4,10 +4,11 @@ package com.florabreak.app.model;
  * Zentrales Profilmodell für Flora Break.
  *
  * Diese Daten werden beim ersten App-Start vom Nutzer ausgefüllt
- * und später über ein Repository gespeichert.
+ * und lokal gespeichert.
  *
- * TODO: In einer finalen Version können diese Daten in Room/Firebase
- *       statt nur lokal gespeichert werden.
+ * Der Arbeitsort kann später für Maps verwendet werden:
+ * Wenn ein Arbeitsort gespeichert ist, werden Pausenrouten bevorzugt
+ * ab diesem Standort berechnet.
  */
 public class UserProfile {
 
@@ -18,8 +19,17 @@ public class UserProfile {
     private final String workStartTime;
     private final String workEndTime;
     private final int subjectiveStressLevel;
+
+    private final String workLocationName;
+    private final double workLatitude;
+    private final double workLongitude;
+    private final boolean workLocationSaved;
+
     private final boolean profileCompleted;
 
+    /**
+     * Alter Konstruktor bleibt erhalten, damit bestehender Code nicht bricht.
+     */
     public UserProfile(String name,
                        int age,
                        int heightCm,
@@ -28,6 +38,34 @@ public class UserProfile {
                        String workEndTime,
                        int subjectiveStressLevel,
                        boolean profileCompleted) {
+        this(
+                name,
+                age,
+                heightCm,
+                weightKg,
+                workStartTime,
+                workEndTime,
+                subjectiveStressLevel,
+                "",
+                0.0,
+                0.0,
+                false,
+                profileCompleted
+        );
+    }
+
+    public UserProfile(String name,
+                       int age,
+                       int heightCm,
+                       int weightKg,
+                       String workStartTime,
+                       String workEndTime,
+                       int subjectiveStressLevel,
+                       String workLocationName,
+                       double workLatitude,
+                       double workLongitude,
+                       boolean workLocationSaved,
+                       boolean profileCompleted) {
         this.name = name;
         this.age = age;
         this.heightCm = heightCm;
@@ -35,6 +73,10 @@ public class UserProfile {
         this.workStartTime = workStartTime;
         this.workEndTime = workEndTime;
         this.subjectiveStressLevel = subjectiveStressLevel;
+        this.workLocationName = workLocationName;
+        this.workLatitude = workLatitude;
+        this.workLongitude = workLongitude;
+        this.workLocationSaved = workLocationSaved;
         this.profileCompleted = profileCompleted;
     }
 
@@ -64,6 +106,22 @@ public class UserProfile {
 
     public int getSubjectiveStressLevel() {
         return subjectiveStressLevel;
+    }
+
+    public String getWorkLocationName() {
+        return workLocationName;
+    }
+
+    public double getWorkLatitude() {
+        return workLatitude;
+    }
+
+    public double getWorkLongitude() {
+        return workLongitude;
+    }
+
+    public boolean isWorkLocationSaved() {
+        return workLocationSaved;
     }
 
     public boolean isProfileCompleted() {

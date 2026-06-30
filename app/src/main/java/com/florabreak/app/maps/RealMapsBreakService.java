@@ -4,9 +4,11 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import com.florabreak.app.data.repository.ProfileRepository;
 import com.florabreak.app.data.repository.RouteCacheRepository;
 import com.florabreak.app.model.CachedRoute;
 import com.florabreak.app.model.RouteResult;
+import com.florabreak.app.model.UserProfile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,74 +29,108 @@ public class RealMapsBreakService {
     private final RealMapsRouteProvider realMapsRouteProvider;
     private final RouteCacheRepository routeCacheRepository;
     private final DeviceLocationService deviceLocationService;
+    private final ProfileRepository profileRepository;
 
     public RealMapsBreakService(@NonNull Context context) {
         this.realMapsRouteProvider = new RealMapsRouteProvider(context);
         this.routeCacheRepository = new RouteCacheRepository(context);
         this.deviceLocationService = new DeviceLocationService(context);
+        this.profileRepository = new ProfileRepository(context);
     }
 
     public void getBreakDecision(@NonNull BreakDecisionCallback callback) {
-        deviceLocationService.getCurrentLocation((latitude, longitude, isRealLocation) -> {
-            String locationKey = deviceLocationService.createLocationKey(
+        UserProfile profile = profileRepository.getProfile();
+
+        if (profile.isWorkLocationSaved()) {
+            handleLocationForRoute(
+                    profile.getWorkLatitude(),
+                    profile.getWorkLongitude(),
+                    true,
+                    true,
+                    callback
+            );
+            return;
+        }
+
+        deviceLocationService.getCurrentLocation((latitude, longitude, isRealLocation) ->
+                handleLocationForRoute(
+                        latitude,
+                        longitude,
+                        isRealLocation,
+                        false,
+                        callback
+                )
+        );
+    }
+
+    private void handleLocationForRoute(
+            double latitude,
+            double longitude,
+            boolean isRealLocation,
+            boolean usedWorkLocation,
+            @NonNull BreakDecisionCallback callback
+    ) {
+        String locationKey;
+
+        if (usedWorkLocation) {
+            locationKey = "work_" + createRoundedLocationKey(latitude, longitude);
+        } else {
+            locationKey = deviceLocationService.createLocationKey(
                     latitude,
-	                longitude,
-	                isRealLocation
-	        );
+                    longitude,
+                    isRealLocation
+            );
+        }
 
-	        List<CachedRoute> cachedRoutes =
-	                routeCacheRepository.getRoutesForLocation(locationKey);
+        List<CachedRoute> cachedRoutes =
+                routeCacheRepository.getRoutesForLocation(locationKey);
 
-	        if (!cachedRoutes.isEmpty()) {
-	            CachedRoute cachedRoute = cachedRoutes.get(0);
+        if (!cachedRoutes.isEmpty()) {
+            CachedRoute cachedRoute = cachedRoutes.get(0);
 
-	            RouteResult routeResult = new RouteResult(
-	                    cachedRoute.getDestinationName(),
-	                    cachedRoute.getDestinationLatitude(),
-	                    cachedRoute.getDestinationLongitude(),
-	                    cachedRoute.getOneWayWalkingTimeMinutes(),
-	                    cachedRoute.isReachableWithinLimit()
-	            );
+            RouteResult routeResult = new RouteResult(
+                    cachedRoute.getDestinationName(),
+                    cachedRoute.getDestinationLatitude(),
+                    cachedRoute.getDestinationLongitude(),
+                    cachedRoute.getOneWayWalkingTimeMinutes(),
+                    cachedRoute.isReachableWithinLimit()
+            );
 
-	            callback.onBreakDecisionReady(
-	                    cachedRoute.getTitle(),
-	                    buildUserTextFromCachedRoute(cachedRoute),
-	                    routeResult,
-	                    isRealLocation,
-	                    cachedRoute.isParkRoute(),
-	                    false
-	            );
+            callback.onBreakDecisionReady(
+                    cachedRoute.getTitle(),
+                    buildUserTextFromCachedRoute(cachedRoute, usedWorkLocation),
+                    routeResult,
+                    isRealLocation,
+                    cachedRoute.isParkRoute(),
+                    false
+            );
 
-	            return;
-	        }
+            return;
+        }
 
-	        realMapsRouteProvider.getRecommendedWalkingRoute(
-	                (routeResult, usedRealLocation, foundRealPlace, usedRealRoute) -> {
-	                    CachedRoute cachedRoute = createCachedRouteFromResult(
-	                            routeResult,
-	                            foundRealPlace,
-	                            locationKey
-	                    );
+        realMapsRouteProvider.getRecommendedWalkingRoute(
+                (routeResult, usedRealLocation, foundRealPlace, usedRealRoute) -> {
+                    CachedRoute cachedRoute = createCachedRouteFromResult(
+                            routeResult,
+                            foundRealPlace,
+                            locationKey
+                    );
 
-	                    List<CachedRoute> routesToSave = new ArrayList<>();
-	                    routesToSave.add(cachedRoute);
-	                    routeCacheRepository.saveRoutes(locationKey, routesToSave);
+                    List<CachedRoute> routesToSave = new ArrayList<>();
+                    routesToSave.add(cachedRoute);
+                    routeCacheRepository.saveRoutes(locationKey, routesToSave);
 
-	                    String title = cachedRoute.getTitle();
-	                    String text = buildUserTextFromCachedRoute(cachedRoute);
-
-	                    callback.onBreakDecisionReady(
-	                            title,
-	                            text,
-	                            routeResult,
-	                            usedRealLocation,
-	                            foundRealPlace,
-	                            usedRealRoute
-	                    );
-	                }
-	        );
-	    });
-	}
+                    callback.onBreakDecisionReady(
+                            cachedRoute.getTitle(),
+                            buildUserTextFromCachedRoute(cachedRoute, usedWorkLocation),
+                            routeResult,
+                            usedRealLocation,
+                            foundRealPlace,
+                            usedRealRoute
+                    );
+                }
+        );
+    }
 
     private CachedRoute createCachedRouteFromResult(
             RouteResult routeResult,
@@ -134,9 +170,15 @@ public class RealMapsBreakService {
         );
     }
 
-    private String buildUserTextFromCachedRoute(CachedRoute route) {
+    private String buildUserTextFromCachedRoute(CachedRoute route, boolean usedWorkLocation) {
+        String locationText = usedWorkLocation
+                ? "ausgehend von deinem gespeicherten Arbeitsort"
+                : "ausgehend von deinem aktuellen Standort";
+
         if (route.isParkRoute()) {
-            return "Eine passende Grünfläche wurde gefunden. Gesamtweg: ca. "
+            return "Eine passende Grünfläche wurde "
+                    + locationText
+                    + " gefunden. Gesamtweg: ca. "
                     + route.getTotalWalkingTimeMinutes()
                     + " Minuten bis "
                     + route.getDestinationName()
@@ -144,6 +186,15 @@ public class RealMapsBreakService {
         }
 
         return "Es wurde keine passende Grünfläche innerhalb von 20 Minuten Gesamtweg gefunden. "
-                + "Flora Break empfiehlt deshalb einen kurzen Urban Walk in der Umgebung.";
+                + "Flora Break empfiehlt deshalb einen kurzen Urban Walk "
+                + locationText
+                + ".";
+    }
+
+    private String createRoundedLocationKey(double latitude, double longitude) {
+        double roundedLatitude = Math.round(latitude * 100.0) / 100.0;
+        double roundedLongitude = Math.round(longitude * 100.0) / 100.0;
+
+        return roundedLatitude + "_" + roundedLongitude;
     }
 }
