@@ -299,7 +299,47 @@
                     android:layout_height="wrap_content"
                     android:text="Belastung: mittel bis hoch"
                     android:textSize="15sp"
-                    android:textColor="#06140C" />
+		                    android:textColor="#06140C" />
+		<TextView
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:text="Arbeitsort für Pausenrouten"
+		    android:textSize="15sp"
+		    android:textStyle="bold"
+		    android:textColor="#06140C"
+		    android:layout_marginTop="18dp" />
+
+		<TextView
+		    android:id="@+id/workLocationStatusText"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:text="Noch kein Arbeitsort gespeichert."
+		    android:textSize="14sp"
+		    android:textColor="#637568"
+		    android:layout_marginTop="6dp"
+		    android:layout_marginBottom="10dp" />
+
+		<Button
+		    android:id="@+id/saveWorkLocationButton"
+		    android:layout_width="match_parent"
+		    android:layout_height="48dp"
+		    android:text="Aktuellen Standort als Arbeitsort speichern"
+		    android:textAllCaps="false"
+		    android:textSize="14sp"
+		    android:textStyle="bold"
+		    android:textColor="#FFFFFF"
+		    android:backgroundTint="#2F6B45"
+		    android:layout_marginBottom="8dp" />
+
+		<Button
+		    android:id="@+id/clearWorkLocationButton"
+		    android:layout_width="match_parent"
+		    android:layout_height="44dp"
+		    android:text="Arbeitsort entfernen"
+		    android:textAllCaps="false"
+		    android:textSize="14sp"
+		    android:textColor="#2F6B45"
+		    android:backgroundTint="#EEF4EE" />
             </LinearLayout>
 
             <!--
