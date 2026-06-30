@@ -13,6 +13,8 @@ import androidx.health.connect.client.contracts.HealthPermissionsRequestContract
 
 import com.florabreak.app.R;
 import com.florabreak.app.health.HealthConnectDataProvider;
+import com.florabreak.app.maps.RealMapsBreakService;
+import com.florabreak.app.model.RouteResult;
 
 import java.util.List;
 import java.util.Set;
@@ -118,29 +120,72 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         HealthConnectDataProvider healthProvider = new HealthConnectDataProvider(this);
 
         // Ruft echte Health-Connect-Daten ab.
-        // Die UI nutzt aktuell noch Mock-Stressanzeige als stabile Zwischenlösung.
+        // Aktuell nutzt die UI noch eine stabile Mock-Stressanzeige,
+        // bis StressEngine/Controller final angebunden sind.
         healthProvider.getCurrentStressData();
 
         UiStressState stressState = MockUiDataProvider.getCurrentStressState();
-        List<UiRouteSuggestion> routes = MockUiDataProvider.getRouteSuggestions();
 
         suggestionStressScoreText.setText(String.valueOf(stressState.getStressScore()));
         suggestionStressLabelText.setText(stressState.getStressLabel() + " - Health Connect aktiv");
 
-        showRoutes(routes);
+        loadRealMapsRoutes();
     }
 
     private void loadMockData() {
         UiStressState stressState = MockUiDataProvider.getCurrentStressState();
-        List<UiRouteSuggestion> routes = MockUiDataProvider.getRouteSuggestions();
 
         suggestionStressScoreText.setText(String.valueOf(stressState.getStressScore()));
         suggestionStressLabelText.setText(stressState.getStressLabel() + " - Mock-Daten");
 
-        showRoutes(routes);
+        loadRealMapsRoutes();
     }
 
-    private void showRoutes(List<UiRouteSuggestion> routes) {
+    private void loadRealMapsRoutes() {
+        routeOneNameText.setText("Route wird berechnet...");
+        routeOneInfoText.setText("Standort, Grünfläche und Gehzeit werden geprüft.");
+        routeOneTypeText.setText("🗺️ Google Maps");
+
+        routeTwoNameText.setText("Fallback bereit");
+        routeTwoInfoText.setText("Falls Google Maps keine Daten liefert, nutzt Flora Break eine sichere Ersatzempfehlung.");
+        routeTwoTypeText.setText("🌿 Fallback");
+
+        RealMapsBreakService realMapsBreakService = new RealMapsBreakService(this);
+
+        realMapsBreakService.getBreakDecision(
+                (recommendationTitle, recommendationText, routeResult, usedRealLocation, foundRealPlace, usedRealRoute) -> {
+                    runOnUiThread(() -> {
+                        routeOneNameText.setText(recommendationTitle);
+                        routeOneInfoText.setText(recommendationText);
+
+                        if (routeResult != null && routeResult.isReachable()) {
+                            routeOneTypeText.setText("🌿 Urban Walk");
+                        } else {
+                            routeOneTypeText.setText("🌿 Fallback-Route");
+                        }
+
+                        if (routeResult != null) {
+                            routeTwoNameText.setText(routeResult.getDestinationName());
+                            routeTwoInfoText.setText(
+                                    "Gehzeit: "
+                                            + routeResult.getWalkingTimeMinutes()
+                                            + " Minuten | Standort: "
+                                            + (usedRealLocation ? "echt" : "Fallback")
+                                            + " | Ort: "
+                                            + (foundRealPlace ? "Google Places" : "Fallback")
+                            );
+                            routeTwoTypeText.setText(usedRealRoute ? "✅ Echte Route" : "🧪 Fallback-Route");
+                        } else {
+                            showMockRoutesAsFallback();
+                        }
+                    });
+                }
+        );
+    }
+
+    private void showMockRoutesAsFallback() {
+        List<UiRouteSuggestion> routes = MockUiDataProvider.getRouteSuggestions();
+
         if (routes.size() >= 2) {
             UiRouteSuggestion routeOne = routes.get(0);
             UiRouteSuggestion routeTwo = routes.get(1);
