@@ -10,18 +10,17 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.florabreak.app.R;
+import com.florabreak.app.data.repository.BreakHistoryRepository;
+import com.florabreak.app.model.SavedBreak;
 
 /**
  * Verlauf-Screen für gespeicherte Pausen.
  *
- * Wichtig:
- * Diese Activity ist aktuell noch ein UI-Prototyp.
- * Die Daten kommen aus MockUiDataProvider und nicht aus einer echten Datenbank.
+ * Aktuell speichert der Prototyp die letzte abgeschlossene Pause
+ * über BreakHistoryRepository in SharedPreferences.
  *
- * Später kann diese Klasse erweitert werden:
- * - echte Pausen aus einer lokalen Datenbank laden
- * - mehrere Pausen in einer RecyclerView anzeigen
- * - Daten aus Maps, Stress Engine und Health Connect zusammenführen
+ * Später kann dieses Repository durch Room oder Firebase ersetzt werden,
+ * um mehrere Pausen dauerhaft zu speichern.
  */
 public class HistoryActivity extends AppCompatActivity {
 
@@ -39,35 +38,37 @@ public class HistoryActivity extends AppCompatActivity {
     private TextView historyBreakRatingText;
     private TextView historyBreakStressText;
 
+    private BreakHistoryRepository breakHistoryRepository;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        // Header / Navigation
+        breakHistoryRepository = new BreakHistoryRepository(this);
+
+        bindViews();
+        updateHistory();
+        setupNavigation();
+    }
+
+    private void bindViews() {
         backFromHistoryButton = findViewById(R.id.backFromHistoryButton);
 
-        // Bottom Navigation
         navHomeFromHistory = findViewById(R.id.navHomeFromHistory);
         navStatsFromHistory = findViewById(R.id.navStatsFromHistory);
         navProfileFromHistory = findViewById(R.id.navProfileFromHistory);
 
-        // Karten für Verlauf
         historyBreakCard = findViewById(R.id.historyBreakCard);
         historyEmptyCard = findViewById(R.id.historyEmptyCard);
 
-        // Textfelder der Pause
         historyBreakTitleText = findViewById(R.id.historyBreakTitleText);
         historyBreakDetailsText = findViewById(R.id.historyBreakDetailsText);
         historyBreakRatingText = findViewById(R.id.historyBreakRatingText);
         historyBreakStressText = findViewById(R.id.historyBreakStressText);
+    }
 
-        /*
-         * UI mit Mock-Daten aktualisieren.
-         * Später wird hier eine echte Datenbank-Abfrage stehen.
-         */
-        updateHistory();
-
+    private void setupNavigation() {
         backFromHistoryButton.setOnClickListener(view -> finish());
 
         navHomeFromHistory.setOnClickListener(view -> {
@@ -86,46 +87,38 @@ public class HistoryActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Aktualisiert die Verlaufsliste.
-     *
-     * Aktuell:
-     * - Es wird nur die zuletzt gespeicherte Mock-Pause angezeigt.
-     *
-     * Später:
-     * - mehrere Pausen aus Datenbank laden
-     * - pro Pause Route, Dauer, Distanz, Stresswerte und Bewertung anzeigen
-     */
     private void updateHistory() {
-        if (MockUiDataProvider.getSavedBreaks().isEmpty()) {
+        SavedBreak savedBreak = breakHistoryRepository.getLatestBreak();
+
+        if (savedBreak == null) {
             historyBreakCard.setVisibility(View.GONE);
             historyEmptyCard.setVisibility(View.VISIBLE);
             return;
         }
 
-        UiSavedBreak savedBreak = MockUiDataProvider.getSavedBreaks().get(0);
-
         historyBreakCard.setVisibility(View.VISIBLE);
         historyEmptyCard.setVisibility(View.GONE);
 
-        /*
-         * Platzhalterdaten:
-         * Titel und Details kommen aktuell aus MockUiDataProvider.
-         * Stresswerte und Bewertung sind aktuell noch UI-Mockwerte.
-         */
         historyBreakTitleText.setText(savedBreak.getTitle());
-        historyBreakDetailsText.setText(savedBreak.getDetails());
+
+        String details =
+                savedBreak.getDurationMinutes()
+                        + " Min · "
+                        + savedBreak.getRouteName()
+                        + " · "
+                        + savedBreak.getType();
+
+        historyBreakDetailsText.setText(details);
         historyBreakRatingText.setText(createStarRating(savedBreak.getRating()));
-        historyBreakStressText.setText("Stress reduziert: 7.6 → 4.8");
+
+        historyBreakStressText.setText(
+                "Stress beim Speichern: "
+                        + savedBreak.getStressScore()
+                        + "/10 · "
+                        + savedBreak.getStressLabel()
+        );
     }
-    /**
-     * Erstellt die Sterneanzeige aus der gespeicherten Bewertung.
-     *
-     * Beispiel:
-     * 3 Sterne → ★★★☆☆
-     *
-     * Später kann diese Logik auch in eine eigene UI-Hilfsklasse ausgelagert werden.
-     */
+
     private String createStarRating(int rating) {
         StringBuilder stars = new StringBuilder();
 

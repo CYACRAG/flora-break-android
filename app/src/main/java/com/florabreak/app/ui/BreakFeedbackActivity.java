@@ -7,16 +7,23 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.florabreak.app.R;
+import com.florabreak.app.data.FloraBreakController;
+import com.florabreak.app.data.FloraBreakControllerFactory;
+import com.florabreak.app.data.repository.BreakHistoryRepository;
+import com.florabreak.app.model.BreakRecommendation;
+import com.florabreak.app.model.FloraBreakSessionResult;
+import com.florabreak.app.model.SavedBreak;
+import com.florabreak.app.model.StressResult;
 
 public class BreakFeedbackActivity extends AppCompatActivity {
 
     private TextView backToBreakButton;
     private Button saveBreakButton;
     private Button backHomeButton;
+
     private TextView star1;
     private TextView star2;
     private TextView star3;
@@ -26,33 +33,49 @@ public class BreakFeedbackActivity extends AppCompatActivity {
 
     private int selectedRating = 0;
 
+    private BreakHistoryRepository breakHistoryRepository;
+    private FloraBreakController floraBreakController;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_break_feedback);
 
+        breakHistoryRepository = new BreakHistoryRepository(this);
+        floraBreakController = FloraBreakControllerFactory.create(this);
+
+        bindViews();
+        setupRatingStars();
+        setupButtons();
+    }
+
+    private void bindViews() {
         backToBreakButton = findViewById(R.id.backToBreakButton);
         saveBreakButton = findViewById(R.id.saveBreakButton);
         backHomeButton = findViewById(R.id.backHomeButton);
+
         star1 = findViewById(R.id.star1);
         star2 = findViewById(R.id.star2);
         star3 = findViewById(R.id.star3);
         star4 = findViewById(R.id.star4);
         star5 = findViewById(R.id.star5);
-        ratingHintText = findViewById(R.id.ratingHintText);
 
+        ratingHintText = findViewById(R.id.ratingHintText);
+    }
+
+    private void setupRatingStars() {
         star1.setOnClickListener(view -> setRating(1));
         star2.setOnClickListener(view -> setRating(2));
         star3.setOnClickListener(view -> setRating(3));
         star4.setOnClickListener(view -> setRating(4));
         star5.setOnClickListener(view -> setRating(5));
+    }
 
+    private void setupButtons() {
         backToBreakButton.setOnClickListener(view -> finish());
 
         saveBreakButton.setOnClickListener(view -> {
-            // Speichert die Pause inklusive der ausgewählten Sternebewertung.
-// Später kann diese Bewertung in einer echten Datenbank gespeichert werden.
-            MockUiDataProvider.saveCompletedBreak(selectedRating);
+            saveCompletedBreak();
 
             String message;
 
@@ -63,18 +86,52 @@ public class BreakFeedbackActivity extends AppCompatActivity {
             }
 
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-
-            Intent intent = new Intent(BreakFeedbackActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
+            goBackHome();
         });
 
-        backHomeButton.setOnClickListener(view -> {
-            Intent intent = new Intent(BreakFeedbackActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-        });
+        backHomeButton.setOnClickListener(view -> goBackHome());
     }
+
+    private void saveCompletedBreak() {
+        FloraBreakSessionResult sessionResult =
+                floraBreakController.evaluateCurrentSituation();
+
+        StressResult stressResult = sessionResult.getStressResult();
+        BreakRecommendation recommendation = sessionResult.getBreakRecommendation();
+
+        String routeName = getIntent().getStringExtra("selectedRouteName");
+
+        if (routeName == null || routeName.trim().isEmpty()) {
+            routeName = recommendation.getTitle();
+        }
+
+        int durationMinutes = recommendation.getDurationMinutes();
+
+        if (durationMinutes <= 0) {
+            durationMinutes = 5;
+        }
+
+        SavedBreak savedBreak = new SavedBreak(
+                System.currentTimeMillis(),
+                "Abgeschlossene Pause",
+                recommendation.getType(),
+                durationMinutes,
+                stressResult.getScore(),
+                stressResult.getLabel(),
+                routeName,
+                selectedRating,
+                true
+        );
+
+        breakHistoryRepository.saveCompletedBreak(savedBreak);
+    }
+
+    private void goBackHome() {
+        Intent intent = new Intent(BreakFeedbackActivity.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+
     private void setRating(int rating) {
         selectedRating = rating;
 
@@ -116,3 +173,4 @@ public class BreakFeedbackActivity extends AppCompatActivity {
         }
     }
 }
+

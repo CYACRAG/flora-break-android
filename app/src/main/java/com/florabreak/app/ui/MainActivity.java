@@ -14,6 +14,8 @@ import com.florabreak.app.data.FloraBreakController;
 import com.florabreak.app.data.FloraBreakControllerFactory;
 import com.florabreak.app.model.FloraBreakSessionResult;
 import com.florabreak.app.model.StressResult;
+import com.florabreak.app.data.repository.BreakHistoryRepository;
+import com.florabreak.app.model.SavedBreak;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     private StressGaugeView stressGaugeView;
     private FloraBreakController floraBreakController;
+    private BreakHistoryRepository breakHistoryRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         floraBreakController = FloraBreakControllerFactory.create(this);
+        breakHistoryRepository = new BreakHistoryRepository(this);
 
         bindViews();
         setupNavigation();
@@ -111,14 +115,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateRecentBreaks() {
-        if (MockUiDataProvider.getSavedBreaks().isEmpty()) {
+        SavedBreak savedBreak = breakHistoryRepository.getLatestBreak();
+
+        if (savedBreak == null) {
             recentBreakTitleText.setText("Keine Pause gespeichert");
             recentBreaksText.setText("Noch keine gespeicherten Pausen");
             return;
         }
 
-        UiSavedBreak savedBreak = MockUiDataProvider.getSavedBreaks().get(0);
         recentBreakTitleText.setText(savedBreak.getTitle());
-        recentBreaksText.setText(savedBreak.getDetails());
+
+        String details =
+                savedBreak.getDurationMinutes()
+                        + " Min · "
+                        + savedBreak.getRouteName()
+                        + " · Stress "
+                        + savedBreak.getStressScore()
+                        + "/10 · "
+                        + createStarRating(savedBreak.getRating());
+
+        recentBreaksText.setText(details);
     }
+
+    private String createStarRating(int rating) {
+        StringBuilder stars = new StringBuilder();
+
+            for (int i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                stars.append("★");
+            } else {
+                stars.append("☆");
+            }
+        }
+
+        return stars.toString();
+   }
 }
