@@ -43,7 +43,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     private FloraBreakSessionResult sessionResult;
 
     private String routeOneName = "Route wird berechnet";
-    private String routeTwoName = "Fallback";
+    private String routeTwoName = "Urban Walk";
     private int routeOneWalkingTimeMinutes = 0;
     private int routeTwoWalkingTimeMinutes = 5;
     private String routeOneType = "ROUTE";
@@ -202,7 +202,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
             routeOneNameText.setText("Keine Route verfügbar");
             routeOneInfoText.setText("Es konnte keine passende Route berechnet werden.");
-            routeOneTypeText.setText("Fallback");
+            routeOneTypeText.setText("Urban Walk");
 
             showControllerFallbackRoute();
             return;
@@ -221,7 +221,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
                             + routeResult.getDestinationName()
                             + "."
             );
-            routeOneTypeText.setText("✅ Echte Route");
+            routeOneTypeText.setText("Parkroute");
         } else if (usedRealRoute) {
             routeOneType = "REAL_ROUTE_TOO_FAR";
 
@@ -236,20 +236,20 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         } else if (routeResult.isReachable()) {
             routeOneType = "FALLBACK_URBAN_WALK";
 
-            routeOneNameText.setText("Fallback-Route empfohlen");
+            routeOneNameText.setText("Urban Walk empfohlen");
             routeOneInfoText.setText(
                     routeResult.getWalkingTimeMinutes()
                             + " Minuten bis "
                             + routeResult.getDestinationName()
                             + "."
             );
-            routeOneTypeText.setText("🧪 Fallback-Route");
+            routeOneTypeText.setText("Urban Walk");
         } else {
             routeOneType = "FALLBACK_ROUTE_TOO_FAR";
 
             routeOneNameText.setText("Keine passende Route");
             routeOneInfoText.setText(recommendationText);
-            routeOneTypeText.setText("Fallback");
+            routeOneTypeText.setText("Urban Walk");
         }
 
         routeTwoName = routeResult.getDestinationName();
@@ -259,15 +259,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         routeTwoType = usedRealRoute ? "REAL_ROUTE_INFO" : "FALLBACK_ROUTE_INFO";
 
         routeTwoNameText.setText(routeResult.getDestinationName());
-        routeTwoInfoText.setText(
-                "Gehzeit: "
-                        + routeResult.getWalkingTimeMinutes()
-                        + " Minuten | Standort: "
-                        + (usedRealLocation ? "echt" : "Fallback")
-                        + " | Ort: "
-                        + (foundRealPlace ? "Google Places" : "Fallback")
-        );
-        routeTwoTypeText.setText(usedRealRoute ? "✅ Echte Route" : "🧪 Fallback-Route");
+        routeTwoTypeText.setText("Alternative Route");
     }
 
     private void showControllerFallbackRoute() {

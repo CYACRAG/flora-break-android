@@ -110,9 +110,9 @@ public class NearbyGreenSpaceService {
     }
 
     private void useFallbackGreenSpace(@NonNull GreenSpaceCallback callback) {
-        // Fallback: Rheinpark Köln
+        // Fallback: neutrale Urban Walk Route
         callback.onGreenSpaceFound(
-                "Rheinpark Köln",
+                "Urban Walk Umgebung",
                 50.9473,
                 6.9828,
                 false

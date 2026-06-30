@@ -128,9 +128,9 @@ public class ActiveBreakActivity extends AppCompatActivity {
             distanceText.setText("zu weit");
         } else if ("FALLBACK_URBAN_WALK".equals(selectedRouteType)
                 || "FALLBACK_ROUTE_INFO".equals(selectedRouteType)) {
-            navigationMainText.setText("Fallback-Route aktiv");
-            navigationSubText.setText("Demo-/Fallback-Weg bis " + selectedRouteName);
-            distanceText.setText("Fallback");
+            navigationMainText.setText("Urban Walk aktiv");
+            navigationSubText.setText("Gehe deine ausgewählte Route bis " + selectedRouteName);
+            distanceText.setText("Aktive Pause");
         } else {
             navigationMainText.setText("Pause aktiv");
             navigationSubText.setText("Route: " + selectedRouteName);
