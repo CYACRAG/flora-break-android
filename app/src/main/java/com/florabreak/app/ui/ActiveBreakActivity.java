@@ -8,6 +8,17 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.florabreak.app.R;
 
 public class ActiveBreakActivity extends AppCompatActivity {
@@ -18,6 +29,14 @@ public class ActiveBreakActivity extends AppCompatActivity {
     private TextView navigationSubText;
     private TextView remainingTimeText;
     private TextView distanceText;
+
+    private Button openMapsButton;
+
+    private double selectedLatitude = 0.0;
+    private double selectedLongitude = 0.0;
+    private boolean reminderScheduled = false;
+
+    private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 44;
 
     private Button finishBreakButton;
     private TextView proofCameraPlaceholder;
@@ -70,6 +89,7 @@ public class ActiveBreakActivity extends AppCompatActivity {
 
         finishBreakButton = findViewById(R.id.finishBreakButton);
         proofCameraPlaceholder = findViewById(R.id.proofCameraPlaceholder);
+        openMapsButton = findViewById(R.id.openMapsButton);
     }
 
     private void readIntentData() {
@@ -85,6 +105,8 @@ public class ActiveBreakActivity extends AppCompatActivity {
         }
 
         selectedWalkingTimeMinutes = getIntent().getIntExtra("selectedWalkingTimeMinutes", 0);
+        selectedLatitude = getIntent().getDoubleExtra("selectedLatitude", 0.0);
+        selectedLongitude = getIntent().getDoubleExtra("selectedLongitude", 0.0);
     }
 
     private void updateRouteUi() {
@@ -117,6 +139,11 @@ public class ActiveBreakActivity extends AppCompatActivity {
     }
 
     private void setupButtons() {
+        openMapsButton.setOnClickListener(view -> {
+            requestNotificationPermissionIfNeeded();
+            scheduleBreakReminder();
+            openRouteInGoogleMaps();
+        });
         proofCameraPlaceholder.setOnClickListener(view -> {
             Intent intent = new Intent(ActiveBreakActivity.this, RouteProofActivity.class);
             startActivity(intent);
@@ -131,6 +158,79 @@ public class ActiveBreakActivity extends AppCompatActivity {
             intent.putExtra("selectedRouteType", selectedRouteType);
             startActivity(intent);
         });
+    }
+
+    private void requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        NOTIFICATION_PERMISSION_REQUEST_CODE
+                );
+            }
+        }
+    }
+
+    private void scheduleBreakReminder() {
+        if (reminderScheduled) {
+            return;
+        }
+
+        int reminderMinutes = selectedWalkingTimeMinutes;
+
+        if (reminderMinutes <= 0) {
+            reminderMinutes = 5;
+        }
+
+        Intent intent = new Intent(this, BreakReminderReceiver.class);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this,
+                2026,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        if (alarmManager != null) {
+            long triggerAtMillis = System.currentTimeMillis() + reminderMinutes * 60L * 1000L;
+
+            alarmManager.setAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    triggerAtMillis,
+                    pendingIntent
+            );
+
+            reminderScheduled = true;
+        }
+    }
+
+    private void openRouteInGoogleMaps() {
+        if (selectedLatitude == 0.0 && selectedLongitude == 0.0) {
+            return;
+        }
+
+        Uri uri = Uri.parse(
+                "https://www.google.com/maps/dir/?api=1"
+                        + "&destination="
+                        + selectedLatitude
+                        + ","
+                        + selectedLongitude
+                        + "&travelmode=walking"
+        );
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        intent.setPackage("com.google.android.apps.maps");
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(browserIntent);
+        }
     }
 
     @Override

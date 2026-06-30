@@ -49,6 +49,11 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     private String routeOneType = "ROUTE";
     private String routeTwoType = "FALLBACK";
 
+    private double routeOneLatitude = 0.0;
+    private double routeOneLongitude = 0.0;
+    private double routeTwoLatitude = 0.0;
+    private double routeTwoLongitude = 0.0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,15 +109,21 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             String selectedRouteName;
             int selectedWalkingTime;
             String selectedRouteType;
+            double selectedLatitude = 0.0;
+            double selectedLongitude = 0.0;
 
             if (selectedRouteIndex == 0) {
                 selectedRouteName = routeOneName;
                 selectedWalkingTime = routeOneWalkingTimeMinutes;
                 selectedRouteType = routeOneType;
+                selectedLatitude = routeOneLatitude;
+                selectedLongitude = routeOneLongitude;
             } else {
                 selectedRouteName = routeTwoName;
                 selectedWalkingTime = routeTwoWalkingTimeMinutes;
                 selectedRouteType = routeTwoType;
+                selectedLatitude = routeOneLatitude;
+                selectedLongitude = routeOneLongitude;
             }
 
             Toast.makeText(this, selectedRouteName + " ausgewählt", Toast.LENGTH_SHORT).show();
@@ -121,6 +132,8 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             intent.putExtra("selectedRouteName", selectedRouteName);
             intent.putExtra("selectedWalkingTimeMinutes", selectedWalkingTime);
             intent.putExtra("selectedRouteType", selectedRouteType);
+            intent.putExtra("selectedLatitude", selectedLatitude);
+            intent.putExtra("selectedLongitude", selectedLongitude);
 
             if (sessionResult != null) {
                 intent.putExtra("stressScore", sessionResult.getStressResult().getScore());
@@ -182,6 +195,8 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     ) {
         if (routeResult == null) {
             routeOneName = "Keine Route verfügbar";
+            routeOneLatitude = routeResult.getLatitude();
+            routeOneLongitude = routeResult.getLongitude();
             routeOneWalkingTimeMinutes = 0;
             routeOneType = "NO_ROUTE";
 
@@ -238,6 +253,8 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         }
 
         routeTwoName = routeResult.getDestinationName();
+        routeTwoLatitude = routeResult.getLatitude();
+        routeTwoLongitude = routeResult.getLongitude();
         routeTwoWalkingTimeMinutes = routeResult.getWalkingTimeMinutes();
         routeTwoType = usedRealRoute ? "REAL_ROUTE_INFO" : "FALLBACK_ROUTE_INFO";
 

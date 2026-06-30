@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
     <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE" />
-
-    <!-- Für Google Maps / Places / Standort -->
+        <!-- Für Google Maps / Places / Standort -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -45,6 +44,10 @@
 
             </intent-filter>
         </activity>
+
+        <receiver
+    android:name=".ui.BreakReminderReceiver"
+    android:exported="false" />
 
     </application>
 
