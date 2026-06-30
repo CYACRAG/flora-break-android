@@ -7,17 +7,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.health.connect.client.contracts.HealthPermissionsRequestContract;
 
 import com.florabreak.app.R;
-import com.florabreak.app.health.HealthConnectDataProvider;
+import com.florabreak.app.data.FloraBreakController;
+import com.florabreak.app.data.FloraBreakControllerFactory;
 import com.florabreak.app.maps.RealMapsBreakService;
-import com.florabreak.app.model.RouteResult;
-
-import java.util.List;
-import java.util.Set;
+import com.florabreak.app.model.BreakRecommendation;
+import com.florabreak.app.model.FloraBreakSessionResult;
+import com.florabreak.app.model.StressResult;
 
 public class BreakSuggestionActivity extends AppCompatActivity {
 
@@ -40,14 +38,27 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
     private int selectedRouteIndex = 0;
 
-    private ActivityResultLauncher<Set<? extends String>> healthPermissionLauncher;
+    private FloraBreakController floraBreakController;
+    private FloraBreakSessionResult sessionResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_break_suggestion);
 
+        floraBreakController = FloraBreakControllerFactory.create(this);
+
+        bindViews();
+        setupRouteSelection();
+        setupButtons();
+
+        loadControllerData();
+        loadRealMapsRoutes();
+
+        updateSelectedRoute();
+    }
+
+    private void bindViews() {
         backButton = findViewById(R.id.backButton);
         startBreakButton = findViewById(R.id.startBreakButton);
 
@@ -64,27 +75,9 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
         routeOneCard = findViewById(R.id.routeOneCard);
         routeTwoCard = findViewById(R.id.routeTwoCard);
+    }
 
-        healthPermissionLauncher = registerForActivityResult(
-                new HealthPermissionsRequestContract(),
-                grantedPermissions -> {
-                    if (grantedPermissions.containsAll(HealthConnectDataProvider.getRequiredPermissions())) {
-                        Toast.makeText(this, "Health Connect verbunden", Toast.LENGTH_SHORT).show();
-                        loadHealthConnectData();
-                    } else {
-                        Toast.makeText(this, "Health Connect Berechtigung fehlt - Mock-Daten werden genutzt", Toast.LENGTH_LONG).show();
-                        loadMockData();
-                    }
-                }
-        );
-
-        if (HealthConnectDataProvider.isAvailable(this)) {
-            healthPermissionLauncher.launch(HealthConnectDataProvider.getRequiredPermissions());
-        } else {
-            Toast.makeText(this, "Health Connect nicht verfügbar - Mock-Daten werden genutzt", Toast.LENGTH_LONG).show();
-            loadMockData();
-        }
-
+    private void setupRouteSelection() {
         routeOneCard.setOnClickListener(view -> {
             selectedRouteIndex = 0;
             updateSelectedRoute();
@@ -94,9 +87,9 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             selectedRouteIndex = 1;
             updateSelectedRoute();
         });
+    }
 
-        updateSelectedRoute();
-
+    private void setupButtons() {
         backButton.setOnClickListener(view -> finish());
 
         startBreakButton.setOnClickListener(view -> {
@@ -112,33 +105,28 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
             Intent intent = new Intent(BreakSuggestionActivity.this, ActiveBreakActivity.class);
             intent.putExtra("selectedRouteName", selectedRouteName);
+
+            if (sessionResult != null) {
+                intent.putExtra("stressScore", sessionResult.getStressResult().getScore());
+                intent.putExtra("stressLabel", sessionResult.getStressResult().getLabel());
+                intent.putExtra("recommendationTitle", sessionResult.getBreakRecommendation().getTitle());
+                intent.putExtra("recommendationType", sessionResult.getBreakRecommendation().getType());
+            }
+
             startActivity(intent);
         });
     }
 
-    private void loadHealthConnectData() {
-        HealthConnectDataProvider healthProvider = new HealthConnectDataProvider(this);
+    private void loadControllerData() {
+        sessionResult = floraBreakController.evaluateCurrentSituation();
 
-        // Ruft echte Health-Connect-Daten ab.
-        // Aktuell nutzt die UI noch eine stabile Mock-Stressanzeige,
-        // bis StressEngine/Controller final angebunden sind.
-        healthProvider.getCurrentStressData();
+        StressResult stressResult = sessionResult.getStressResult();
+        BreakRecommendation recommendation = sessionResult.getBreakRecommendation();
 
-        UiStressState stressState = MockUiDataProvider.getCurrentStressState();
-
-        suggestionStressScoreText.setText(String.valueOf(stressState.getStressScore()));
-        suggestionStressLabelText.setText(stressState.getStressLabel() + " - Health Connect aktiv");
-
-        loadRealMapsRoutes();
-    }
-
-    private void loadMockData() {
-        UiStressState stressState = MockUiDataProvider.getCurrentStressState();
-
-        suggestionStressScoreText.setText(String.valueOf(stressState.getStressScore()));
-        suggestionStressLabelText.setText(stressState.getStressLabel() + " - Mock-Daten");
-
-        loadRealMapsRoutes();
+        suggestionStressScoreText.setText(String.valueOf(stressResult.getScore()));
+        suggestionStressLabelText.setText(
+                stressResult.getLabel() + " · " + recommendation.getTitle()
+        );
     }
 
     private void loadRealMapsRoutes() {
@@ -146,9 +134,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         routeOneInfoText.setText("Standort, Grünfläche und Gehzeit werden geprüft.");
         routeOneTypeText.setText("🗺️ Google Maps");
 
-        routeTwoNameText.setText("Fallback bereit");
-        routeTwoInfoText.setText("Falls Google Maps keine Daten liefert, nutzt Flora Break eine sichere Ersatzempfehlung.");
-        routeTwoTypeText.setText("🌿 Fallback");
+        showControllerFallbackRoute();
 
         RealMapsBreakService realMapsBreakService = new RealMapsBreakService(this);
 
@@ -176,33 +162,23 @@ public class BreakSuggestionActivity extends AppCompatActivity {
                             );
                             routeTwoTypeText.setText(usedRealRoute ? "✅ Echte Route" : "🧪 Fallback-Route");
                         } else {
-                            showMockRoutesAsFallback();
+                            showControllerFallbackRoute();
                         }
                     });
                 }
         );
     }
 
-    private void showMockRoutesAsFallback() {
-        List<UiRouteSuggestion> routes = MockUiDataProvider.getRouteSuggestions();
-
-        if (routes.size() >= 2) {
-            UiRouteSuggestion routeOne = routes.get(0);
-            UiRouteSuggestion routeTwo = routes.get(1);
-
-            routeOneNameText.setText(routeOne.getRouteName());
-            routeOneInfoText.setText(routeOne.getDistance() + "   " + routeOne.getDuration());
-            routeOneTypeText.setText(routeOne.getRouteType());
-
-            routeTwoNameText.setText(routeTwo.getRouteName());
-            routeTwoInfoText.setText(routeTwo.getDistance() + "   " + routeTwo.getDuration());
-
-            if (routeTwo.isUrbanFallback()) {
-                routeTwoTypeText.setText("Fallback: " + routeTwo.getRouteType());
-            } else {
-                routeTwoTypeText.setText(routeTwo.getRouteType());
-            }
+    private void showControllerFallbackRoute() {
+        if (sessionResult == null) {
+            return;
         }
+
+        BreakRecommendation recommendation = sessionResult.getBreakRecommendation();
+
+        routeTwoNameText.setText(recommendation.getTitle());
+        routeTwoInfoText.setText(recommendation.getDescription());
+        routeTwoTypeText.setText(recommendation.getType());
     }
 
     private void updateSelectedRoute() {
