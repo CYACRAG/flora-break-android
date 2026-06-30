@@ -64,4 +64,18 @@ public class DeviceLocationService {
                 true
         );
     }
+    public String createLocationKey(double latitude, double longitude, boolean isRealLocation) {
+        if (!isRealLocation) {
+            return "demo_location";
+        }
+
+        double roundedLatitude = Math.round(latitude * 100.0) / 100.0;
+        double roundedLongitude = Math.round(longitude * 100.0) / 100.0;
+
+        return roundedLatitude + "_" + roundedLongitude;
+    }
+
+    public boolean isFallbackLocation(double latitude, double longitude) {
+        return latitude == FALLBACK_LATITUDE && longitude == FALLBACK_LONGITUDE;
+    }
 }

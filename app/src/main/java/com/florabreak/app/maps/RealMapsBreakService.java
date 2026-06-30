@@ -26,67 +26,75 @@ public class RealMapsBreakService {
 
     private final RealMapsRouteProvider realMapsRouteProvider;
     private final RouteCacheRepository routeCacheRepository;
+    private final DeviceLocationService deviceLocationService;
 
     public RealMapsBreakService(@NonNull Context context) {
         this.realMapsRouteProvider = new RealMapsRouteProvider(context);
         this.routeCacheRepository = new RouteCacheRepository(context);
+        this.deviceLocationService = new DeviceLocationService(context);
     }
 
     public void getBreakDecision(@NonNull BreakDecisionCallback callback) {
-        String locationKey = "current_location_demo";
+        deviceLocationService.getCurrentLocation((latitude, longitude, isRealLocation) -> {
+            String locationKey = deviceLocationService.createLocationKey(
+                    latitude,
+	                longitude,
+	                isRealLocation
+	        );
 
-        List<CachedRoute> cachedRoutes =
-                routeCacheRepository.getRoutesForLocation(locationKey);
+	        List<CachedRoute> cachedRoutes =
+	                routeCacheRepository.getRoutesForLocation(locationKey);
 
-        if (!cachedRoutes.isEmpty()) {
-            CachedRoute cachedRoute = cachedRoutes.get(0);
+	        if (!cachedRoutes.isEmpty()) {
+	            CachedRoute cachedRoute = cachedRoutes.get(0);
 
-            RouteResult routeResult = new RouteResult(
-                    cachedRoute.getDestinationName(),
-                    cachedRoute.getDestinationLatitude(),
-                    cachedRoute.getDestinationLongitude(),
-                    cachedRoute.getOneWayWalkingTimeMinutes(),
-                    cachedRoute.isReachableWithinLimit()
-            );
+	            RouteResult routeResult = new RouteResult(
+	                    cachedRoute.getDestinationName(),
+	                    cachedRoute.getDestinationLatitude(),
+	                    cachedRoute.getDestinationLongitude(),
+	                    cachedRoute.getOneWayWalkingTimeMinutes(),
+	                    cachedRoute.isReachableWithinLimit()
+	            );
 
-            callback.onBreakDecisionReady(
-                    cachedRoute.getTitle(),
-                    buildUserTextFromCachedRoute(cachedRoute),
-                    routeResult,
-                    false,
-                    cachedRoute.isParkRoute(),
-                    false
-            );
+	            callback.onBreakDecisionReady(
+	                    cachedRoute.getTitle(),
+	                    buildUserTextFromCachedRoute(cachedRoute),
+	                    routeResult,
+	                    isRealLocation,
+	                    cachedRoute.isParkRoute(),
+	                    false
+	            );
 
-            return;
-        }
+	            return;
+	        }
 
-        realMapsRouteProvider.getRecommendedWalkingRoute(
-                (routeResult, usedRealLocation, foundRealPlace, usedRealRoute) -> {
-                    CachedRoute cachedRoute = createCachedRouteFromResult(
-                            routeResult,
-                            foundRealPlace,
-                            locationKey
-                    );
+	        realMapsRouteProvider.getRecommendedWalkingRoute(
+	                (routeResult, usedRealLocation, foundRealPlace, usedRealRoute) -> {
+	                    CachedRoute cachedRoute = createCachedRouteFromResult(
+	                            routeResult,
+	                            foundRealPlace,
+	                            locationKey
+	                    );
 
-                    List<CachedRoute> routesToSave = new ArrayList<>();
-                    routesToSave.add(cachedRoute);
-                    routeCacheRepository.saveRoutes(locationKey, routesToSave);
+	                    List<CachedRoute> routesToSave = new ArrayList<>();
+	                    routesToSave.add(cachedRoute);
+	                    routeCacheRepository.saveRoutes(locationKey, routesToSave);
 
-                    String title = cachedRoute.getTitle();
-                    String text = buildUserTextFromCachedRoute(cachedRoute);
+	                    String title = cachedRoute.getTitle();
+	                    String text = buildUserTextFromCachedRoute(cachedRoute);
 
-                    callback.onBreakDecisionReady(
-                            title,
-                            text,
-                            routeResult,
-                            usedRealLocation,
-                            foundRealPlace,
-                            usedRealRoute
-                    );
-                }
-        );
-    }
+	                    callback.onBreakDecisionReady(
+	                            title,
+	                            text,
+	                            routeResult,
+	                            usedRealLocation,
+	                            foundRealPlace,
+	                            usedRealRoute
+	                    );
+	                }
+	        );
+	    });
+	}
 
     private CachedRoute createCachedRouteFromResult(
             RouteResult routeResult,
