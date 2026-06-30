@@ -14,14 +14,23 @@ public class ActiveBreakActivity extends AppCompatActivity {
 
     private TextView timerText;
     private TextView selectedRouteNameText;
+    private TextView navigationMainText;
+    private TextView navigationSubText;
+    private TextView remainingTimeText;
+    private TextView distanceText;
+
     private Button finishBreakButton;
     private TextView proofCameraPlaceholder;
 
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
     private int seconds = 0;
     private boolean timerRunning = true;
 
-    private Runnable timerRunnable = new Runnable() {
+    private String selectedRouteName = "Grünfläche in der Nähe";
+    private int selectedWalkingTimeMinutes = 0;
+    private String selectedRouteType = "ROUTE";
+
+    private final Runnable timerRunnable = new Runnable() {
         @Override
         public void run() {
             if (timerRunning) {
@@ -41,43 +50,85 @@ public class ActiveBreakActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Verbindet diese Java-Datei mit dem Layout activity_active_break.xml
         setContentView(R.layout.activity_active_break);
 
+        bindViews();
+        readIntentData();
+        updateRouteUi();
+        setupButtons();
+
+        handler.postDelayed(timerRunnable, 1000);
+    }
+
+    private void bindViews() {
         timerText = findViewById(R.id.timerText);
         selectedRouteNameText = findViewById(R.id.selectedRouteNameText);
+        navigationMainText = findViewById(R.id.navigationMainText);
+        navigationSubText = findViewById(R.id.navigationSubText);
+        remainingTimeText = findViewById(R.id.remainingTimeText);
+        distanceText = findViewById(R.id.distanceText);
+
         finishBreakButton = findViewById(R.id.finishBreakButton);
         proofCameraPlaceholder = findViewById(R.id.proofCameraPlaceholder);
+    }
 
-        String selectedRouteName = getIntent().getStringExtra("selectedRouteName");
+    private void readIntentData() {
+        String routeNameExtra = getIntent().getStringExtra("selectedRouteName");
+        String routeTypeExtra = getIntent().getStringExtra("selectedRouteType");
 
-        if (selectedRouteName != null && !selectedRouteName.isEmpty()) {
-            selectedRouteNameText.setText("📍 " + selectedRouteName);
+        if (routeNameExtra != null && !routeNameExtra.trim().isEmpty()) {
+            selectedRouteName = routeNameExtra;
         }
-        /*
-         * Öffnet den Streckenbeweis-Placeholder.
-         *
-         * Aktuell wird noch keine echte Kamera verwendet.
-         * Der Screen zeigt nur, wo später die Kamera-Funktion eingebaut werden kann.
-         */
+
+        if (routeTypeExtra != null && !routeTypeExtra.trim().isEmpty()) {
+            selectedRouteType = routeTypeExtra;
+        }
+
+        selectedWalkingTimeMinutes = getIntent().getIntExtra("selectedWalkingTimeMinutes", 0);
+    }
+
+    private void updateRouteUi() {
+        selectedRouteNameText.setText("📍 " + selectedRouteName);
+
+        if (selectedWalkingTimeMinutes > 0) {
+            remainingTimeText.setText(selectedWalkingTimeMinutes + " Min");
+        } else {
+            remainingTimeText.setText("— Min");
+        }
+
+        if ("REAL_URBAN_WALK".equals(selectedRouteType)) {
+            navigationMainText.setText("Urban Walk aktiv");
+            navigationSubText.setText("Echte Google-Route bis " + selectedRouteName);
+            distanceText.setText("Route aktiv");
+        } else if ("REAL_ROUTE_TOO_FAR".equals(selectedRouteType)) {
+            navigationMainText.setText("Route ist zu lang");
+            navigationSubText.setText("Für den Prototyp wird sie trotzdem angezeigt.");
+            distanceText.setText("zu weit");
+        } else if ("FALLBACK_URBAN_WALK".equals(selectedRouteType)
+                || "FALLBACK_ROUTE_INFO".equals(selectedRouteType)) {
+            navigationMainText.setText("Fallback-Route aktiv");
+            navigationSubText.setText("Demo-/Fallback-Weg bis " + selectedRouteName);
+            distanceText.setText("Fallback");
+        } else {
+            navigationMainText.setText("Pause aktiv");
+            navigationSubText.setText("Route: " + selectedRouteName);
+            distanceText.setText("—");
+        }
+    }
+
+    private void setupButtons() {
         proofCameraPlaceholder.setOnClickListener(view -> {
             Intent intent = new Intent(ActiveBreakActivity.this, RouteProofActivity.class);
             startActivity(intent);
         });
 
-        // Timer startet automatisch
-        handler.postDelayed(timerRunnable, 1000);
-
-        // Beim Klick auf "Beenden" wird der Timer gestoppt
-        /*
-         * Beendet die aktive Pause und öffnet die Feedback-Seite.
-         * Die angezeigten Werte auf der Feedback-Seite sind aktuell Mock-Daten.
-         */
         finishBreakButton.setOnClickListener(view -> {
             timerRunning = false;
 
             Intent intent = new Intent(ActiveBreakActivity.this, BreakFeedbackActivity.class);
+            intent.putExtra("selectedRouteName", selectedRouteName);
+            intent.putExtra("selectedWalkingTimeMinutes", selectedWalkingTimeMinutes);
+            intent.putExtra("selectedRouteType", selectedRouteType);
             startActivity(intent);
         });
     }
@@ -86,7 +137,6 @@ public class ActiveBreakActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        // Verhindert, dass der Timer im Hintergrund weiterläuft
         timerRunning = false;
         handler.removeCallbacks(timerRunnable);
     }

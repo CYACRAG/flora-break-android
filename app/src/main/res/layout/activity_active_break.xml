@@ -43,6 +43,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/navigationMainText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="In 100 m"
@@ -51,6 +52,7 @@
                         android:textColor="#FFFFFF" />
 
                     <TextView
+                        android:id="@+id/navigationSubText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="rechts in den Parkweg"
@@ -224,6 +226,7 @@
                     android:layout_marginStart="7dp">
 
                     <TextView
+                        android:id="@+id/remainingTimeText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="18 Min"
@@ -273,6 +276,7 @@
                     android:textColor="#06140C" />
 
                 <TextView
+                    android:id="@+id/distanceText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0.00 km"

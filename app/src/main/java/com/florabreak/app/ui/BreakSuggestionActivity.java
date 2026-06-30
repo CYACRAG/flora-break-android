@@ -15,6 +15,7 @@ import com.florabreak.app.data.FloraBreakControllerFactory;
 import com.florabreak.app.maps.RealMapsBreakService;
 import com.florabreak.app.model.BreakRecommendation;
 import com.florabreak.app.model.FloraBreakSessionResult;
+import com.florabreak.app.model.RouteResult;
 import com.florabreak.app.model.StressResult;
 
 public class BreakSuggestionActivity extends AppCompatActivity {
@@ -40,6 +41,13 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
     private FloraBreakController floraBreakController;
     private FloraBreakSessionResult sessionResult;
+
+    private String routeOneName = "Route wird berechnet";
+    private String routeTwoName = "Fallback";
+    private int routeOneWalkingTimeMinutes = 0;
+    private int routeTwoWalkingTimeMinutes = 5;
+    private String routeOneType = "ROUTE";
+    private String routeTwoType = "FALLBACK";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,17 +102,25 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
         startBreakButton.setOnClickListener(view -> {
             String selectedRouteName;
+            int selectedWalkingTime;
+            String selectedRouteType;
 
             if (selectedRouteIndex == 0) {
-                selectedRouteName = routeOneNameText.getText().toString();
+                selectedRouteName = routeOneName;
+                selectedWalkingTime = routeOneWalkingTimeMinutes;
+                selectedRouteType = routeOneType;
             } else {
-                selectedRouteName = routeTwoNameText.getText().toString();
+                selectedRouteName = routeTwoName;
+                selectedWalkingTime = routeTwoWalkingTimeMinutes;
+                selectedRouteType = routeTwoType;
             }
 
             Toast.makeText(this, selectedRouteName + " ausgewählt", Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent(BreakSuggestionActivity.this, ActiveBreakActivity.class);
             intent.putExtra("selectedRouteName", selectedRouteName);
+            intent.putExtra("selectedWalkingTimeMinutes", selectedWalkingTime);
+            intent.putExtra("selectedRouteType", selectedRouteType);
 
             if (sessionResult != null) {
                 intent.putExtra("stressScore", sessionResult.getStressResult().getScore());
@@ -130,6 +146,10 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     }
 
     private void loadRealMapsRoutes() {
+        routeOneName = "Route wird berechnet";
+        routeOneWalkingTimeMinutes = 0;
+        routeOneType = "MAPS_LOADING";
+
         routeOneNameText.setText("Route wird berechnet...");
         routeOneInfoText.setText("Standort, Grünfläche und Gehzeit werden geprüft.");
         routeOneTypeText.setText("🗺️ Google Maps");
@@ -140,33 +160,97 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
         realMapsBreakService.getBreakDecision(
                 (recommendationTitle, recommendationText, routeResult, usedRealLocation, foundRealPlace, usedRealRoute) -> {
-                    runOnUiThread(() -> {
-                        routeOneNameText.setText(recommendationTitle);
-                        routeOneInfoText.setText(recommendationText);
-
-                        if (routeResult != null && routeResult.isReachable()) {
-                            routeOneTypeText.setText("🌿 Urban Walk");
-                        } else {
-                            routeOneTypeText.setText("🌿 Fallback-Route");
-                        }
-
-                        if (routeResult != null) {
-                            routeTwoNameText.setText(routeResult.getDestinationName());
-                            routeTwoInfoText.setText(
-                                    "Gehzeit: "
-                                            + routeResult.getWalkingTimeMinutes()
-                                            + " Minuten | Standort: "
-                                            + (usedRealLocation ? "echt" : "Fallback")
-                                            + " | Ort: "
-                                            + (foundRealPlace ? "Google Places" : "Fallback")
-                            );
-                            routeTwoTypeText.setText(usedRealRoute ? "✅ Echte Route" : "🧪 Fallback-Route");
-                        } else {
-                            showControllerFallbackRoute();
-                        }
-                    });
+                    runOnUiThread(() -> showRealMapsResult(
+                            recommendationTitle,
+                            recommendationText,
+                            routeResult,
+                            usedRealLocation,
+                            foundRealPlace,
+                            usedRealRoute
+                    ));
                 }
         );
+    }
+
+    private void showRealMapsResult(
+            String recommendationTitle,
+            String recommendationText,
+            RouteResult routeResult,
+            boolean usedRealLocation,
+            boolean foundRealPlace,
+            boolean usedRealRoute
+    ) {
+        if (routeResult == null) {
+            routeOneName = "Keine Route verfügbar";
+            routeOneWalkingTimeMinutes = 0;
+            routeOneType = "NO_ROUTE";
+
+            routeOneNameText.setText("Keine Route verfügbar");
+            routeOneInfoText.setText("Es konnte keine passende Route berechnet werden.");
+            routeOneTypeText.setText("Fallback");
+
+            showControllerFallbackRoute();
+            return;
+        }
+
+        routeOneName = routeResult.getDestinationName();
+        routeOneWalkingTimeMinutes = routeResult.getWalkingTimeMinutes();
+
+        if (usedRealRoute && routeResult.isReachable()) {
+            routeOneType = "REAL_URBAN_WALK";
+
+            routeOneNameText.setText("Urban Walk empfohlen");
+            routeOneInfoText.setText(
+                    routeResult.getWalkingTimeMinutes()
+                            + " Minuten bis "
+                            + routeResult.getDestinationName()
+                            + "."
+            );
+            routeOneTypeText.setText("✅ Echte Route");
+        } else if (usedRealRoute) {
+            routeOneType = "REAL_ROUTE_TOO_FAR";
+
+            routeOneNameText.setText("Route gefunden, aber zu weit");
+            routeOneInfoText.setText(
+                    routeResult.getDestinationName()
+                            + " ist ca. "
+                            + routeResult.getWalkingTimeMinutes()
+                            + " Minuten entfernt. Ziel sind 10–15 Minuten."
+            );
+            routeOneTypeText.setText("⚠️ Echte Route zu lang");
+        } else if (routeResult.isReachable()) {
+            routeOneType = "FALLBACK_URBAN_WALK";
+
+            routeOneNameText.setText("Fallback-Route empfohlen");
+            routeOneInfoText.setText(
+                    routeResult.getWalkingTimeMinutes()
+                            + " Minuten bis "
+                            + routeResult.getDestinationName()
+                            + "."
+            );
+            routeOneTypeText.setText("🧪 Fallback-Route");
+        } else {
+            routeOneType = "FALLBACK_ROUTE_TOO_FAR";
+
+            routeOneNameText.setText("Keine passende Route");
+            routeOneInfoText.setText(recommendationText);
+            routeOneTypeText.setText("Fallback");
+        }
+
+        routeTwoName = routeResult.getDestinationName();
+        routeTwoWalkingTimeMinutes = routeResult.getWalkingTimeMinutes();
+        routeTwoType = usedRealRoute ? "REAL_ROUTE_INFO" : "FALLBACK_ROUTE_INFO";
+
+        routeTwoNameText.setText(routeResult.getDestinationName());
+        routeTwoInfoText.setText(
+                "Gehzeit: "
+                        + routeResult.getWalkingTimeMinutes()
+                        + " Minuten | Standort: "
+                        + (usedRealLocation ? "echt" : "Fallback")
+                        + " | Ort: "
+                        + (foundRealPlace ? "Google Places" : "Fallback")
+        );
+        routeTwoTypeText.setText(usedRealRoute ? "✅ Echte Route" : "🧪 Fallback-Route");
     }
 
     private void showControllerFallbackRoute() {
@@ -175,6 +259,12 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         }
 
         BreakRecommendation recommendation = sessionResult.getBreakRecommendation();
+
+        routeTwoName = recommendation.getTitle();
+        routeTwoWalkingTimeMinutes = recommendation.getDurationMinutes() > 0
+                ? recommendation.getDurationMinutes()
+                : 5;
+        routeTwoType = recommendation.getType();
 
         routeTwoNameText.setText(recommendation.getTitle());
         routeTwoInfoText.setText(recommendation.getDescription());
