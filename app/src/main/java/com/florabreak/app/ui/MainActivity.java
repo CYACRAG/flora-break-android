@@ -105,15 +105,8 @@ public class MainActivity extends AppCompatActivity {
 
         int stressScore = stressResult.getScore();
 
-        /*
-         * StressGaugeView zeigt aktuell optisch eine 0-10 Skala.
-         * Die StressEngine arbeitet mit 0-6.
-         * Deshalb wird der Wert hier für die Anzeige auf 0-10 umgerechnet.
-         */
-        float displayScore = (stressScore / 6.0f) * 10.0f;
-
-        stressGaugeView.setStressScore(displayScore);
-        stressScoreText.setText(String.format(java.util.Locale.US, "%.1f", displayScore));
+        stressGaugeView.setStressScore(stressScore);
+        stressScoreText.setText(String.valueOf(stressScore));
         stressLabelText.setText(stressResult.getLabel());
     }
 
