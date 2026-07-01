@@ -3,27 +3,28 @@ package com.florabreak.app.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.Toast;
-import android.widget.TextView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.florabreak.app.R;
 import com.florabreak.app.data.FloraBreakController;
 import com.florabreak.app.data.FloraBreakControllerFactory;
+import com.florabreak.app.data.local.BreakEntity;
+import com.florabreak.app.data.repository.BreakSessionRepository;
 import com.florabreak.app.model.FloraBreakSessionResult;
 import com.florabreak.app.model.StressResult;
-import com.florabreak.app.data.repository.BreakHistoryRepository;
-import com.florabreak.app.model.SavedBreak;
 
 public class MainActivity extends AppCompatActivity {
 
     private Button showBreakButton;
+    private Button refreshButton;
+
     private LinearLayout navHistoryButton;
     private LinearLayout navStatsButton;
     private LinearLayout navProfileButton;
-    private Button refreshButton;
 
     private TextView stressScoreText;
     private TextView stressLabelText;
@@ -31,8 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView recentBreaksText;
 
     private StressGaugeView stressGaugeView;
+
     private FloraBreakController floraBreakController;
-    private BreakHistoryRepository breakHistoryRepository;
+    private BreakSessionRepository breakSessionRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         floraBreakController = FloraBreakControllerFactory.create(this);
-        breakHistoryRepository = new BreakHistoryRepository(this);
+        breakSessionRepository = new BreakSessionRepository(this);
 
         bindViews();
         setupNavigation();
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
         refreshButton.setOnClickListener(view -> {
             updateStressFromController();
+            updateRecentBreaks();
             Toast.makeText(this, "Stressdaten wurden aktualisiert", Toast.LENGTH_SHORT).show();
         });
     }
@@ -57,8 +60,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        // Wenn im Profil Demo-Regler geändert wurden,
-        // wird der Home-Screen beim Zurückkommen automatisch aktualisiert.
         floraBreakController = FloraBreakControllerFactory.create(this);
         updateStressFromController();
         updateRecentBreaks();
@@ -91,9 +92,10 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        navStatsButton.setOnClickListener(view ->
-                Toast.makeText(this, "Statistik wird später ergänzt", Toast.LENGTH_SHORT).show()
-        );
+        navStatsButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, StatsActivity.class);
+            startActivity(intent);
+        });
 
         navProfileButton.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
@@ -115,32 +117,44 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateRecentBreaks() {
-        SavedBreak savedBreak = breakHistoryRepository.getLatestBreak();
+        BreakEntity latestBreak = breakSessionRepository.getLatestBreak();
 
-        if (savedBreak == null) {
+        if (latestBreak == null) {
             recentBreakTitleText.setText("Keine Pause gespeichert");
             recentBreaksText.setText("Noch keine gespeicherten Pausen");
             return;
         }
 
-        recentBreakTitleText.setText(savedBreak.getTitle());
+        recentBreakTitleText.setText("Letzte gespeicherte Pause");
 
         String details =
-                savedBreak.getDurationMinutes()
+                latestBreak.durationMinutes
                         + " Min · "
-                        + savedBreak.getRouteName()
+                        + safeText(latestBreak.routeName, "Route")
                         + " · Stress "
-                        + savedBreak.getStressScore()
+                        + latestBreak.stressScore
                         + "/10 · "
-                        + createStarRating(savedBreak.getRating());
+                        + createStarRating(latestBreak.rating);
+
+        if (latestBreak.photoProofTaken) {
+            details += " · Foto";
+        }
 
         recentBreaksText.setText(details);
+    }
+
+    private String safeText(String value, String fallback) {
+        if (value == null || value.trim().isEmpty()) {
+            return fallback;
+        }
+
+        return value;
     }
 
     private String createStarRating(int rating) {
         StringBuilder stars = new StringBuilder();
 
-            for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 5; i++) {
             if (i <= rating) {
                 stars.append("★");
             } else {
@@ -149,5 +163,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return stars.toString();
-   }
+    }
 }
