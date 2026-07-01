@@ -253,7 +253,16 @@
                     android:textColor="#637568" />
             </LinearLayout>
         </LinearLayout>
-
+	<Button
+	    android:id="@+id/generateNewRouteButton"
+	    android:layout_width="match_parent"
+	    android:layout_height="52dp"
+	    android:text="＋ Neue Pausenroute suchen"
+	    android:textSize="16sp"
+	    android:textStyle="bold"
+	    android:textColor="#2F6B45"
+	    android:backgroundTint="#EEF4EE"
+	    android:layout_marginBottom="12dp" />
         <Button
             android:id="@+id/startBreakButton"
             android:layout_width="match_parent"

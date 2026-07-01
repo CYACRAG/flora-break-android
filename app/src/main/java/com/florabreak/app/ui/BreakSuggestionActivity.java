@@ -28,7 +28,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     private TextView suggestionStressScoreText;
     private TextView suggestionStressLabelText;
     private View stressMarkerView;
-
+    private Button generateNewRouteButton;
     private TextView routeOneNameText;
     private TextView routeOneInfoText;
     private TextView routeOneTypeText;
@@ -46,13 +46,13 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     private FloraBreakSessionResult sessionResult;
 
     private String routeOneName = "Route wird berechnet";
-    private String routeTwoName = "Kurzer Urban Walk";
+    private String routeTwoName = "Weiter Pausenroute";
 
     private int routeOneWalkingTimeMinutes = 0;
     private int routeTwoWalkingTimeMinutes = 5;
 
     private String routeOneType = "MAPS_LOADING";
-    private String routeTwoType = "URBAN_WALK";
+    private String routeTwoType = "Weitere Pausenroute";
 
     private double routeOneLatitude = 0.0;
     private double routeOneLongitude = 0.0;
@@ -94,7 +94,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         routeTwoNameText = findViewById(R.id.routeTwoNameText);
         routeTwoInfoText = findViewById(R.id.routeTwoInfoText);
         routeTwoTypeText = findViewById(R.id.routeTwoTypeText);
-
+	generateNewRouteButton = findViewById(R.id.generateNewRouteButton);
         routeOneCard = findViewById(R.id.routeOneCard);
         routeTwoCard = findViewById(R.id.routeTwoCard);
     }
@@ -113,7 +113,17 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
     private void setupButtons() {
         backButton.setOnClickListener(view -> finish());
+	generateNewRouteButton.setOnClickListener(view -> {
+	    generateAnotherPauseRoute();
+	    selectedRouteIndex = 1;
+	    updateSelectedRoute();
 
+	    Toast.makeText(
+	            this,
+	            "Neue Pausenroute erstellt",
+	            Toast.LENGTH_SHORT
+	    ).show();
+	});
         startBreakButton.setOnClickListener(view -> {
             String selectedRouteName;
             int selectedWalkingTime;
@@ -236,13 +246,13 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             boolean usedRealRoute
     ) {
         if (routeResult == null) {
-            routeOneName = "Urban Walk";
+            routeOneName = "Weitere Pausenroute";
             routeOneLatitude = 0.0;
             routeOneLongitude = 0.0;
             routeOneWalkingTimeMinutes = 5;
-            routeOneType = "URBAN_WALK";
+            routeOneType = "Weitere Pausenroute";
 
-            routeOneNameText.setText("Urban Walk empfohlen");
+            routeOneNameText.setText("Weitere Pausenroute empfohlen");
             routeOneInfoText.setText("Es konnte kein Kartenziel berechnet werden. Starte einen kurzen Rundgang in deiner Umgebung.");
             routeOneTypeText.setText("Aktive Pause");
 
@@ -273,9 +283,9 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             );
             routeOneTypeText.setText("Grünfläche");
         } else if (hasCoordinates && usedRealRoute && routeResult.isReachable()) {
-            routeOneType = "URBAN_WALK";
+            routeOneType = "Weitere Pausenroute";
 
-            routeOneNameText.setText("Urban Walk empfohlen");
+            routeOneNameText.setText("Weitere Pausenroute");
             routeOneInfoText.setText(
                     oneWayMinutes
                             + " Min hin · "
@@ -296,14 +306,14 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             );
             routeOneTypeText.setText("Zu lang");
         } else {
-            routeOneType = "URBAN_WALK";
+            routeOneType = "Weitere Pausenroute";
 
-            routeOneNameText.setText("Urban Walk empfohlen");
+            routeOneNameText.setText("Andere Route empfohlen");
             routeOneInfoText.setText(recommendationText);
             routeOneTypeText.setText("Aktive Pause");
         }
 
-        setAlternativeUrbanWalkRoute();
+        setSecondPauseRoute();
     }
 
     private void showControllerFallbackRoute() {
@@ -313,14 +323,14 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
         BreakRecommendation recommendation = sessionResult.getBreakRecommendation();
 
-        setAlternativeUrbanWalkRoute();
+        setSecondPauseRoute();
     }
 
 
-    private void setAlternativeUrbanWalkRoute() {
-        routeTwoName = "Kurzer Urban Walk";
+    private void setSecondPauseRoute() {
+        routeTwoName = "Weitere Pausenroute";
         routeTwoWalkingTimeMinutes = 5;
-        routeTwoType = "URBAN_WALK";
+        routeTwoType = "Weitere Pausenroute";
 
         if (routeOneLatitude != 0.0 || routeOneLongitude != 0.0) {
             routeTwoLatitude = routeOneLatitude + 0.0035;
@@ -330,11 +340,41 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             routeTwoLongitude = 0.0;
         }
 
-        routeTwoNameText.setText("Kurzer Urban Walk");
-        routeTwoInfoText.setText("Eigene alternative Urban-Walk-Route. Öffnet ein anderes Ziel als Route 1.");
-        routeTwoTypeText.setText("Alternative");
+        routeTwoNameText.setText("Weitere Route");
+        routeTwoInfoText.setText("Eigene alternative Route. Öffnet ein anderes Ziel als Route 1.");
+        routeTwoTypeText.setText("Pausenroute");
     }
+	private void generateAnotherPauseRoute() {
+	    routeTwoName = "Neue Pausenroute";
+	    routeTwoWalkingTimeMinutes = 10;
+	    routeTwoType = "PAUSE_ROUTE";
 
+	    if (routeOneLatitude != 0.0 || routeOneLongitude != 0.0) {
+	        long seed = System.currentTimeMillis() / 1000L;
+	        int direction = (int) (seed % 4);
+
+	        if (direction == 0) {
+	            routeTwoLatitude = routeOneLatitude + 0.0045;
+	            routeTwoLongitude = routeOneLongitude + 0.0015;
+	        } else if (direction == 1) {
+	            routeTwoLatitude = routeOneLatitude - 0.0045;
+	            routeTwoLongitude = routeOneLongitude - 0.0015;
+	        } else if (direction == 2) {
+	            routeTwoLatitude = routeOneLatitude + 0.0015;
+	            routeTwoLongitude = routeOneLongitude - 0.0045;
+	        } else {
+	            routeTwoLatitude = routeOneLatitude - 0.0015;
+	            routeTwoLongitude = routeOneLongitude + 0.0045;
+	        }
+	    } else {
+	        routeTwoLatitude = 0.0;
+	        routeTwoLongitude = 0.0;
+	    }
+
+	    routeTwoNameText.setText("Neue Pausenroute");
+	    routeTwoInfoText.setText("10 Min gesamt · Noch nicht bewertet");
+	    routeTwoTypeText.setText("Pausenroute");
+	}
     private void updateSelectedRoute() {
         if (selectedRouteIndex == 0) {
             routeOneCard.setBackgroundResource(R.drawable.bg_route_selected);
