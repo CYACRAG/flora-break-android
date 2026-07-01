@@ -227,7 +227,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         routeOneName = routeResult.getDestinationName();
         routeOneLatitude = routeResult.getLatitude();
         routeOneLongitude = routeResult.getLongitude();
-        routeOneWalkingTimeMinutes = routeResult.getWalkingTimeMinutes();
+        routeOneWalkingTimeMinutes = Math.max(1, routeResult.getWalkingTimeMinutes() * 2);
 
         boolean hasCoordinates = !(routeOneLatitude == 0.0 && routeOneLongitude == 0.0);
 
@@ -237,10 +237,10 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             routeOneNameText.setText("Parkroute empfohlen");
             routeOneInfoText.setText(
                     "Ca. "
-                            + routeResult.getWalkingTimeMinutes()
+                            + (routeResult.getWalkingTimeMinutes() * 2)
                             + " Minuten einfacher Weg bis "
                             + routeResult.getDestinationName()
-                            + "."
+                            + " und zurück."
             );
             routeOneTypeText.setText("Grünfläche");
         } else if (hasCoordinates && usedRealRoute && routeResult.isReachable()) {
@@ -249,10 +249,10 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             routeOneNameText.setText("Urban Walk empfohlen");
             routeOneInfoText.setText(
                     "Ca. "
-                            + routeResult.getWalkingTimeMinutes()
+                            + (routeResult.getWalkingTimeMinutes() * 2)
                             + " Minuten einfacher Weg bis "
                             + routeResult.getDestinationName()
-                            + "."
+                            + " und zurück."
             );
             routeOneTypeText.setText("Aktive Route");
         } else if (hasCoordinates && usedRealRoute) {
@@ -262,8 +262,8 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             routeOneInfoText.setText(
                     routeResult.getDestinationName()
                             + " ist ca. "
-                            + routeResult.getWalkingTimeMinutes()
-                            + " Minuten entfernt. Für eine kurze Pause empfiehlt Flora Break eher einen Urban Walk."
+                            + (routeResult.getWalkingTimeMinutes() * 2)
+                            + " Minuten lang. Für eine kurze Pause empfiehlt Flora Break eher einen Urban Walk."
             );
             routeOneTypeText.setText("Zu lang");
         } else {

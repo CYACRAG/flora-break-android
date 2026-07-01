@@ -45,26 +45,27 @@ public class RealMapsBreakService {
         UserProfile profile = profileRepository.getProfile();
 
         deviceLocationService.getCurrentLocation((currentLatitude, currentLongitude, isRealLocation) -> {
-			if (!isRealLocation || (currentLatitude == 0.0 && currentLongitude == 0.0)) {
-			    RouteResult routeResult = new RouteResult(
-			            "Standort nicht verfügbar",
-			            0.0,
-			            0.0,
-			            0,
-			            false
-			    );
+            if (!isRealLocation || (currentLatitude == 0.0 && currentLongitude == 0.0)) {
+                RouteResult routeResult = new RouteResult(
+                        "Standort nicht verfügbar",
+                        0.0,
+                        0.0,
+                        0,
+                        false
+                );
 
-			    callback.onBreakDecisionReady(
-			            "Standort benötigt",
-			            "Flora Break braucht deinen aktuellen Standort, um eine Grünfläche oder einen Urban Walk in deiner Nähe vorzuschlagen.",
-			            routeResult,
-			            false,
-			            false,
-			            false
-			    );
-			    return;
-			}
-            if (profile.isWorkLocationSaved() && isRealLocation) {
+                callback.onBreakDecisionReady(
+                        "Standort benötigt",
+                        "Flora Break braucht deinen aktuellen Standort, um eine Grünfläche oder einen Urban Walk in deiner Nähe vorzuschlagen.",
+                        routeResult,
+                        false,
+                        false,
+                        false
+                );
+                return;
+            }
+
+            if (profile.isWorkLocationSaved()) {
                 double distanceToWork = calculateDistanceMeters(
                         currentLatitude,
                         currentLongitude,
@@ -87,7 +88,7 @@ public class RealMapsBreakService {
             handleLocationForRoute(
                     currentLatitude,
                     currentLongitude,
-                    isRealLocation,
+                    true,
                     false,
                     callback
             );
@@ -148,15 +149,26 @@ public class RealMapsBreakService {
                 longitude,
                 isRealLocation,
                 (routeResult, usedRealLocation, foundRealPlace, usedRealRoute) -> {
-					if (routeCacheRepository.isRejectedRoute(
-					        routeResult.getDestinationName(),
-					        routeResult.getLatitude(),
-					        routeResult.getLongitude()
-					)) {
-					    routeResult = createAlternativeUrbanWalkRoute(latitude, longitude);
-					    foundRealPlace = false;
-					    usedRealRoute = false;
-					}
+                    if (routeResult == null) {
+                        routeResult = createAlternativeUrbanWalkRoute(latitude, longitude);
+                        foundRealPlace = false;
+                        usedRealRoute = false;
+                    }
+
+                    boolean dislikedRoute = routeCacheRepository.isRejectedRoute(
+                            routeResult.getDestinationName(),
+                            routeResult.getLatitude(),
+                            routeResult.getLongitude()
+                    );
+
+                    boolean tooLongForBreak = !routeResult.isReachable();
+
+                    if (dislikedRoute || tooLongForBreak) {
+                        routeResult = createAlternativeUrbanWalkRoute(latitude, longitude);
+                        foundRealPlace = false;
+                        usedRealRoute = false;
+                    }
+
                     CachedRoute cachedRoute = createCachedRouteFromResult(
                             routeResult,
                             foundRealPlace,
@@ -196,7 +208,13 @@ public class RealMapsBreakService {
                     route.getDestinationLongitude()
             );
 
-            if (distanceToDestination <= MAX_REASONABLE_DESTINATION_DISTANCE_METERS) {
+            boolean rejected = routeCacheRepository.isRejectedRoute(
+                    route.getDestinationName(),
+                    route.getDestinationLatitude(),
+                    route.getDestinationLongitude()
+            );
+
+            if (!rejected && distanceToDestination <= MAX_REASONABLE_DESTINATION_DISTANCE_METERS) {
                 return route;
             }
         }
@@ -257,10 +275,43 @@ public class RealMapsBreakService {
                     + " und zurück.";
         }
 
-        return "Es wurde keine benannte Grünfläche innerhalb von 20 Minuten Gesamtweg gefunden. "
+        return "Es wurde keine passende Grünfläche innerhalb von 20 Minuten Gesamtweg gefunden. "
                 + "Flora Break empfiehlt deshalb einen kurzen Urban Walk "
                 + locationText
                 + ".";
+    }
+
+    private RouteResult createAlternativeUrbanWalkRoute(
+            double startLatitude,
+            double startLongitude
+    ) {
+        long seed = System.currentTimeMillis() / 1000L;
+        int direction = (int) (seed % 4);
+
+        double latitudeOffset;
+        double longitudeOffset;
+
+        if (direction == 0) {
+            latitudeOffset = 0.0060;
+            longitudeOffset = 0.0015;
+        } else if (direction == 1) {
+            latitudeOffset = -0.0060;
+            longitudeOffset = -0.0015;
+        } else if (direction == 2) {
+            latitudeOffset = 0.0015;
+            longitudeOffset = 0.0060;
+        } else {
+            latitudeOffset = -0.0015;
+            longitudeOffset = -0.0060;
+        }
+
+        return new RouteResult(
+                "Alternative ruhige Route",
+                startLatitude + latitudeOffset,
+                startLongitude + longitudeOffset,
+                7,
+                true
+        );
     }
 
     private String createRoundedLocationKey(double latitude, double longitude) {
@@ -269,18 +320,7 @@ public class RealMapsBreakService {
 
         return roundedLatitude + "_" + roundedLongitude;
     }
-	private RouteResult createAlternativeUrbanWalkRoute(
-	        double startLatitude,
-	        double startLongitude
-	) {
-	    return new RouteResult(
-	            "Alternative ruhige Route",
-	            startLatitude + 0.0040,
-	            startLongitude - 0.0030,
-	            7,
-	            true
-	    );
-	}
+
     private double calculateDistanceMeters(
             double startLatitude,
             double startLongitude,

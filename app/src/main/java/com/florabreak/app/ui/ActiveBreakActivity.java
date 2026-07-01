@@ -205,13 +205,7 @@ public class ActiveBreakActivity extends AppCompatActivity {
     }
 
     private int getElapsedDurationMinutes() {
-        int elapsedMinutes = Math.max(1, seconds / 60);
-
-        if (selectedWalkingTimeMinutes > 0) {
-            return Math.max(elapsedMinutes, selectedWalkingTimeMinutes);
-        }
-
-        return elapsedMinutes;
+        return Math.max(1, (int) Math.ceil(seconds / 60.0));
     }
 
     private void requestNotificationPermissionIfNeeded() {
