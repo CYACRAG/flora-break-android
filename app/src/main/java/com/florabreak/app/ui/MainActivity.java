@@ -25,7 +25,9 @@ import com.florabreak.app.data.FloraBreakController;
 import com.florabreak.app.data.FloraBreakControllerFactory;
 import com.florabreak.app.data.local.BreakEntity;
 import com.florabreak.app.data.repository.BreakSessionRepository;
+import com.florabreak.app.data.repository.DemoStressSettingsRepository;
 import com.florabreak.app.data.repository.ProfileRepository;
+import com.florabreak.app.model.DemoStressSettings;
 import com.florabreak.app.model.FloraBreakSessionResult;
 import com.florabreak.app.model.StressResult;
 import com.florabreak.app.model.UserProfile;
@@ -57,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView stressScoreText;
     private TextView stressLabelText;
+    private TextView homeHrvText;
+    private TextView homePulseText;
+    private TextView homeStressReasonText;
     private TextView recentBreakTitleText;
     private TextView recentBreaksText;
 
@@ -65,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private ProfileRepository profileRepository;
     private FloraBreakController floraBreakController;
     private BreakSessionRepository breakSessionRepository;
+    private DemoStressSettingsRepository demoStressSettingsRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
         floraBreakController = FloraBreakControllerFactory.create(this);
         breakSessionRepository = new BreakSessionRepository(this);
+        demoStressSettingsRepository = new DemoStressSettingsRepository(this);
 
         bindViews();
         setupNavigation();
@@ -123,6 +130,9 @@ public class MainActivity extends AppCompatActivity {
         stressGaugeView = findViewById(R.id.stressGaugeView);
         stressScoreText = findViewById(R.id.stressScoreText);
         stressLabelText = findViewById(R.id.stressLabelText);
+        homeHrvText = findViewById(R.id.homeHrvText);
+        homePulseText = findViewById(R.id.homePulseText);
+        homeStressReasonText = findViewById(R.id.homeStressReasonText);
 
         recentBreakTitleText = findViewById(R.id.recentBreakTitleText);
         recentBreaksText = findViewById(R.id.recentBreaksText);
@@ -190,8 +200,33 @@ public class MainActivity extends AppCompatActivity {
         stressGaugeView.setStressScore(stressScore);
         stressScoreText.setText(String.valueOf(stressScore));
         stressLabelText.setText(stressResult.getLabel());
+        updateHealthSummary(stressScore);
 
         maybeShowStressAlertNotification(stressResult);
+    }
+
+
+    private void updateHealthSummary(int stressScore) {
+        if (demoStressSettingsRepository == null) {
+            return;
+        }
+
+        DemoStressSettings settings = demoStressSettingsRepository.getSettings();
+
+        int currentHrv = (int) settings.getCurrentHrv();
+        int normalHrv = (int) settings.getNormalHrv();
+        int heartRate = settings.getHeartRate();
+
+        homeHrvText.setText("HRV " + currentHrv + " / normal " + normalHrv);
+        homePulseText.setText("Puls " + heartRate + " bpm");
+
+        if (stressScore >= 7) {
+            homeStressReasonText.setText("Deine aktuelle HRV liegt deutlich unter deinem Normalwert. Flora Break empfiehlt jetzt eine kurze aktive Pause.");
+        } else if (stressScore >= 4) {
+            homeStressReasonText.setText("Deine Werte zeigen eine mittlere Belastung. Eine kurze Pause kann helfen, den Stress zu senken.");
+        } else {
+            homeStressReasonText.setText("Deine Werte liegen aktuell im ruhigen Bereich. Du kannst trotzdem eine Erholungspause starten.");
+        }
     }
 
     private void updateRecentBreaks() {
