@@ -303,15 +303,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             routeOneTypeText.setText("Aktive Pause");
         }
 
-        routeTwoName = "Kurzer Urban Walk";
-        routeTwoWalkingTimeMinutes = 5;
-        routeTwoType = "URBAN_WALK";
-        routeTwoLatitude = routeOneLatitude;
-        routeTwoLongitude = routeOneLongitude;
-
-        routeTwoNameText.setText("Kurzer Urban Walk");
-        routeTwoInfoText.setText("Alternative aktive Pause in deiner Umgebung.");
-        routeTwoTypeText.setText("Alternative");
+        setAlternativeUrbanWalkRoute();
     }
 
     private void showControllerFallbackRoute() {
@@ -321,16 +313,25 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
         BreakRecommendation recommendation = sessionResult.getBreakRecommendation();
 
+        setAlternativeUrbanWalkRoute();
+    }
+
+
+    private void setAlternativeUrbanWalkRoute() {
         routeTwoName = "Kurzer Urban Walk";
-        routeTwoWalkingTimeMinutes = recommendation.getDurationMinutes() > 0
-                ? recommendation.getDurationMinutes()
-                : 5;
+        routeTwoWalkingTimeMinutes = 5;
         routeTwoType = "URBAN_WALK";
-        routeTwoLatitude = routeOneLatitude;
-        routeTwoLongitude = routeOneLongitude;
+
+        if (routeOneLatitude != 0.0 || routeOneLongitude != 0.0) {
+            routeTwoLatitude = routeOneLatitude + 0.0035;
+            routeTwoLongitude = routeOneLongitude - 0.0035;
+        } else {
+            routeTwoLatitude = 0.0;
+            routeTwoLongitude = 0.0;
+        }
 
         routeTwoNameText.setText("Kurzer Urban Walk");
-        routeTwoInfoText.setText("Alternative aktive Pause ohne feste Grünfläche.");
+        routeTwoInfoText.setText("Eigene alternative Urban-Walk-Route. Öffnet ein anderes Ziel als Route 1.");
         routeTwoTypeText.setText("Alternative");
     }
 
