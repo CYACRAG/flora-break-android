@@ -43,16 +43,21 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     private FloraBreakSessionResult sessionResult;
 
     private String routeOneName = "Route wird berechnet";
-    private String routeTwoName = "Urban Walk";
+    private String routeTwoName = "Kurzer Urban Walk";
+
     private int routeOneWalkingTimeMinutes = 0;
     private int routeTwoWalkingTimeMinutes = 5;
-    private String routeOneType = "ROUTE";
-    private String routeTwoType = "FALLBACK";
+
+    private String routeOneType = "MAPS_LOADING";
+    private String routeTwoType = "URBAN_WALK";
 
     private double routeOneLatitude = 0.0;
     private double routeOneLongitude = 0.0;
     private double routeTwoLatitude = 0.0;
     private double routeTwoLongitude = 0.0;
+
+    private int currentStressScore = 0;
+    private String currentStressLabel = "Unbekannt";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,8 +114,8 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             String selectedRouteName;
             int selectedWalkingTime;
             String selectedRouteType;
-            double selectedLatitude = 0.0;
-            double selectedLongitude = 0.0;
+            double selectedLatitude;
+            double selectedLongitude;
 
             if (selectedRouteIndex == 0) {
                 selectedRouteName = routeOneName;
@@ -122,11 +127,19 @@ public class BreakSuggestionActivity extends AppCompatActivity {
                 selectedRouteName = routeTwoName;
                 selectedWalkingTime = routeTwoWalkingTimeMinutes;
                 selectedRouteType = routeTwoType;
-                selectedLatitude = routeOneLatitude;
-                selectedLongitude = routeOneLongitude;
+                selectedLatitude = routeTwoLatitude;
+                selectedLongitude = routeTwoLongitude;
             }
 
-            Toast.makeText(this, selectedRouteName + " ausgewählt", Toast.LENGTH_SHORT).show();
+            if (selectedLatitude == 0.0 && selectedLongitude == 0.0) {
+                Toast.makeText(
+                        this,
+                        "Für diese Route ist noch kein Kartenziel verfügbar.",
+                        Toast.LENGTH_SHORT
+                ).show();
+            } else {
+                Toast.makeText(this, selectedRouteName + " ausgewählt", Toast.LENGTH_SHORT).show();
+            }
 
             Intent intent = new Intent(BreakSuggestionActivity.this, ActiveBreakActivity.class);
             intent.putExtra("selectedRouteName", selectedRouteName);
@@ -134,10 +147,10 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             intent.putExtra("selectedRouteType", selectedRouteType);
             intent.putExtra("selectedLatitude", selectedLatitude);
             intent.putExtra("selectedLongitude", selectedLongitude);
+            intent.putExtra("stressScore", currentStressScore);
+            intent.putExtra("stressLabel", currentStressLabel);
 
             if (sessionResult != null) {
-                intent.putExtra("stressScore", sessionResult.getStressResult().getScore());
-                intent.putExtra("stressLabel", sessionResult.getStressResult().getLabel());
                 intent.putExtra("recommendationTitle", sessionResult.getBreakRecommendation().getTitle());
                 intent.putExtra("recommendationType", sessionResult.getBreakRecommendation().getType());
             }
@@ -152,9 +165,12 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         StressResult stressResult = sessionResult.getStressResult();
         BreakRecommendation recommendation = sessionResult.getBreakRecommendation();
 
-        suggestionStressScoreText.setText(String.valueOf(stressResult.getScore()));
+        currentStressScore = stressResult.getScore();
+        currentStressLabel = stressResult.getLabel();
+
+        suggestionStressScoreText.setText(String.valueOf(currentStressScore));
         suggestionStressLabelText.setText(
-                stressResult.getLabel() + " · " + recommendation.getTitle()
+                currentStressLabel + " · " + recommendation.getTitle()
         );
     }
 
@@ -165,7 +181,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
         routeOneNameText.setText("Route wird berechnet...");
         routeOneInfoText.setText("Standort, Grünfläche und Gehzeit werden geprüft.");
-        routeOneTypeText.setText("🗺️ Google Maps");
+        routeOneTypeText.setText("Kartenziel");
 
         showControllerFallbackRoute();
 
@@ -194,72 +210,79 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             boolean usedRealRoute
     ) {
         if (routeResult == null) {
-            routeOneName = "Keine Route verfügbar";
-            routeOneLatitude = routeResult.getLatitude();
-            routeOneLongitude = routeResult.getLongitude();
-            routeOneWalkingTimeMinutes = 0;
-            routeOneType = "NO_ROUTE";
+            routeOneName = "Urban Walk";
+            routeOneLatitude = 0.0;
+            routeOneLongitude = 0.0;
+            routeOneWalkingTimeMinutes = 5;
+            routeOneType = "URBAN_WALK";
 
-            routeOneNameText.setText("Keine Route verfügbar");
-            routeOneInfoText.setText("Es konnte keine passende Route berechnet werden.");
-            routeOneTypeText.setText("Urban Walk");
+            routeOneNameText.setText("Urban Walk empfohlen");
+            routeOneInfoText.setText("Es konnte kein Kartenziel berechnet werden. Starte einen kurzen Rundgang in deiner Umgebung.");
+            routeOneTypeText.setText("Aktive Pause");
 
             showControllerFallbackRoute();
             return;
         }
 
         routeOneName = routeResult.getDestinationName();
+        routeOneLatitude = routeResult.getLatitude();
+        routeOneLongitude = routeResult.getLongitude();
         routeOneWalkingTimeMinutes = routeResult.getWalkingTimeMinutes();
 
-        if (usedRealRoute && routeResult.isReachable()) {
-            routeOneType = "REAL_URBAN_WALK";
+        boolean hasCoordinates = !(routeOneLatitude == 0.0 && routeOneLongitude == 0.0);
 
-            routeOneNameText.setText("Urban Walk empfohlen");
+        if (foundRealPlace && usedRealRoute && routeResult.isReachable()) {
+            routeOneType = "PARK_ROUTE";
+
+            routeOneNameText.setText("Parkroute empfohlen");
             routeOneInfoText.setText(
-                    routeResult.getWalkingTimeMinutes()
-                            + " Minuten bis "
+                    "Ca. "
+                            + routeResult.getWalkingTimeMinutes()
+                            + " Minuten einfacher Weg bis "
                             + routeResult.getDestinationName()
                             + "."
             );
-            routeOneTypeText.setText("Parkroute");
-        } else if (usedRealRoute) {
-            routeOneType = "REAL_ROUTE_TOO_FAR";
+            routeOneTypeText.setText("Grünfläche");
+        } else if (hasCoordinates && usedRealRoute && routeResult.isReachable()) {
+            routeOneType = "URBAN_WALK";
 
-            routeOneNameText.setText("Route gefunden, aber zu weit");
+            routeOneNameText.setText("Urban Walk empfohlen");
+            routeOneInfoText.setText(
+                    "Ca. "
+                            + routeResult.getWalkingTimeMinutes()
+                            + " Minuten einfacher Weg bis "
+                            + routeResult.getDestinationName()
+                            + "."
+            );
+            routeOneTypeText.setText("Aktive Route");
+        } else if (hasCoordinates && usedRealRoute) {
+            routeOneType = "LONG_ROUTE";
+
+            routeOneNameText.setText("Längere Route gefunden");
             routeOneInfoText.setText(
                     routeResult.getDestinationName()
                             + " ist ca. "
                             + routeResult.getWalkingTimeMinutes()
-                            + " Minuten entfernt. Ziel sind maximal 20 Minuten Gesamtweg."
+                            + " Minuten entfernt. Für eine kurze Pause empfiehlt Flora Break eher einen Urban Walk."
             );
-            routeOneTypeText.setText("⚠️ Echte Route zu lang");
-        } else if (routeResult.isReachable()) {
-            routeOneType = "FALLBACK_URBAN_WALK";
+            routeOneTypeText.setText("Zu lang");
+        } else {
+            routeOneType = "URBAN_WALK";
 
             routeOneNameText.setText("Urban Walk empfohlen");
-            routeOneInfoText.setText(
-                    routeResult.getWalkingTimeMinutes()
-                            + " Minuten bis "
-                            + routeResult.getDestinationName()
-                            + "."
-            );
-            routeOneTypeText.setText("Urban Walk");
-        } else {
-            routeOneType = "FALLBACK_ROUTE_TOO_FAR";
-
-            routeOneNameText.setText("Keine passende Route");
             routeOneInfoText.setText(recommendationText);
-            routeOneTypeText.setText("Urban Walk");
+            routeOneTypeText.setText("Aktive Pause");
         }
 
-        routeTwoName = routeResult.getDestinationName();
-        routeTwoLatitude = routeResult.getLatitude();
-        routeTwoLongitude = routeResult.getLongitude();
-        routeTwoWalkingTimeMinutes = routeResult.getWalkingTimeMinutes();
-        routeTwoType = usedRealRoute ? "REAL_ROUTE_INFO" : "FALLBACK_ROUTE_INFO";
+        routeTwoName = "Kurzer Urban Walk";
+        routeTwoWalkingTimeMinutes = 5;
+        routeTwoType = "URBAN_WALK";
+        routeTwoLatitude = routeOneLatitude;
+        routeTwoLongitude = routeOneLongitude;
 
-        routeTwoNameText.setText(routeResult.getDestinationName());
-        routeTwoTypeText.setText("Alternative Route");
+        routeTwoNameText.setText("Kurzer Urban Walk");
+        routeTwoInfoText.setText("Alternative aktive Pause in deiner Umgebung. Nutzt bei Bedarf dasselbe Kartenziel.");
+        routeTwoTypeText.setText("Alternative");
     }
 
     private void showControllerFallbackRoute() {
@@ -269,15 +292,17 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
         BreakRecommendation recommendation = sessionResult.getBreakRecommendation();
 
-        routeTwoName = recommendation.getTitle();
+        routeTwoName = "Kurzer Urban Walk";
         routeTwoWalkingTimeMinutes = recommendation.getDurationMinutes() > 0
                 ? recommendation.getDurationMinutes()
                 : 5;
-        routeTwoType = recommendation.getType();
+        routeTwoType = "URBAN_WALK";
+        routeTwoLatitude = routeOneLatitude;
+        routeTwoLongitude = routeOneLongitude;
 
-        routeTwoNameText.setText(recommendation.getTitle());
-        routeTwoInfoText.setText(recommendation.getDescription());
-        routeTwoTypeText.setText(recommendation.getType());
+        routeTwoNameText.setText("Kurzer Urban Walk");
+        routeTwoInfoText.setText("Alternative aktive Pause ohne feste Grünfläche.");
+        routeTwoTypeText.setText("Alternative");
     }
 
     private void updateSelectedRoute() {

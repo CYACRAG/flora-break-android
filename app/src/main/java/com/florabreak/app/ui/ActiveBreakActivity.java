@@ -12,7 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Button;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -148,6 +148,7 @@ public class ActiveBreakActivity extends AppCompatActivity {
 
     private void updateRouteUi() {
         selectedRouteNameText.setText("📍 " + selectedRouteName);
+	navigationMainText.setText("Stress beim Start: " + stressScore + "/10 · " + stressLabel);
 
         if (selectedWalkingTimeMinutes > 0) {
             remainingTimeText.setText(selectedWalkingTimeMinutes + " Min");
@@ -173,6 +174,8 @@ public class ActiveBreakActivity extends AppCompatActivity {
             navigationSubText.setText("Route: " + selectedRouteName);
             distanceText.setText("—");
         }
+	String currentSubText = navigationSubText.getText().toString();
+	navigationSubText.setText(currentSubText + "\nStress beim Start: " + stressScore + "/10 · " + stressLabel);
     }
 
     private void setupButtons() {
@@ -290,8 +293,9 @@ public class ActiveBreakActivity extends AppCompatActivity {
 
     private void openRouteInGoogleMaps() {
         if (selectedLatitude == 0.0 && selectedLongitude == 0.0) {
-            return;
-        }
+	    Toast.makeText(this, "Für diese Route ist kein Kartenziel gespeichert.", Toast.LENGTH_SHORT).show();
+	    return;
+	}
 
         Uri uri = Uri.parse(
                 "https://www.google.com/maps/dir/?api=1"
