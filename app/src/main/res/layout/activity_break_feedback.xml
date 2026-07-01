@@ -105,7 +105,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Deine Pause wurde gespeichert. Bewertung und Streckenbeweis fließen in deine Statistik ein."
+                android:text="Deine Bewertung wird gespeichert und fließt lokal in die Routenauswahl und Statistik ein."
                 android:textSize="12sp"
                 android:textColor="#637568"
                 android:gravity="center" />
@@ -174,7 +174,7 @@
 			android:id="@+id/feedbackDistanceText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="520 m"
+                        android:text="Route"
                         android:textSize="27sp"
                         android:textStyle="bold"
                         android:textColor="#2F6B45" />
@@ -182,7 +182,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Strecke"
+                        android:text="Pausenroute"
                         android:textSize="12sp"
                         android:textColor="#637568" />
 
@@ -199,7 +199,7 @@
 			android:id="@+id/feedbackStressChangeText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="-2.8"
+                        android:text="-3"
                         android:textSize="27sp"
                         android:textStyle="bold"
                         android:textColor="#2F6B45" />
@@ -242,7 +242,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Vorher: 7.6"
+                        android:text="Vorher: 8/10"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="#E8787E" />
@@ -261,7 +261,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Nachher: 4.8"
+                        android:text="Nachher: 4/10"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="#2F6B45"
@@ -286,7 +286,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Strecke bewerten"
+                android:text="Pausenroute bewerten"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 android:textColor="#06140C"
@@ -296,7 +296,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Wie hat dir die Naturpause gefallen?"
+                android:text="Wie hilfreich war diese Pausenroute?"
                 android:textSize="13sp"
                 android:textColor="#637568"
                 android:gravity="center"

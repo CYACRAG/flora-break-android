@@ -6,14 +6,14 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.florabreak.app.data.local.BreakEntity;
-import com.florabreak.app.data.repository.RouteCacheRepository;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.florabreak.app.R;
 import com.florabreak.app.data.local.BreakEntity;
 import com.florabreak.app.data.repository.BreakSessionRepository;
 import com.florabreak.app.data.repository.DemoStressSettingsRepository;
+import com.florabreak.app.data.repository.RouteCacheRepository;
 import com.florabreak.app.model.DemoStressSettings;
 
 public class BreakFeedbackActivity extends AppCompatActivity {
@@ -27,7 +27,7 @@ public class BreakFeedbackActivity extends AppCompatActivity {
     private TextView feedbackStressChangeText;
     private TextView stressBeforeText;
     private TextView stressAfterText;
-    private RouteCacheRepository routeCacheRepository;
+
     private TextView star1;
     private TextView star2;
     private TextView star3;
@@ -44,6 +44,7 @@ public class BreakFeedbackActivity extends AppCompatActivity {
 
     private BreakSessionRepository breakSessionRepository;
     private DemoStressSettingsRepository demoStressSettingsRepository;
+    private RouteCacheRepository routeCacheRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +52,8 @@ public class BreakFeedbackActivity extends AppCompatActivity {
         setContentView(R.layout.activity_break_feedback);
 
         breakSessionRepository = new BreakSessionRepository(this);
-	routeCacheRepository = new RouteCacheRepository(this);
         demoStressSettingsRepository = new DemoStressSettingsRepository(this);
+        routeCacheRepository = new RouteCacheRepository(this);
 
         readIntentData();
         bindViews();
@@ -91,11 +92,7 @@ public class BreakFeedbackActivity extends AppCompatActivity {
     }
 
     private void loadBreakSummary() {
-        BreakEntity breakEntity = null;
-
-        if (breakSessionId > 0) {
-            breakEntity = breakSessionRepository.getBreakById(breakSessionId);
-        }
+        BreakEntity breakEntity = getCurrentBreakEntity();
 
         if (breakEntity != null) {
             stressBefore = breakEntity.stressScore;
@@ -106,7 +103,7 @@ public class BreakFeedbackActivity extends AppCompatActivity {
         stressAfter = calculateStressAfterPause(stressBefore);
 
         feedbackDurationText.setText(String.valueOf(elapsedDurationMinutes));
-        feedbackDistanceText.setText("—");
+        feedbackDistanceText.setText("Route");
 
         int change = stressAfter - stressBefore;
 
@@ -118,18 +115,25 @@ public class BreakFeedbackActivity extends AppCompatActivity {
             feedbackStressChangeText.setText("0");
         }
 
-        stressBeforeText.setText("Vorher: " + stressBefore);
-        stressAfterText.setText("Nachher: " + stressAfter);
+        stressBeforeText.setText("Vorher: " + stressBefore + "/10");
+        stressAfterText.setText("Nachher: " + stressAfter + "/10");
+    }
+
+    private BreakEntity getCurrentBreakEntity() {
+        if (breakSessionId <= 0) {
+            return null;
+        }
+
+        return breakSessionRepository.getBreakById(breakSessionId);
     }
 
     private int calculateStressAfterPause(int before) {
         DemoStressSettings settings = demoStressSettingsRepository.getSettings();
 
         if (settings.isDemoModeEnabled()) {
-            return 4;
+            return Math.min(4, Math.max(0, before - 3));
         }
 
-        // Später im echten Betrieb: nach der Pause Health Connect erneut abfragen.
         if (before <= 0) {
             return 0;
         }
@@ -165,34 +169,64 @@ public class BreakFeedbackActivity extends AppCompatActivity {
 
         backHomeButton.setOnClickListener(view -> goBackHome());
     }
-	private void saveCompletedBreak() {
-	    if (breakSessionId <= 0) {
-	        Toast.makeText(
-	                this,
-	                "Keine aktive Pause gefunden. Feedback konnte nicht gespeichert werden.",
-	                Toast.LENGTH_LONG
-	        ).show();
-	        return;
-	    }
 
-	    BreakEntity breakEntity = breakSessionRepository.getBreakById(breakSessionId);
+    private void saveCompletedBreak() {
+        if (breakSessionId <= 0) {
+            Toast.makeText(
+                    this,
+                    "Keine aktive Pause gefunden. Feedback konnte nicht gespeichert werden.",
+                    Toast.LENGTH_LONG
+            ).show();
+            return;
+        }
 
-	    breakSessionRepository.finishBreak(
-	            breakSessionId,
-	            elapsedDurationMinutes,
-	            selectedRating,
-	            getFeedbackTextForRating(selectedRating)
-	    );
+        BreakEntity breakEntity = getCurrentBreakEntity();
 
-	    if (breakEntity != null && selectedRating > 0) {
-	        routeCacheRepository.handleRouteFeedback(
-	                breakEntity.routeName,
-	                breakEntity.routeLatitude,
-	                breakEntity.routeLongitude,
-	                selectedRating
-	        );
-	    }
-	}
+        breakSessionRepository.finishBreak(
+                breakSessionId,
+                elapsedDurationMinutes,
+                selectedRating,
+                getFeedbackTextForRating(selectedRating)
+        );
+
+        if (breakEntity != null && selectedRating > 0) {
+            routeCacheRepository.handleRouteFeedback(
+                    breakEntity.routeName,
+                    breakEntity.routeLatitude,
+                    breakEntity.routeLongitude,
+                    selectedRating
+            );
+        }
+
+        applyDemoStressAfterPause();
+    }
+
+    private void applyDemoStressAfterPause() {
+        DemoStressSettings settings = demoStressSettingsRepository.getSettings();
+
+        if (!settings.isDemoModeEnabled()) {
+            return;
+        }
+
+        double normalHrv = settings.getNormalHrv();
+
+        if (normalHrv <= 0) {
+            normalHrv = 60.0;
+        }
+
+        double relaxedCurrentHrv = normalHrv / 1.2;
+
+        DemoStressSettings relaxedSettings = new DemoStressSettings(
+                true,
+                relaxedCurrentHrv,
+                normalHrv,
+                78,
+                settings.getSystolicBloodPressure(),
+                settings.getDiastolicBloodPressure()
+        );
+
+        demoStressSettingsRepository.saveSettings(relaxedSettings);
+    }
 
     private String getFeedbackTextForRating(int rating) {
         switch (rating) {
