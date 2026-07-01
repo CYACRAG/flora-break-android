@@ -11,19 +11,19 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="128dp"
+            android:layout_height="142dp"
             android:orientation="vertical"
             android:background="#2F6B45"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
-            android:paddingTop="22dp"
+            android:paddingTop="26dp"
             android:paddingBottom="14dp">
 
             <TextView
                 android:id="@+id/navigationMainText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Flora Break läuft"
+                android:text="Aktive Flora Break"
                 android:textSize="27sp"
                 android:textStyle="bold"
                 android:textColor="#FFFFFF" />
@@ -32,7 +32,7 @@
                 android:id="@+id/navigationSubText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Atme durch und bewege dich bewusst."
+                android:text="Folge deiner Route und sammle einen kurzen Erholungsmoment."
                 android:textSize="15sp"
                 android:textColor="#DCEBDE"
                 android:layout_marginTop="4dp" />
@@ -63,20 +63,20 @@
                 android:elevation="5dp"
                 android:padding="22dp">
 
-                <TextView
-                    android:layout_width="82dp"
-                    android:layout_height="82dp"
-                    android:gravity="center"
-                    android:text="🌲"
-                    android:textSize="46sp"
+                <ImageView
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+                    android:padding="12dp"
+                    android:src="@drawable/flora_break_logo"
                     android:background="@drawable/bg_green_pill"
+                    android:contentDescription="Flora Break Logo"
                     android:layout_marginBottom="16dp" />
 
                 <TextView
                     android:id="@+id/selectedRouteNameText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="📍 Ruhige Route"
+                    android:text="📍 Ausgewählte Pausenroute"
                     android:textSize="19sp"
                     android:textStyle="bold"
                     android:textColor="#06140C"
@@ -86,7 +86,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Öffne Google Maps für die Navigation. Flora Break begleitet deine Pause im Hintergrund."
+                    android:text="Öffne Google Maps für die Wegführung. Flora Break speichert Dauer, Stresswert und deinen Streckenbeweis lokal."
                     android:textSize="14sp"
                     android:textColor="#637568"
                     android:gravity="center"
@@ -95,9 +95,9 @@
                 <TextView
                     android:id="@+id/proofCameraPlaceholder"
                     android:layout_width="wrap_content"
-                    android:layout_height="46dp"
+                    android:layout_height="52dp"
                     android:gravity="center"
-                    android:text="📷 Streckenbeweis aufnehmen"
+                    android:text="📷 Foto-Beweis aufnehmen"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="#06140C"
@@ -119,7 +119,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="78dp"
+                android:layout_height="86dp"
                 android:orientation="horizontal"
                 android:paddingBottom="4dp"
                 android:layout_marginBottom="8dp">
@@ -139,7 +139,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="00:00"
-                        android:textSize="28sp"
+                        android:textSize="32sp"
                         android:textStyle="bold"
                         android:textColor="#173522" />
 
@@ -166,7 +166,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="14 Min"
-                        android:textSize="24sp"
+                        android:textSize="28sp"
                         android:textStyle="bold"
                         android:textColor="#173522" />
 
@@ -181,7 +181,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="56dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:background="@drawable/bg_soft_card"
@@ -233,7 +233,7 @@
                 android:id="@+id/finishBreakButton"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:text="■  Pause beenden"
+                android:text="✓  Pause abschließen"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="#FFFFFF"

@@ -148,7 +148,7 @@ public class ActiveBreakActivity extends AppCompatActivity {
 
     private void updateRouteUi() {
         selectedRouteNameText.setText("📍 " + selectedRouteName);
-	navigationMainText.setText("Flora Break läuft");
+	navigationMainText.setText("Aktive Flora Break");
 
         if (selectedWalkingTimeMinutes > 0) {
             remainingTimeText.setText(selectedWalkingTimeMinutes + " Min");
@@ -170,7 +170,7 @@ public class ActiveBreakActivity extends AppCompatActivity {
             navigationSubText.setText("Gehe deine ausgewählte Route bis " + selectedRouteName);
             distanceText.setText("Aktive Pause");
         } else {
-            navigationMainText.setText("Flora Break läuft");
+            navigationMainText.setText("Aktive Flora Break");
             navigationSubText.setText("Route: " + selectedRouteName);
             distanceText.setText("—");
         }
