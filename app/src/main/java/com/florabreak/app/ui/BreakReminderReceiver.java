@@ -18,9 +18,9 @@ import com.florabreak.app.R;
 /**
  * Lokale Benachrichtigungen für aktive Flora-Break-Pausen.
  *
- * Unterstützte Reminder:
- * - Halbzeit: Foto-/Streckenbeweis aufnehmen
- * - Ende: Pause beenden und Feedback geben
+ * Hotlinks:
+ * - Halbzeit öffnet direkt RouteProofActivity
+ * - Ende öffnet direkt BreakFeedbackActivity
  */
 public class BreakReminderReceiver extends BroadcastReceiver {
 
@@ -46,30 +46,32 @@ public class BreakReminderReceiver extends BroadcastReceiver {
         }
 
         String reminderType = intent.getStringExtra(EXTRA_REMINDER_TYPE);
+        long breakSessionId = intent.getLongExtra("breakSessionId", -1L);
+        int plannedDurationMinutes = intent.getIntExtra("plannedDurationMinutes", 5);
 
         if (TYPE_PHOTO_PROOF.equals(reminderType)) {
-            showPhotoProofNotification(context);
+            showPhotoProofNotification(context, breakSessionId);
         } else {
-            showEndBreakNotification(context);
+            showEndBreakNotification(context, breakSessionId, plannedDurationMinutes);
         }
     }
 
-    private void showPhotoProofNotification(Context context) {
-        Intent openAppIntent = new Intent(context, ActiveBreakActivity.class);
-        openAppIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        openAppIntent.putExtra("openPhotoProof", true);
+    private void showPhotoProofNotification(Context context, long breakSessionId) {
+        Intent openProofIntent = new Intent(context, RouteProofActivity.class);
+        openProofIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        openProofIntent.putExtra("breakSessionId", breakSessionId);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context,
                 NOTIFICATION_ID_PHOTO_PROOF,
-                openAppIntent,
+                openProofIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle("Flora Break Halbzeit")
-                .setContentText("Halbzeit erreicht. Nimm jetzt ein Foto als Streckenbeweis auf.")
+                .setContentText("Halbzeit erreicht. Nimm jetzt dein Foto als Streckenbeweis auf.")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
@@ -77,15 +79,20 @@ public class BreakReminderReceiver extends BroadcastReceiver {
         showNotification(context, NOTIFICATION_ID_PHOTO_PROOF, builder);
     }
 
-    private void showEndBreakNotification(Context context) {
-        Intent openAppIntent = new Intent(context, ActiveBreakActivity.class);
-        openAppIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        openAppIntent.putExtra("openFeedback", true);
+    private void showEndBreakNotification(
+            Context context,
+            long breakSessionId,
+            int plannedDurationMinutes
+    ) {
+        Intent openFeedbackIntent = new Intent(context, BreakFeedbackActivity.class);
+        openFeedbackIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        openFeedbackIntent.putExtra("breakSessionId", breakSessionId);
+        openFeedbackIntent.putExtra("elapsedDurationMinutes", plannedDurationMinutes);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context,
                 NOTIFICATION_ID_END_BREAK,
-                openAppIntent,
+                openFeedbackIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 

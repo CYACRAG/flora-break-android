@@ -261,6 +261,13 @@ public class ActiveBreakActivity extends AppCompatActivity {
         intent.putExtra(BreakReminderReceiver.EXTRA_REMINDER_TYPE, reminderType);
         intent.putExtra("breakSessionId", breakSessionId);
 
+        int plannedDuration = selectedWalkingTimeMinutes;
+
+	if (plannedDuration <= 0) {
+	    plannedDuration = 5;
+	}
+
+	intent.putExtra("plannedDurationMinutes", plannedDuration);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 this,
                 requestCode,
