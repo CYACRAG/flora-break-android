@@ -14,11 +14,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.florabreak.app.R;
 import com.florabreak.app.data.FloraBreakController;
 import com.florabreak.app.data.FloraBreakControllerFactory;
+import com.florabreak.app.data.local.BreakEntity;
+import com.florabreak.app.data.repository.BreakSessionRepository;
 import com.florabreak.app.maps.RealMapsBreakService;
 import com.florabreak.app.model.BreakRecommendation;
 import com.florabreak.app.model.FloraBreakSessionResult;
 import com.florabreak.app.model.RouteResult;
 import com.florabreak.app.model.StressResult;
+
+import java.util.List;
+import java.util.Locale;
 
 public class BreakSuggestionActivity extends AppCompatActivity {
 
@@ -43,6 +48,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     private int selectedRouteIndex = 0;
 
     private FloraBreakController floraBreakController;
+private BreakSessionRepository breakSessionRepository;
     private FloraBreakSessionResult sessionResult;
 
     private String routeOneName = "Route wird berechnet";
@@ -68,6 +74,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_break_suggestion);
 
         floraBreakController = FloraBreakControllerFactory.create(this);
+        breakSessionRepository = new BreakSessionRepository(this);
 
         bindViews();
         setupRouteSelection();
@@ -278,8 +285,8 @@ public class BreakSuggestionActivity extends AppCompatActivity {
                     oneWayMinutes
                             + " Min hin · "
                             + totalMinutes
-                            + " Min gesamt bis "
-                            + routeResult.getDestinationName()
+                            + " Min gesamt · "
+                            + getRouteUsageText(routeOneName, routeOneLatitude, routeOneLongitude)
             );
             routeOneTypeText.setText("Grünfläche");
         } else if (hasCoordinates && usedRealRoute && routeResult.isReachable()) {
@@ -290,8 +297,8 @@ public class BreakSuggestionActivity extends AppCompatActivity {
                     oneWayMinutes
                             + " Min hin · "
                             + totalMinutes
-                            + " Min gesamt bis "
-                            + routeResult.getDestinationName()
+                            + " Min gesamt · "
+                            + getRouteUsageText(routeOneName, routeOneLatitude, routeOneLongitude)
             );
             routeOneTypeText.setText("Aktive Route");
         } else if (hasCoordinates && usedRealRoute) {
@@ -372,9 +379,116 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 	    }
 
 	    routeTwoNameText.setText("Neue Pausenroute");
-	    routeTwoInfoText.setText("10 Min gesamt · Noch nicht bewertet");
+	    routeTwoInfoText.setText(
+            routeTwoWalkingTimeMinutes
+                    + " Min gesamt · "
+                    + getRouteUsageText(routeTwoName, routeTwoLatitude, routeTwoLongitude)
+    );
 	    routeTwoTypeText.setText("Pausenroute");
 	}
+
+    private String getRouteUsageText(
+            String routeName,
+            double latitude,
+            double longitude
+    ) {
+        if (breakSessionRepository == null) {
+            return "Noch nicht bewertet";
+        }
+
+        List<BreakEntity> breaks = breakSessionRepository.getAllBreaks();
+
+        if (breaks == null || breaks.isEmpty()) {
+            return "Noch nicht bewertet";
+        }
+
+        int completedCount = 0;
+        int ratingCount = 0;
+        int ratingSum = 0;
+
+        for (BreakEntity item : breaks) {
+            if (item == null) {
+                continue;
+            }
+
+            if (!isSameRoute(item, routeName, latitude, longitude)) {
+                continue;
+            }
+
+            completedCount++;
+
+            if (item.rating > 0) {
+                ratingCount++;
+                ratingSum += item.rating;
+            }
+        }
+
+        if (completedCount == 0) {
+            return "Noch nicht bewertet";
+        }
+
+        if (ratingCount == 0) {
+            return "Schon " + completedCount + "× gelaufen · noch keine Bewertung";
+        }
+
+        double averageRating = ratingSum / (double) ratingCount;
+
+        return "Schon "
+                + completedCount
+                + "× gelaufen · Ø "
+                + String.format(Locale.GERMANY, "%.1f", averageRating)
+                + " ★";
+    }
+
+    private boolean isSameRoute(
+            BreakEntity item,
+            String routeName,
+            double latitude,
+            double longitude
+    ) {
+        boolean sameName = routeName != null
+                && item.routeName != null
+                && routeName.trim().equalsIgnoreCase(item.routeName.trim());
+
+        double distanceMeters = calculateDistanceMeters(
+                latitude,
+                longitude,
+                item.routeLatitude,
+                item.routeLongitude
+        );
+
+        return sameName || distanceMeters <= 150.0;
+    }
+
+    private double calculateDistanceMeters(
+            double startLatitude,
+            double startLongitude,
+            double endLatitude,
+            double endLongitude
+    ) {
+        if ((startLatitude == 0.0 && startLongitude == 0.0)
+                || (endLatitude == 0.0 && endLongitude == 0.0)) {
+            return Double.MAX_VALUE;
+        }
+
+        double earthRadiusMeters = 6371000.0;
+
+        double startLatRad = Math.toRadians(startLatitude);
+        double endLatRad = Math.toRadians(endLatitude);
+        double deltaLat = Math.toRadians(endLatitude - startLatitude);
+        double deltaLon = Math.toRadians(endLongitude - startLongitude);
+
+        double a = Math.sin(deltaLat / 2.0) * Math.sin(deltaLat / 2.0)
+                + Math.cos(startLatRad)
+                * Math.cos(endLatRad)
+                * Math.sin(deltaLon / 2.0)
+                * Math.sin(deltaLon / 2.0);
+
+        double c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0 - a));
+
+        return earthRadiusMeters * c;
+    }
+
     private void updateSelectedRoute() {
         if (selectedRouteIndex == 0) {
             routeOneCard.setBackgroundResource(R.drawable.bg_route_selected);
