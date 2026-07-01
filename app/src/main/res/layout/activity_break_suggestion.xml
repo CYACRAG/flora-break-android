@@ -255,7 +255,7 @@
                     android:id="@+id/routeTwoTypeText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Fallback-Route"
+                    android:text="Alternative Route"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="#B56A00"

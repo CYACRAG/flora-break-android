@@ -105,7 +105,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Platzhalter für späteren Pflanzen- oder Pausennachweis"
+                android:text="Deine Pause wurde gespeichert. Bewertung und Streckenbeweis fließen in deine Statistik ein."
                 android:textSize="12sp"
                 android:textColor="#637568"
                 android:gravity="center" />
