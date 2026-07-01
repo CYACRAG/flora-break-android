@@ -8,7 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+import com.florabreak.app.data.repository.ProfileRepository;
 import com.florabreak.app.R;
 import com.florabreak.app.data.FloraBreakController;
 import com.florabreak.app.data.FloraBreakControllerFactory;
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView recentBreaksText;
 
     private StressGaugeView stressGaugeView;
-
+    private ProfileRepository profileRepository;
     private FloraBreakController floraBreakController;
     private BreakSessionRepository breakSessionRepository;
 
@@ -40,6 +40,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+	profileRepository = new ProfileRepository(this);
+
+	if (!profileRepository.isProfileCompleted()) {
+	    Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+	    intent.putExtra("firstSetup", true);
+	    startActivity(intent);
+	    finish();
+	    return;
+	}
 
         floraBreakController = FloraBreakControllerFactory.create(this);
         breakSessionRepository = new BreakSessionRepository(this);

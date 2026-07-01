@@ -350,7 +350,7 @@
                 android:id="@+id/editProfileButton"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:text="Profil bearbeiten"
+                android:text="Profil speichern"
                 android:textAllCaps="false"
                 android:textSize="16sp"
                 android:textStyle="bold"

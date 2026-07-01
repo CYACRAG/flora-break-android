@@ -231,10 +231,21 @@ public class ProfileActivity extends AppCompatActivity {
 
         demoModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> saveDemoSettings());
 
-        editProfileButton.setOnClickListener(view -> {
-            saveDemoSettings();
-            Toast.makeText(this, "Profil- und Demo-Werte gespeichert", Toast.LENGTH_SHORT).show();
-        });
+	editProfileButton.setOnClickListener(view -> {
+	    saveDemoSettings();
+	    saveProfileCompleted();
+
+	    Toast.makeText(this, "Profil gespeichert", Toast.LENGTH_SHORT).show();
+
+	    boolean firstSetup = getIntent().getBooleanExtra("firstSetup", false);
+
+	    if (firstSetup) {
+	        Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+	        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	        startActivity(intent);
+	        finish();
+	    }
+	});
     }
 
     private void setupWorkLocationButtons() {
@@ -299,6 +310,29 @@ public class ProfileActivity extends AppCompatActivity {
 
         return fineLocationGranted || coarseLocationGranted;
     }
+
+	private void saveProfileCompleted() {
+	    UserProfile oldProfile = profileRepository.getProfile();
+
+	    UserProfile updatedProfile = new UserProfile(
+	            oldProfile.getName() == null || oldProfile.getName().trim().isEmpty()
+	                    ? "Flora Nutzer"
+	                    : oldProfile.getName(),
+	            oldProfile.getAge(),
+	            oldProfile.getHeightCm(),
+	            oldProfile.getWeightKg(),
+	            oldProfile.getWorkStartTime(),
+	            oldProfile.getWorkEndTime(),
+	            oldProfile.getSubjectiveStressLevel(),
+	            oldProfile.getWorkLocationName(),
+	            oldProfile.getWorkLatitude(),
+	            oldProfile.getWorkLongitude(),
+	            oldProfile.isWorkLocationSaved(),
+	            true
+	    );
+
+	    profileRepository.saveProfile(updatedProfile);
+	}
 
     private void saveDemoSettings() {
         DemoStressSettings newSettings = new DemoStressSettings(
