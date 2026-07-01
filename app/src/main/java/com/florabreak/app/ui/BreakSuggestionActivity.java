@@ -302,7 +302,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
                     oneWayMinutes
                             + " Min hin · "
                             + totalMinutes
-                            + " Min gesamt. Flora Break empfiehlt stattdessen eine kurze Alternative."
+                            + " Min gesamt. Flora Break schlägt eine kürzere Pausenroute vor."
             );
             routeOneTypeText.setText("Zu lang");
         } else {
