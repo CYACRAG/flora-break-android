@@ -158,7 +158,7 @@ public class BreakFeedbackActivity extends AppCompatActivity {
             String message;
 
             if (selectedRating > 0) {
-                message = "Pause gespeichert: " + selectedRating + " Sterne";
+                message = "Pause gespeichert und Route bewertet: " + selectedRating + " Sterne";
             } else {
                 message = "Pause gespeichert";
             }
@@ -231,15 +231,15 @@ public class BreakFeedbackActivity extends AppCompatActivity {
     private String getFeedbackTextForRating(int rating) {
         switch (rating) {
             case 1:
-                return "Eher nicht erholsam";
+                return "Nicht erholsam";
             case 2:
-                return "War okay";
+                return "Okay, aber ausbaufähig";
             case 3:
-                return "Ganz gut";
+                return "Solide Pausenroute";
             case 4:
-                return "Hat gut getan";
+                return "Gute Erholung";
             case 5:
-                return "Richtig erholsam";
+                return "Sehr erholsam";
             default:
                 return "Keine Bewertung abgegeben";
         }
@@ -272,19 +272,19 @@ public class BreakFeedbackActivity extends AppCompatActivity {
     private void updateRatingHint(int rating) {
         switch (rating) {
             case 1:
-                ratingHintText.setText("Eher nicht erholsam");
+                ratingHintText.setText("Nicht erholsam · Route wird künftig seltener empfohlen");
                 break;
             case 2:
-                ratingHintText.setText("War okay");
+                ratingHintText.setText("Okay · Flora Break merkt sich dein Feedback");
                 break;
             case 3:
-                ratingHintText.setText("Ganz gut");
+                ratingHintText.setText("Solide Pausenroute · Bewertung wird lokal gespeichert");
                 break;
             case 4:
-                ratingHintText.setText("Hat gut getan");
+                ratingHintText.setText("Gute Erholung · Route bleibt empfohlen");
                 break;
             case 5:
-                ratingHintText.setText("Richtig erholsam");
+                ratingHintText.setText("Sehr erholsam · Route wird als positiv bewertet");
                 break;
             default:
                 ratingHintText.setText("Tippe auf die Sterne");

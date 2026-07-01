@@ -59,19 +59,19 @@
             android:padding="16dp"
             android:layout_marginBottom="12dp">
 
-            <TextView
-                android:layout_width="62dp"
-                android:layout_height="62dp"
-                android:gravity="center"
-                android:text="🌿"
-                android:textSize="34sp"
+            <ImageView
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:padding="9dp"
+                android:src="@drawable/flora_break_logo"
                 android:background="@drawable/bg_green_pill"
+                android:contentDescription="Flora Break Logo"
                 android:layout_marginBottom="10dp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Schön, dass du da warst!"
+                android:text="Pause erfolgreich abgeschlossen"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="#06140C"
@@ -81,7 +81,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Deine Pause wurde erfolgreich beendet."
+                android:text="Flora Break hat deine Pause lokal gespeichert."
                 android:textSize="13sp"
                 android:textColor="#637568"
                 android:gravity="center"
@@ -91,15 +91,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="92dp"
                 android:gravity="center"
-                android:text="🍃"
-                android:textSize="46sp"
+                android:text="Stress reduziert · Route gelernt"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#2F6B45"
                 android:background="#EAF3EC"
                 android:layout_marginBottom="10dp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Naturmoment gesammelt"
+                android:text="Erholungsmoment gesammelt"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="#06140C"
@@ -109,7 +111,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Deine Bewertung wird gespeichert und fließt lokal in die Routenauswahl und Statistik ein."
+                android:text="Dauer, Stresswert, Foto-Beweis und Bewertung fließen lokal in Verlauf, Statistik und Routenauswahl ein."
                 android:textSize="12sp"
                 android:textColor="#637568"
                 android:gravity="center" />
@@ -129,7 +131,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Deine Pause"
+                android:text="Zusammenfassung deiner Pause"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="#06140C"
@@ -224,12 +226,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="#F4F7F3"
-                android:padding="12dp">
+                android:padding="14dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Stress-Level"
+                    android:text="Stress vor und nach der Pause"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="#06140C"
@@ -290,7 +292,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Pausenroute bewerten"
+                android:text="Wie gut war diese Pausenroute?"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 android:textColor="#06140C"
@@ -300,7 +302,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Wie hilfreich war diese Pausenroute?"
+                android:text="Deine Bewertung hilft Flora Break, passende Routen künftig besser auszuwählen."
                 android:textSize="13sp"
                 android:textColor="#637568"
                 android:gravity="center"
@@ -318,7 +320,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="☆"
-                    android:textSize="32sp"
+                    android:textSize="40sp"
                     android:textColor="#C7D1C9"
                     android:padding="4dp" />
 
@@ -327,7 +329,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="☆"
-                    android:textSize="32sp"
+                    android:textSize="40sp"
                     android:textColor="#C7D1C9"
                     android:padding="4dp" />
 
@@ -336,7 +338,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="☆"
-                    android:textSize="32sp"
+                    android:textSize="40sp"
                     android:textColor="#C7D1C9"
                     android:padding="4dp" />
 
@@ -345,7 +347,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="☆"
-                    android:textSize="32sp"
+                    android:textSize="40sp"
                     android:textColor="#C7D1C9"
                     android:padding="4dp" />
 
@@ -354,7 +356,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="☆"
-                    android:textSize="32sp"
+                    android:textSize="40sp"
                     android:textColor="#C7D1C9"
                     android:padding="4dp" />
             </LinearLayout>
@@ -366,7 +368,10 @@
                 android:text="Tippe auf die Sterne"
                 android:textSize="13sp"
                 android:textColor="#637568"
-                android:gravity="center" />
+                android:gravity="center"
+                android:background="#F4F7F3"
+                android:padding="10dp"
+                android:layout_marginTop="6dp" />
 
         </LinearLayout>
 
@@ -375,8 +380,8 @@
         <Button
             android:id="@+id/saveBreakButton"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="🌿  Pause speichern"
+            android:layout_height="56dp"
+            android:text="✓  Pause speichern und auswerten"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
@@ -387,8 +392,8 @@
             android:id="@+id/backHomeButton"
             android:layout_marginBottom="28dp"
             android:layout_width="match_parent"
-            android:layout_height="46dp"
-            android:text="Zurück zur Übersicht"
+            android:layout_height="50dp"
+            android:text="Zurück zum Dashboard"
             android:textSize="15sp"
             android:textStyle="bold"
             android:textColor="#2F6B45"
