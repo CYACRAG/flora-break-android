@@ -28,6 +28,7 @@ public class RealMapsBreakService {
 
     private static final double MAX_DISTANCE_TO_WORK_METERS = 700.0;
     private static final double MAX_REASONABLE_DESTINATION_DISTANCE_METERS = 3000.0;
+    private static final int MAX_TOTAL_WALKING_TIME_MINUTES = 20;
 
     private final RealMapsRouteProvider realMapsRouteProvider;
     private final RouteCacheRepository routeCacheRepository;
@@ -161,7 +162,7 @@ public class RealMapsBreakService {
                             routeResult.getLongitude()
                     );
 
-                    boolean tooLongForBreak = !routeResult.isReachable();
+                    boolean tooLongForBreak = isTooLongForBreak(routeResult);
 
                     if (dislikedRoute || tooLongForBreak) {
                         routeResult = createAlternativeUrbanWalkRoute(latitude, longitude);
@@ -214,7 +215,11 @@ public class RealMapsBreakService {
                     route.getDestinationLongitude()
             );
 
-            if (!rejected && distanceToDestination <= MAX_REASONABLE_DESTINATION_DISTANCE_METERS) {
+            boolean tooLong = route.getTotalWalkingTimeMinutes() > MAX_TOTAL_WALKING_TIME_MINUTES;
+
+            if (!rejected
+                    && !tooLong
+                    && distanceToDestination <= MAX_REASONABLE_DESTINATION_DISTANCE_METERS) {
                 return route;
             }
         }
@@ -229,7 +234,7 @@ public class RealMapsBreakService {
     ) {
         int oneWayMinutes = routeResult.getWalkingTimeMinutes();
         int totalMinutes = oneWayMinutes * 2;
-        boolean reachable = routeResult.isReachable();
+        boolean reachable = routeResult.isReachable() && totalMinutes <= MAX_TOTAL_WALKING_TIME_MINUTES;
 
         boolean parkRoute = foundRealPlace && reachable;
 
@@ -312,6 +317,18 @@ public class RealMapsBreakService {
                 7,
                 true
         );
+    }
+
+
+    private boolean isTooLongForBreak(RouteResult routeResult) {
+        if (routeResult == null) {
+            return true;
+        }
+
+        int oneWayMinutes = Math.max(1, routeResult.getWalkingTimeMinutes());
+        int totalMinutes = oneWayMinutes * 2;
+
+        return !routeResult.isReachable() || totalMinutes > MAX_TOTAL_WALKING_TIME_MINUTES;
     }
 
     private String createRoundedLocationKey(double latitude, double longitude) {

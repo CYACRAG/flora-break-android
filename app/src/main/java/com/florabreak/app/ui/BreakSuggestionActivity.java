@@ -46,9 +46,10 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     private LinearLayout routeTwoCard;
 
     private int selectedRouteIndex = 0;
+    private int generatedRouteCounter = 0;
 
     private FloraBreakController floraBreakController;
-private BreakSessionRepository breakSessionRepository;
+    private BreakSessionRepository breakSessionRepository;
     private FloraBreakSessionResult sessionResult;
 
     private String routeOneName = "Route wird berechnet";
@@ -355,60 +356,51 @@ private BreakSessionRepository breakSessionRepository;
 	    routeTwoTypeText.setText("Pausenroute");
 	}
 	private void generateAnotherPauseRoute() {
-	    routeTwoName = "Neue Pausenroute";
-	    routeTwoWalkingTimeMinutes = 10;
-	    routeTwoType = "PAUSE_ROUTE";
+        routeTwoName = "Neue Pausenroute";
+        routeTwoWalkingTimeMinutes = 10;
+        routeTwoType = "PAUSE_ROUTE";
 
-	    double baseLatitude = routeOneLatitude;
-	    double baseLongitude = routeOneLongitude;
+        double baseLatitude = routeOneLatitude;
+        double baseLongitude = routeOneLongitude;
 
-	    if (baseLatitude == 0.0 && baseLongitude == 0.0) {
-	        routeTwoLatitude = 0.0;
-	        routeTwoLongitude = 0.0;
+        if (baseLatitude == 0.0 && baseLongitude == 0.0) {
+            routeTwoLatitude = 0.0;
+            routeTwoLongitude = 0.0;
 
-	        routeTwoNameText.setText("Neue Pausenroute");
-	        routeTwoInfoText.setText("Standort wird benötigt, um eine neue Route zu erzeugen.");
-	        routeTwoTypeText.setText("Pausenroute");
-	        return;
-	    }
+            routeTwoNameText.setText("Neue Pausenroute");
+            routeTwoInfoText.setText("Standort wird benötigt, um eine neue Route zu erzeugen.");
+            routeTwoTypeText.setText("Pausenroute");
+            return;
+        }
 
-	    long seed = System.currentTimeMillis() / 1000L;
-	    int direction = (int) (seed % 6);
+        generatedRouteCounter++;
 
-	    double latitudeOffset;
-	    double longitudeOffset;
+        double[][] offsets = {
+                {0.0030, 0.0012},
+                {-0.0030, -0.0012},
+                {0.0012, 0.0030},
+                {-0.0012, -0.0030},
+                {0.0026, -0.0026},
+                {-0.0026, 0.0026},
+                {0.0040, 0.0008},
+                {-0.0040, -0.0008},
+                {0.0008, 0.0040},
+                {-0.0008, -0.0040}
+        };
 
-	    if (direction == 0) {
-	        latitudeOffset = 0.0050;
-	        longitudeOffset = 0.0015;
-	    } else if (direction == 1) {
-	        latitudeOffset = -0.0050;
-	        longitudeOffset = -0.0015;
-	    } else if (direction == 2) {
-	        latitudeOffset = 0.0015;
-	        longitudeOffset = 0.0050;
-	    } else if (direction == 3) {
-	        latitudeOffset = -0.0015;
-	        longitudeOffset = -0.0050;
-	    } else if (direction == 4) {
-	        latitudeOffset = 0.0040;
-	        longitudeOffset = -0.0040;
-	    } else {
-	        latitudeOffset = -0.0040;
-	        longitudeOffset = 0.0040;
-	    }
+        int direction = generatedRouteCounter % offsets.length;
 
-	    routeTwoLatitude = baseLatitude + latitudeOffset;
-	    routeTwoLongitude = baseLongitude + longitudeOffset;
+        routeTwoLatitude = baseLatitude + offsets[direction][0];
+        routeTwoLongitude = baseLongitude + offsets[direction][1];
 
-	    routeTwoNameText.setText("Neue Pausenroute");
-	    routeTwoInfoText.setText(
-	            routeTwoWalkingTimeMinutes
-	                    + " Min gesamt · "
-	                    + getRouteUsageText(routeTwoName, routeTwoLatitude, routeTwoLongitude)
-	    );
-	    routeTwoTypeText.setText("Pausenroute");
-	}
+        routeTwoNameText.setText("Neue Pausenroute " + generatedRouteCounter);
+        routeTwoInfoText.setText(
+                routeTwoWalkingTimeMinutes
+                        + " Min gesamt · "
+                        + getRouteUsageText(routeTwoName, routeTwoLatitude, routeTwoLongitude)
+        );
+        routeTwoTypeText.setText("Pausenroute");
+    }
 
     private String getRouteUsageText(
             String routeName,
