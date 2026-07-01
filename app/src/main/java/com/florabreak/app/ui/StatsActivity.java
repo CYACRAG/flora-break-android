@@ -48,7 +48,7 @@ public class StatsActivity extends AppCompatActivity {
 
     private void bindViews() {
         backFromStatsButton = findViewById(R.id.backFromStatsButton);
-	stressHistoryChartView = findViewById(R.id.stressHistoryChartView);
+        stressHistoryChartView = findViewById(R.id.stressHistoryChartView);
         breakCountText = findViewById(R.id.breakCountText);
         totalMinutesText = findViewById(R.id.totalMinutesText);
         averageStressText = findViewById(R.id.averageStressText);
@@ -67,13 +67,13 @@ public class StatsActivity extends AppCompatActivity {
         double averageRating = breakSessionRepository.getAverageRatingLastSevenDays();
         int photoProofCount = breakSessionRepository.getPhotoProofCountLastSevenDays();
 
-        breakCountText.setText(breakCount + " Pausen");
+        breakCountText.setText(breakCount + " Flora Breaks");
         totalMinutesText.setText(totalMinutes + " Minuten");
         averageStressText.setText(String.format(java.util.Locale.GERMANY, "%.1f/10", averageStress));
         averageRatingText.setText(String.format(java.util.Locale.GERMANY, "%.1f/5", averageRating));
         photoProofCountText.setText(photoProofCount + " Foto-Beweise");
-	List<BreakEntity> breaks = breakSessionRepository.getBreaksLastMonth();
-	stressHistoryChartView.setBreaks(breaks);
+        List<BreakEntity> breaks = breakSessionRepository.getBreaksLastMonth();
+        stressHistoryChartView.setBreaks(breaks);
     }
 
     private void setupNavigation() {

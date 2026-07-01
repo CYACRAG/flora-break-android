@@ -33,10 +33,10 @@
                     android:layout_height="42dp"
                     android:gravity="center"
                     android:text="‹"
-                android:includeFontPadding="false"
-                android:padding="0dp"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
+                    android:includeFontPadding="false"
+                    android:padding="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
                     android:textSize="30sp"
                     android:textStyle="bold"
                     android:textColor="#173522"
@@ -45,7 +45,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Statistik"
+                    android:text="Flora Statistik"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:textColor="#06140C"
@@ -64,7 +64,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Letzte 7 Tage"
+                    android:text="Deine letzten 7 Tage"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#06140C"
@@ -73,7 +73,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Gespeicherte Pausen"
+                    android:text="Gespeicherte Flora Breaks"
                     android:textSize="14sp"
                     android:textColor="#637568" />
 
@@ -90,7 +90,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Aktive Pausenzeit"
+                    android:text="Aktive Erholungszeit"
                     android:textSize="14sp"
                     android:textColor="#637568" />
 
@@ -107,7 +107,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Ø Stress beim Start"
+                    android:text="Ø Startstress"
                     android:textSize="14sp"
                     android:textColor="#637568" />
 
@@ -156,7 +156,7 @@
 		<TextView
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:text="Stressverlauf bis 1 Monat"
+		    android:text="Stressverlauf der letzten 30 Tage"
 		    android:textSize="14sp"
 		    android:textColor="#637568"
 		    android:layout_marginTop="18dp"
@@ -181,7 +181,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="HR-Dashboard vorbereitet"
+                    android:text="Lokales Gesundheits-Dashboard"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#06140C"
@@ -190,7 +190,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Die Statistik basiert auf lokal gespeicherten Pausen. Foto-Beweise, Stresswerte, Dauer und Bewertung liegen strukturiert in der Datenbank vor."
+                    android:text="Alle Werte basieren auf lokal gespeicherten Pausen. Dauer, Startstress, Bewertung und Foto-Beweise werden strukturiert in der Room-Datenbank gespeichert."
                     android:textSize="14sp"
                     android:textColor="#637568" />
             </LinearLayout>
@@ -245,7 +245,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="↺"
+                android:text="◷"
                 android:textSize="20sp"
                 android:textColor="#8A8D96" />
 
@@ -268,7 +268,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="☻"
+                android:text="👤"
                 android:textSize="20sp"
                 android:textColor="#8A8D96" />
 

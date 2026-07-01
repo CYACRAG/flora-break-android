@@ -84,7 +84,7 @@ public class HistoryActivity extends AppCompatActivity {
             return;
         }
 
-        historyHeaderText.setText(breaks.size() + " gespeicherte Pausen");
+        historyHeaderText.setText(breaks.size() + " gespeicherte Flora Breaks");
         historyEmptyCard.setVisibility(View.GONE);
 
         for (BreakEntity breakEntity : breaks) {
@@ -108,7 +108,7 @@ public class HistoryActivity extends AppCompatActivity {
         card.setLayoutParams(cardParams);
 
         TextView icon = new TextView(this);
-        icon.setText("🌿");
+        icon.setText("✓");
         icon.setTextSize(26);
         icon.setGravity(android.view.Gravity.CENTER);
         icon.setBackgroundResource(R.drawable.bg_green_pill);
@@ -145,17 +145,21 @@ public class HistoryActivity extends AppCompatActivity {
         details.setTextColor(android.graphics.Color.parseColor("#637568"));
 
         TextView rating = new TextView(this);
-        rating.setText(createStarRating(breakEntity.rating));
+        if (breakEntity.rating > 0) {
+            rating.setText(createStarRating(breakEntity.rating));
+        } else {
+            rating.setText("Noch keine Bewertung");
+        }
         rating.setTextSize(15);
         rating.setTextColor(android.graphics.Color.parseColor("#D79B1E"));
 
         TextView stress = new TextView(this);
         String photoText = breakEntity.photoProofTaken
-                ? " · Foto vorhanden"
+                ? " · Foto-Beweis"
                 : " · kein Foto";
 
         stress.setText(
-                "Stress: "
+                "Startstress: "
                         + breakEntity.stressScore
                         + "/10 · "
                         + safeText(breakEntity.stressLabel, "Unbekannt")
