@@ -208,7 +208,7 @@ public class HistoryActivity extends AppCompatActivity {
         }
 
         if (routeType.contains("URBAN")) {
-            return "Urban Walk";
+            return "Pausenroute";
         }
 
         return "Aktive Pause";

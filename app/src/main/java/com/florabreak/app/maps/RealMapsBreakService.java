@@ -56,7 +56,7 @@ public class RealMapsBreakService {
 
                 callback.onBreakDecisionReady(
                         "Standort benötigt",
-                        "Flora Break braucht deinen aktuellen Standort, um eine Grünfläche oder einen Urban Walk in deiner Nähe vorzuschlagen.",
+                        "Flora Break braucht deinen aktuellen Standort, um eine Grünfläche oder Pausenroute in deiner Nähe vorzuschlagen.",
                         routeResult,
                         false,
                         false,
@@ -241,7 +241,7 @@ public class RealMapsBreakService {
             title = "Parkroute empfohlen";
         } else {
             type = "URBAN_WALK";
-            title = "Urban Walk empfohlen";
+            title = "Pausenroute empfohlen";
         }
 
         return new CachedRoute(
@@ -276,7 +276,7 @@ public class RealMapsBreakService {
         }
 
         return "Es wurde keine passende Grünfläche innerhalb von 20 Minuten Gesamtweg gefunden. "
-                + "Flora Break empfiehlt deshalb einen kurzen Urban Walk "
+                + "Flora Break empfiehlt deshalb eine kurze Pausenroute "
                 + locationText
                 + ".";
     }
@@ -306,7 +306,7 @@ public class RealMapsBreakService {
         }
 
         return new RouteResult(
-                "Alternative ruhige Route",
+                "Weitere Pausenroute",
                 startLatitude + latitudeOffset,
                 startLongitude + longitudeOffset,
                 7,

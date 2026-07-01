@@ -120,7 +120,7 @@ public class NearbyGreenSpaceService {
         double targetLongitude = userLongitude + 0.0030;
 
         callback.onGreenSpaceFound(
-                "Urban Walk in deiner Nähe",
+                "Pausenroute in deiner Nähe",
                 targetLatitude,
                 targetLongitude,
                 false

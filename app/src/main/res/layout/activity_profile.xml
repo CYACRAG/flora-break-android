@@ -98,7 +98,7 @@
                     android:orientation="vertical"
                     android:layout_marginStart="16dp">
 
-                    <!-- Platzhalter-Name: später aus Nutzerprofil / Datenbank -->
+                    <!-- Name wird aus dem lokalen Nutzerprofil geladen -->
                     <TextView
                         android:id="@+id/profileNameText"
                         android:layout_width="wrap_content"
@@ -120,7 +120,7 @@
 
             <!--
                 Gesundheitsdaten-Karte.
-                Platzhalter für spätere Health Connect / Smartwatch API.
+                Health Connect und Demo-Modus liefern HRV- und Pulswerte.
             -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -252,7 +252,7 @@
 
             <!--
                 Arbeitsprofil-Karte.
-                Platzhalter für spätere Nutzerangaben.
+                Lokale Nutzerangaben für die Pausenempfehlung.
             -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -425,7 +425,7 @@
             </LinearLayout>
 
             <!--
-                Button bleibt erstmal Platzhalter.
+                Button speichert den aktuellen Standort als Arbeitsort.
                 Später kann hier ein echter Profil-Bearbeiten-Screen geöffnet werden.
             -->
             <Button
@@ -508,7 +508,7 @@
                 android:textColor="#8A8D96" />
         </LinearLayout>
 
-        <!-- Statistik bleibt Platzhalter -->
+        <!-- Statistik -->
         <LinearLayout
             android:id="@+id/navStatsFromProfile"
             android:layout_width="0dp"

@@ -130,7 +130,7 @@ public class FloraBreakController {
         if (routeResult != null && routeResult.isReachable()) {
             return new BreakRecommendation(
                     "URBAN_WALK",
-                    "Urban Walk empfohlen",
+                    "Pausenroute empfohlen",
                     "Ein Grünbereich ist in "
                             + routeResult.getWalkingTimeMinutes()
                             + " Minuten erreichbar: "

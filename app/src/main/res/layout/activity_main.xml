@@ -98,7 +98,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|center_horizontal"
                     android:layout_marginTop="84dp"
-                    android:text="7.6"
+                    android:text="8"
                     android:textSize="44sp"
                     android:textStyle="bold"
                     android:textColor="#F06F74" />
@@ -215,7 +215,7 @@
                     android:id="@+id/recentBreaksText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="12 Min · 520 m · Stress -2.8"
+                    android:text="Noch keine Pause gespeichert"
                     android:textSize="14sp"
                     android:textColor="#7A7D85"
                     android:layout_marginTop="2dp" />

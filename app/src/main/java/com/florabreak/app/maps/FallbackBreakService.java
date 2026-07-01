@@ -15,6 +15,6 @@ public class FallbackBreakService {
             return "Parkroute empfohlen";
         }
 
-        return "Urban Walk empfohlen";
+        return "Pausenroute empfohlen";
     }
 }
