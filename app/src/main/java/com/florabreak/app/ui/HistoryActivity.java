@@ -12,26 +12,22 @@ import com.florabreak.app.R;
 import com.florabreak.app.data.local.BreakEntity;
 import com.florabreak.app.data.repository.BreakSessionRepository;
 
-/**
- * Verlauf-Screen für gespeicherte Pausen.
- *
- * Nutzt jetzt die lokale Room-Datenbank.
- */
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 public class HistoryActivity extends AppCompatActivity {
 
     private TextView backFromHistoryButton;
+    private TextView historyHeaderText;
 
     private LinearLayout navHomeFromHistory;
     private LinearLayout navStatsFromHistory;
     private LinearLayout navProfileFromHistory;
 
-    private LinearLayout historyBreakCard;
+    private LinearLayout historyListContainer;
     private LinearLayout historyEmptyCard;
-
-    private TextView historyBreakTitleText;
-    private TextView historyBreakDetailsText;
-    private TextView historyBreakRatingText;
-    private TextView historyBreakStressText;
 
     private BreakSessionRepository breakSessionRepository;
 
@@ -49,18 +45,14 @@ public class HistoryActivity extends AppCompatActivity {
 
     private void bindViews() {
         backFromHistoryButton = findViewById(R.id.backFromHistoryButton);
+        historyHeaderText = findViewById(R.id.historyHeaderText);
 
         navHomeFromHistory = findViewById(R.id.navHomeFromHistory);
         navStatsFromHistory = findViewById(R.id.navStatsFromHistory);
         navProfileFromHistory = findViewById(R.id.navProfileFromHistory);
 
-        historyBreakCard = findViewById(R.id.historyBreakCard);
+        historyListContainer = findViewById(R.id.historyListContainer);
         historyEmptyCard = findViewById(R.id.historyEmptyCard);
-
-        historyBreakTitleText = findViewById(R.id.historyBreakTitleText);
-        historyBreakDetailsText = findViewById(R.id.historyBreakDetailsText);
-        historyBreakRatingText = findViewById(R.id.historyBreakRatingText);
-        historyBreakStressText = findViewById(R.id.historyBreakStressText);
     }
 
     private void setupNavigation() {
@@ -84,40 +76,118 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     private void updateHistory() {
-        BreakEntity latestBreak = breakSessionRepository.getLatestBreak();
+        List<BreakEntity> breaks = breakSessionRepository.getAllBreaks();
 
-        if (latestBreak == null) {
-            historyBreakCard.setVisibility(View.GONE);
+        if (breaks == null || breaks.isEmpty()) {
+            historyHeaderText.setText("Gespeicherte Pausen");
             historyEmptyCard.setVisibility(View.VISIBLE);
             return;
         }
 
-        historyBreakCard.setVisibility(View.VISIBLE);
+        historyHeaderText.setText(breaks.size() + " gespeicherte Pausen");
         historyEmptyCard.setVisibility(View.GONE);
 
-        historyBreakTitleText.setText("Abgeschlossene Pause");
+        for (BreakEntity breakEntity : breaks) {
+            historyListContainer.addView(createBreakCard(breakEntity));
+        }
+    }
 
-        String details =
-                latestBreak.durationMinutes
+    private View createBreakCard(BreakEntity breakEntity) {
+        LinearLayout card = new LinearLayout(this);
+        card.setOrientation(LinearLayout.HORIZONTAL);
+        card.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        card.setBackgroundResource(R.drawable.bg_soft_card);
+        card.setElevation(dp(3));
+        card.setPadding(dp(16), dp(16), dp(16), dp(16));
+
+        LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        cardParams.setMargins(0, 0, 0, dp(14));
+        card.setLayoutParams(cardParams);
+
+        TextView icon = new TextView(this);
+        icon.setText("🌿");
+        icon.setTextSize(26);
+        icon.setGravity(android.view.Gravity.CENTER);
+        icon.setBackgroundResource(R.drawable.bg_green_pill);
+
+        LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(dp(54), dp(54));
+        icon.setLayoutParams(iconParams);
+
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+
+        LinearLayout.LayoutParams contentParams = new LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1
+        );
+        contentParams.setMargins(dp(14), 0, 0, 0);
+        content.setLayoutParams(contentParams);
+
+        TextView title = new TextView(this);
+        title.setText(formatDate(breakEntity.startedAt));
+        title.setTextSize(17);
+        title.setTextColor(android.graphics.Color.parseColor("#06140C"));
+        title.setTypeface(null, android.graphics.Typeface.BOLD);
+
+        TextView details = new TextView(this);
+        details.setText(
+                breakEntity.durationMinutes
                         + " Min · "
-                        + safeText(latestBreak.routeName, "Route")
+                        + safeText(breakEntity.routeName, "Route")
                         + " · "
-                        + formatRouteType(latestBreak.routeType);
+                        + formatRouteType(breakEntity.routeType)
+        );
+        details.setTextSize(14);
+        details.setTextColor(android.graphics.Color.parseColor("#637568"));
 
-        historyBreakDetailsText.setText(details);
-        historyBreakRatingText.setText(createStarRating(latestBreak.rating));
+        TextView rating = new TextView(this);
+        rating.setText(createStarRating(breakEntity.rating));
+        rating.setTextSize(15);
+        rating.setTextColor(android.graphics.Color.parseColor("#D79B1E"));
 
-        String photoText = latestBreak.photoProofTaken
-                ? " · Foto-Beweis vorhanden"
-                : " · Kein Foto-Beweis";
+        TextView stress = new TextView(this);
+        String photoText = breakEntity.photoProofTaken
+                ? " · Foto vorhanden"
+                : " · kein Foto";
 
-        historyBreakStressText.setText(
+        stress.setText(
                 "Stress: "
-                        + latestBreak.stressScore
+                        + breakEntity.stressScore
                         + "/10 · "
-                        + safeText(latestBreak.stressLabel, "Unbekannt")
+                        + safeText(breakEntity.stressLabel, "Unbekannt")
                         + photoText
         );
+        stress.setTextSize(14);
+        stress.setTextColor(android.graphics.Color.parseColor("#2F6B45"));
+
+        content.addView(title);
+        content.addView(details);
+        content.addView(rating);
+        content.addView(stress);
+
+        card.addView(icon);
+        card.addView(content);
+
+        return card;
+    }
+
+    private String formatDate(long timestamp) {
+        if (timestamp <= 0) {
+            return "Gespeicherte Pause";
+        }
+
+        SimpleDateFormat formatter =
+                new SimpleDateFormat("dd.MM.yyyy · HH:mm", Locale.GERMANY);
+
+        return formatter.format(new Date(timestamp));
+    }
+
+    private int dp(int value) {
+        return (int) (value * getResources().getDisplayMetrics().density);
     }
 
     private String safeText(String value, String fallback) {

@@ -135,5 +135,12 @@ public class BreakSessionRepository {
 
     private long getSevenDaysAgoTimestamp() {
         return System.currentTimeMillis() - 7L * 24L * 60L * 60L * 1000L;
-    }
+	    }
+	public List<BreakEntity> getBreaksLastMonth() {
+	    return breakDao.getBreaksSince(getOneMonthAgoTimestamp());
+	}
+
+	private long getOneMonthAgoTimestamp() {
+	    return System.currentTimeMillis() - 30L * 24L * 60L * 60L * 1000L;
+	}
 }

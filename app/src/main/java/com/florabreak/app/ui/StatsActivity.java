@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.florabreak.app.data.local.BreakEntity;
 
+import java.util.List;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.florabreak.app.R;
@@ -25,7 +27,7 @@ public class StatsActivity extends AppCompatActivity {
     private TextView averageStressText;
     private TextView averageRatingText;
     private TextView photoProofCountText;
-
+    private StressHistoryChartView stressHistoryChartView;
     private LinearLayout navHomeFromStats;
     private LinearLayout navHistoryFromStats;
     private LinearLayout navProfileFromStats;
@@ -46,7 +48,7 @@ public class StatsActivity extends AppCompatActivity {
 
     private void bindViews() {
         backFromStatsButton = findViewById(R.id.backFromStatsButton);
-
+	stressHistoryChartView = findViewById(R.id.stressHistoryChartView);
         breakCountText = findViewById(R.id.breakCountText);
         totalMinutesText = findViewById(R.id.totalMinutesText);
         averageStressText = findViewById(R.id.averageStressText);
@@ -70,6 +72,8 @@ public class StatsActivity extends AppCompatActivity {
         averageStressText.setText(String.format(java.util.Locale.GERMANY, "%.1f/10", averageStress));
         averageRatingText.setText(String.format(java.util.Locale.GERMANY, "%.1f/5", averageRating));
         photoProofCountText.setText(photoProofCount + " Foto-Beweise");
+	List<BreakEntity> breaks = breakSessionRepository.getBreaksLastMonth();
+	stressHistoryChartView.setBreaks(breaks);
     }
 
     private void setupNavigation() {
