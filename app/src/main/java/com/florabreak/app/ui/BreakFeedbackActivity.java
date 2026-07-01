@@ -6,7 +6,8 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.florabreak.app.data.local.BreakEntity;
+import com.florabreak.app.data.repository.RouteCacheRepository;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.florabreak.app.R;
@@ -26,7 +27,7 @@ public class BreakFeedbackActivity extends AppCompatActivity {
     private TextView feedbackStressChangeText;
     private TextView stressBeforeText;
     private TextView stressAfterText;
-
+    private RouteCacheRepository routeCacheRepository;
     private TextView star1;
     private TextView star2;
     private TextView star3;
@@ -50,6 +51,7 @@ public class BreakFeedbackActivity extends AppCompatActivity {
         setContentView(R.layout.activity_break_feedback);
 
         breakSessionRepository = new BreakSessionRepository(this);
+	routeCacheRepository = new RouteCacheRepository(this);
         demoStressSettingsRepository = new DemoStressSettingsRepository(this);
 
         readIntentData();
@@ -163,24 +165,34 @@ public class BreakFeedbackActivity extends AppCompatActivity {
 
         backHomeButton.setOnClickListener(view -> goBackHome());
     }
+	private void saveCompletedBreak() {
+	    if (breakSessionId <= 0) {
+	        Toast.makeText(
+	                this,
+	                "Keine aktive Pause gefunden. Feedback konnte nicht gespeichert werden.",
+	                Toast.LENGTH_LONG
+	        ).show();
+	        return;
+	    }
 
-    private void saveCompletedBreak() {
-        if (breakSessionId <= 0) {
-            Toast.makeText(
-                    this,
-                    "Keine aktive Pause gefunden. Feedback konnte nicht gespeichert werden.",
-                    Toast.LENGTH_LONG
-            ).show();
-            return;
-        }
+	    BreakEntity breakEntity = breakSessionRepository.getBreakById(breakSessionId);
 
-        breakSessionRepository.finishBreak(
-                breakSessionId,
-                elapsedDurationMinutes,
-                selectedRating,
-                getFeedbackTextForRating(selectedRating)
-        );
-    }
+	    breakSessionRepository.finishBreak(
+	            breakSessionId,
+	            elapsedDurationMinutes,
+	            selectedRating,
+	            getFeedbackTextForRating(selectedRating)
+	    );
+
+	    if (breakEntity != null && selectedRating > 0) {
+	        routeCacheRepository.handleRouteFeedback(
+	                breakEntity.routeName,
+	                breakEntity.routeLatitude,
+	                breakEntity.routeLongitude,
+	                selectedRating
+	        );
+	    }
+	}
 
     private String getFeedbackTextForRating(int rating) {
         switch (rating) {

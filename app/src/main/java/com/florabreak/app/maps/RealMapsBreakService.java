@@ -148,6 +148,15 @@ public class RealMapsBreakService {
                 longitude,
                 isRealLocation,
                 (routeResult, usedRealLocation, foundRealPlace, usedRealRoute) -> {
+					if (routeCacheRepository.isRejectedRoute(
+					        routeResult.getDestinationName(),
+					        routeResult.getLatitude(),
+					        routeResult.getLongitude()
+					)) {
+					    routeResult = createAlternativeUrbanWalkRoute(latitude, longitude);
+					    foundRealPlace = false;
+					    usedRealRoute = false;
+					}
                     CachedRoute cachedRoute = createCachedRouteFromResult(
                             routeResult,
                             foundRealPlace,
@@ -260,7 +269,18 @@ public class RealMapsBreakService {
 
         return roundedLatitude + "_" + roundedLongitude;
     }
-
+	private RouteResult createAlternativeUrbanWalkRoute(
+	        double startLatitude,
+	        double startLongitude
+	) {
+	    return new RouteResult(
+	            "Alternative ruhige Route",
+	            startLatitude + 0.0040,
+	            startLongitude - 0.0030,
+	            7,
+	            true
+	    );
+	}
     private double calculateDistanceMeters(
             double startLatitude,
             double startLongitude,
@@ -285,3 +305,4 @@ public class RealMapsBreakService {
         return earthRadiusMeters * c;
     }
 }
+
