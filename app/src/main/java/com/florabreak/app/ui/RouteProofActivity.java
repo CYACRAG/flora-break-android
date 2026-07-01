@@ -185,10 +185,10 @@ public class RouteProofActivity extends AppCompatActivity {
         Bitmap previewBitmap = BitmapFactory.decodeFile(currentPhotoPath);
         proofImagePreview.setImageBitmap(previewBitmap);
 
-        proofStatusText.setText("Foto-Beweis gespeichert");
-        proofPathText.setText("Lokal gespeichert und mit Pause #" + breakSessionId + " verknüpft.");
+        proofStatusText.setText("Foto-Beweis erfolgreich gespeichert");
+        proofPathText.setText("Lokal gespeichert und mit dieser Flora Break verknüpft.");
 
-        Toast.makeText(this, "Streckenbeweis gespeichert", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Foto-Beweis gespeichert", Toast.LENGTH_SHORT).show();
     }
 
     private boolean compressPhoto(String photoPath) {
@@ -250,7 +250,7 @@ public class RouteProofActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(
                         this,
-                        "Kamera-Berechtigung fehlt. Streckenbeweis nicht möglich.",
+                        "Kamera-Berechtigung fehlt. Foto-Beweis nicht möglich.",
                         Toast.LENGTH_SHORT
                 ).show();
             }

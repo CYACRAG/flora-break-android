@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#06140C">
+    android:background="@drawable/bg_feedback_forest">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,15 +12,34 @@
         android:paddingStart="22dp"
         android:paddingEnd="22dp"
         android:paddingBottom="150dp"
-        android:background="#143B22">
+        android:background="#F4F7F3">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center"
-            android:background="#102D1B"
+            android:background="@drawable/bg_soft_card"
             android:padding="22dp">
+
+            <ImageView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:padding="10dp"
+                android:src="@drawable/flora_break_logo"
+                android:background="@drawable/bg_green_pill"
+                android:contentDescription="Flora Break Logo"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Flora Break Foto-Beweis"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#06140C"
+                android:gravity="center"
+                android:layout_marginBottom="10dp" />
 
             <ImageView
                 android:id="@+id/proofImagePreview"
@@ -28,7 +47,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:scaleType="centerCrop"
-                android:background="#0B2013"
+                android:background="#EAF3EC"
                 android:contentDescription="Streckenbeweis Foto"
                 android:layout_marginBottom="18dp" />
 
@@ -36,10 +55,10 @@
                 android:id="@+id/proofStatusText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Noch kein Foto aufgenommen"
+                android:text="Noch kein Foto-Beweis gespeichert"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="#FFFFFF"
+                android:textColor="#06140C"
                 android:gravity="center"
                 android:layout_marginBottom="8dp" />
 
@@ -47,9 +66,9 @@
                 android:id="@+id/proofPathText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Das Foto wird komprimiert und lokal mit der Pause gespeichert."
+                android:text="Das Foto wird komprimiert und nur lokal mit deiner Pause verknüpft."
                 android:textSize="14sp"
-                android:textColor="#DDEBDE"
+                android:textColor="#637568"
                 android:gravity="center" />
 
         </LinearLayout>
@@ -64,7 +83,7 @@
         android:paddingStart="18dp"
         android:paddingEnd="18dp"
         android:paddingTop="18dp"
-        android:background="#AA06140C">
+        android:background="#CC06140C">
 
         <TextView
             android:id="@+id/backFromProofButton"
@@ -72,10 +91,10 @@
             android:layout_height="42dp"
             android:gravity="center"
             android:text="‹"
-                android:includeFontPadding="false"
-                android:padding="0dp"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
+            android:includeFontPadding="false"
+            android:padding="0dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
             android:textSize="32sp"
             android:textStyle="bold"
             android:textColor="#173522"
@@ -85,7 +104,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Streckenbeweis"
+            android:text="Foto-Beweis"
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
@@ -107,7 +126,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Fotografiere kurz einen Naturmoment auf deiner Route."
+            android:text="Fotografiere kurz einen Naturmoment. Der Beweis bleibt lokal auf deinem Gerät."
             android:textSize="14sp"
             android:textColor="#DDEBDE"
             android:gravity="center"
@@ -117,7 +136,7 @@
             android:id="@+id/captureProofButton"
             android:layout_width="match_parent"
             android:layout_height="54dp"
-            android:text="📷  Foto aufnehmen"
+            android:text="📷  Foto-Beweis aufnehmen"
             android:textSize="17sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
