@@ -5,20 +5,17 @@ import com.florabreak.app.model.StressData;
 /**
  * Berechnet den Stress-Score aus Gesundheitsdaten.
  *
- * Aktuelle Prototyp-Logik:
+ * Fachliche Logik:
+ * - HRV sinkt im Vergleich zur persönlichen Baseline -> Stress steigt
+ * - Puls steigt -> Zusatzstress steigt
+ *
+ * Score-Aufteilung:
  * - HRV-Score: 0 bis 6
  * - Herzfrequenz-Score: 0 bis 4
  * - Gesamt-Score: 0 bis 10
- *
- * Wichtig:
- * Die UI darf diese Berechnung nicht selbst machen.
- * MainActivity und BreakSuggestionActivity zeigen später nur noch das Ergebnis an.
  */
 public class StressScoreCalculator {
 
-    /**
-     * Gesamt-Score für bestehende Controller-/Engine-Aufrufe.
-     */
     public int calculateScore(StressData data) {
         return calculateTotalScore(data);
     }
@@ -26,15 +23,17 @@ public class StressScoreCalculator {
     /**
      * HRV-Stressscore von 0 bis 6.
      *
+     * Wichtig:
+     * Höhere HRV spricht eher für Erholung.
+     * Niedrigere HRV im Vergleich zur normalen HRV spricht eher für Belastung.
+     *
      * Formel:
-     * aktuelle HRV / normale HRV
+     * normale HRV / aktuelle HRV
      *
-     * Verhältnis 1.0  -> Score 0
-     * Verhältnis 1.3+ -> Score 6
-     *
-     * Hinweis:
-     * Für den Prototyp bleibt diese Logik bewusst einfach.
-     * Später sollte normalHrv aus persönlicher Baseline / Profil / Health-Connect-Historie kommen.
+     * Verhältnis 1.00 -> Score 0
+     * Verhältnis 1.10 -> ca. Score 2
+     * Verhältnis 1.20 -> ca. Score 4
+     * Verhältnis 1.30+ -> Score 6
      */
     public int calculateHrvScore(StressData data) {
         if (data == null) {
@@ -44,11 +43,11 @@ public class StressScoreCalculator {
         double normalHrv = data.getNormalHrv();
         double currentHrv = data.getCurrentHrv();
 
-        if (normalHrv <= 0) {
+        if (normalHrv <= 0 || currentHrv <= 0) {
             return 0;
         }
 
-        double ratio = currentHrv / normalHrv;
+        double ratio = normalHrv / currentHrv;
 
         if (ratio <= 1.0) {
             return 0;
@@ -72,9 +71,6 @@ public class StressScoreCalculator {
      * <= 100 bpm -> 2
      * <= 110 bpm -> 3
      * > 110 bpm  -> 4
-     *
-     * Hinweis:
-     * Später sollte dieser Wert relativ zu Ruhepuls, Alter und persönlicher Baseline bewertet werden.
      */
     public int calculateHeartRateScore(StressData data) {
         if (data == null) {
@@ -100,9 +96,6 @@ public class StressScoreCalculator {
         }
     }
 
-    /**
-     * Finaler Stress-Score von 0 bis 10.
-     */
     public int calculateTotalScore(StressData data) {
         int hrvScore = calculateHrvScore(data);
         int heartRateScore = calculateHeartRateScore(data);

@@ -40,14 +40,14 @@ public class DemoStressSettingsRepository {
     }
 
     public DemoStressSettings getSettings() {
-        return new DemoStressSettings(
-                preferences.getBoolean(KEY_DEMO_ENABLED, true),
-                preferences.getFloat(KEY_CURRENT_HRV, 65.0f),
-                preferences.getFloat(KEY_NORMAL_HRV, 50.0f),
-                preferences.getInt(KEY_HEART_RATE, 95),
-                preferences.getInt(KEY_SYSTOLIC, 135),
-                preferences.getInt(KEY_DIASTOLIC, 85)
-        );
+	return new DemoStressSettings(
+	        preferences.getBoolean(KEY_DEMO_ENABLED, true),
+	        preferences.getFloat(KEY_CURRENT_HRV, 45.0f),
+	        preferences.getFloat(KEY_NORMAL_HRV, 60.0f),
+	        preferences.getInt(KEY_HEART_RATE, 100),
+	        preferences.getInt(KEY_SYSTOLIC, 135),
+	        preferences.getInt(KEY_DIASTOLIC, 85)
+	);
     }
 
     public boolean isDemoModeEnabled() {
