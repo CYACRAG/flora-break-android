@@ -333,57 +333,80 @@ private BreakSessionRepository breakSessionRepository;
         setSecondPauseRoute();
     }
 
-
-    private void setSecondPauseRoute() {
-        routeTwoName = "Weitere Pausenroute";
-        routeTwoWalkingTimeMinutes = 5;
-        routeTwoType = "Weitere Pausenroute";
-
-        if (routeOneLatitude != 0.0 || routeOneLongitude != 0.0) {
-            routeTwoLatitude = routeOneLatitude + 0.0035;
-            routeTwoLongitude = routeOneLongitude - 0.0035;
-        } else {
-            routeTwoLatitude = 0.0;
-            routeTwoLongitude = 0.0;
-        }
-
-        routeTwoNameText.setText("Weitere Route");
-        routeTwoInfoText.setText("Eigene alternative Route. Öffnet ein anderes Ziel als Route 1.");
-        routeTwoTypeText.setText("Pausenroute");
-    }
-	private void generateAnotherPauseRoute() {
-	    routeTwoName = "Neue Pausenroute";
+	private void setSecondPauseRoute() {
+	    routeTwoName = "Weitere Pausenroute";
 	    routeTwoWalkingTimeMinutes = 10;
 	    routeTwoType = "PAUSE_ROUTE";
 
 	    if (routeOneLatitude != 0.0 || routeOneLongitude != 0.0) {
-	        long seed = System.currentTimeMillis() / 1000L;
-	        int direction = (int) (seed % 4);
-
-	        if (direction == 0) {
-	            routeTwoLatitude = routeOneLatitude + 0.0045;
-	            routeTwoLongitude = routeOneLongitude + 0.0015;
-	        } else if (direction == 1) {
-	            routeTwoLatitude = routeOneLatitude - 0.0045;
-	            routeTwoLongitude = routeOneLongitude - 0.0015;
-	        } else if (direction == 2) {
-	            routeTwoLatitude = routeOneLatitude + 0.0015;
-	            routeTwoLongitude = routeOneLongitude - 0.0045;
-	        } else {
-	            routeTwoLatitude = routeOneLatitude - 0.0015;
-	            routeTwoLongitude = routeOneLongitude + 0.0045;
-	        }
+	        routeTwoLatitude = routeOneLatitude + 0.0035;
+	        routeTwoLongitude = routeOneLongitude - 0.0035;
 	    } else {
 	        routeTwoLatitude = 0.0;
 	        routeTwoLongitude = 0.0;
 	    }
 
+	    routeTwoNameText.setText("Weitere Pausenroute");
+	    routeTwoInfoText.setText(
+	            routeTwoWalkingTimeMinutes
+	                    + " Min gesamt · "
+	                    + getRouteUsageText(routeTwoName, routeTwoLatitude, routeTwoLongitude)
+	    );
+	    routeTwoTypeText.setText("Pausenroute");
+	}
+	private void generateAnotherPauseRoute() {
+	    routeTwoName = "Neue Pausenroute";
+	    routeTwoWalkingTimeMinutes = 10;
+	    routeTwoType = "PAUSE_ROUTE";
+
+	    double baseLatitude = routeOneLatitude;
+	    double baseLongitude = routeOneLongitude;
+
+	    if (baseLatitude == 0.0 && baseLongitude == 0.0) {
+	        routeTwoLatitude = 0.0;
+	        routeTwoLongitude = 0.0;
+
+	        routeTwoNameText.setText("Neue Pausenroute");
+	        routeTwoInfoText.setText("Standort wird benötigt, um eine neue Route zu erzeugen.");
+	        routeTwoTypeText.setText("Pausenroute");
+	        return;
+	    }
+
+	    long seed = System.currentTimeMillis() / 1000L;
+	    int direction = (int) (seed % 6);
+
+	    double latitudeOffset;
+	    double longitudeOffset;
+
+	    if (direction == 0) {
+	        latitudeOffset = 0.0050;
+	        longitudeOffset = 0.0015;
+	    } else if (direction == 1) {
+	        latitudeOffset = -0.0050;
+	        longitudeOffset = -0.0015;
+	    } else if (direction == 2) {
+	        latitudeOffset = 0.0015;
+	        longitudeOffset = 0.0050;
+	    } else if (direction == 3) {
+	        latitudeOffset = -0.0015;
+	        longitudeOffset = -0.0050;
+	    } else if (direction == 4) {
+	        latitudeOffset = 0.0040;
+	        longitudeOffset = -0.0040;
+	    } else {
+	        latitudeOffset = -0.0040;
+	        longitudeOffset = 0.0040;
+	    }
+
+	    routeTwoLatitude = baseLatitude + latitudeOffset;
+	    routeTwoLongitude = baseLongitude + longitudeOffset;
+
 	    routeTwoNameText.setText("Neue Pausenroute");
 	    routeTwoInfoText.setText(
-            routeTwoWalkingTimeMinutes
-                    + " Min gesamt · "
-                    + getRouteUsageText(routeTwoName, routeTwoLatitude, routeTwoLongitude)
-    );
+	            routeTwoWalkingTimeMinutes
+	                    + " Min gesamt · "
+	                    + getRouteUsageText(routeTwoName, routeTwoLatitude, routeTwoLongitude)
+	    );
 	    routeTwoTypeText.setText("Pausenroute");
 	}
 
