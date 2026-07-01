@@ -54,10 +54,10 @@
                     android:layout_height="42dp"
                     android:gravity="center"
                     android:text="‹"
-                android:includeFontPadding="false"
-                android:padding="0dp"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
+                    android:includeFontPadding="false"
+                    android:padding="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
                     android:textSize="30sp"
                     android:textStyle="bold"
                     android:textColor="#173522"
@@ -87,13 +87,13 @@
                 android:padding="18dp"
                 android:layout_marginBottom="16dp">
 
-                <TextView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:gravity="center"
-                    android:text="🌿"
-                    android:textSize="30sp"
-                    android:background="@drawable/bg_green_pill" />
+                <ImageView
+                    android:layout_width="68dp"
+                    android:layout_height="68dp"
+                    android:padding="8dp"
+                    android:src="@drawable/flora_break_logo"
+                    android:background="@drawable/bg_green_pill"
+                    android:contentDescription="Flora Break Logo" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -115,12 +115,25 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Flora Break Nutzerprofil"
+                        android:text="Persönliche Basis für Stress- und Pausenempfehlungen"
                         android:textSize="14sp"
                         android:textColor="#637568"
                         android:layout_marginTop="3dp" />
                 </LinearLayout>
             </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Dein Profil hilft Flora Break, Arbeitszeiten, Belastung und Demo-Gesundheitsdaten richtig einzuordnen."
+                android:textSize="14sp"
+                android:textColor="#637568"
+                android:gravity="center"
+                android:lineSpacingExtra="2dp"
+                android:background="@drawable/bg_soft_card"
+                android:padding="14dp"
+                android:elevation="2dp"
+                android:layout_marginBottom="16dp" />
 
             <!--
                 Gesundheitsdaten-Karte.
@@ -138,7 +151,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Gesundheitsdaten"
+                    android:text="Gesundheitsdaten &amp; Stressbasis"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#06140C"
@@ -148,7 +161,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="⌚ Smartwatch / Health Connect"
+                    android:text="⌚ Datenquelle"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="#06140C" />
@@ -167,7 +180,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Stress-Basiswert"
+                    android:text="Wie Flora Break Stress einschätzt"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="#06140C" />
@@ -184,7 +197,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Demo-Stresswerte"
+                    android:text="Demo-Modus für die Präsentation"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="#06140C"
@@ -194,7 +207,7 @@
                     android:id="@+id/demoModeSwitch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Demo-Modus aktivieren"
+                    android:text="Demo-Werte statt echter Smartwatch-Daten nutzen"
                     android:textSize="14sp"
                     android:textColor="#06140C"
                     android:layout_marginTop="8dp" />
@@ -248,9 +261,12 @@
                     android:id="@+id/demoStressPreviewText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Demo-Vorschau wird nach dem Speichern aktualisiert."
+                    android:text="Vorschau: Die Demo-Werte zeigen, wie HRV und Puls den Stresswert beeinflussen."
                     android:textSize="14sp"
                     android:textColor="#637568"
+                    android:background="#F4F7F3"
+                    android:padding="12dp"
+                    android:lineSpacingExtra="2dp"
                     android:layout_marginTop="12dp" />
             </LinearLayout>
 
@@ -270,7 +286,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Arbeitsprofil"
+                    android:text="Persönliches Arbeitsprofil"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#06140C"
@@ -352,7 +368,7 @@
 		    android:id="@+id/subjectiveStressInput"
 		    android:layout_width="match_parent"
 		    android:layout_height="48dp"
-		    android:hint="Job-Stress-Level 1–10"
+		    android:hint="Subjektive Belastung 1–10"
 		    android:inputType="number"
 		    android:textSize="14sp"
 		    android:textColor="#06140C"
@@ -409,7 +425,7 @@
 		    android:id="@+id/saveWorkLocationButton"
 		    android:layout_width="match_parent"
 		    android:layout_height="48dp"
-		    android:text="Aktuellen Standort als Arbeitsort speichern"
+		    android:text="📍 Aktuellen Standort als Arbeitsort speichern"
 		    android:textAllCaps="false"
 		    android:textSize="14sp"
 		    android:textStyle="bold"
@@ -436,7 +452,7 @@
                 android:id="@+id/editProfileButton"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:text="Profil speichern"
+                android:text="Profil speichern und übernehmen"
                 android:textAllCaps="false"
                 android:textSize="16sp"
                 android:textStyle="bold"
