@@ -42,8 +42,13 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     private TextView routeTwoInfoText;
     private TextView routeTwoTypeText;
 
+    private TextView routeThreeNameText;
+    private TextView routeThreeInfoText;
+    private TextView routeThreeTypeText;
+
     private LinearLayout routeOneCard;
     private LinearLayout routeTwoCard;
+    private LinearLayout routeThreeCard;
 
     private int selectedRouteIndex = 0;
     private int generatedRouteCounter = 0;
@@ -53,18 +58,23 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     private FloraBreakSessionResult sessionResult;
 
     private String routeOneName = "Route wird berechnet";
-    private String routeTwoName = "Weiter Pausenroute";
+    private String routeTwoName = "Weitere Pausenroute";
+    private String routeThreeName = "Weitere Pausenroute";
 
     private int routeOneWalkingTimeMinutes = 0;
     private int routeTwoWalkingTimeMinutes = 5;
+    private int routeThreeWalkingTimeMinutes = 5;
 
     private String routeOneType = "MAPS_LOADING";
-    private String routeTwoType = "Weitere Pausenroute";
+    private String routeTwoType = "PAUSE_ROUTE";
+    private String routeThreeType = "PAUSE_ROUTE";
 
     private double routeOneLatitude = 0.0;
     private double routeOneLongitude = 0.0;
     private double routeTwoLatitude = 0.0;
     private double routeTwoLongitude = 0.0;
+    private double routeThreeLatitude = 0.0;
+    private double routeThreeLongitude = 0.0;
 
     private int currentStressScore = 0;
     private String currentStressLabel = "Unbekannt";
@@ -102,9 +112,14 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         routeTwoNameText = findViewById(R.id.routeTwoNameText);
         routeTwoInfoText = findViewById(R.id.routeTwoInfoText);
         routeTwoTypeText = findViewById(R.id.routeTwoTypeText);
+
+        routeThreeNameText = findViewById(R.id.routeThreeNameText);
+        routeThreeInfoText = findViewById(R.id.routeThreeInfoText);
+        routeThreeTypeText = findViewById(R.id.routeThreeTypeText);
 	generateNewRouteButton = findViewById(R.id.generateNewRouteButton);
         routeOneCard = findViewById(R.id.routeOneCard);
         routeTwoCard = findViewById(R.id.routeTwoCard);
+        routeThreeCard = findViewById(R.id.routeThreeCard);
     }
 
     private void setupRouteSelection() {
@@ -117,14 +132,19 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             selectedRouteIndex = 1;
             updateSelectedRoute();
         });
+
+        routeThreeCard.setOnClickListener(view -> {
+            selectedRouteIndex = 2;
+            updateSelectedRoute();
+        });
     }
 
     private void setupButtons() {
         backButton.setOnClickListener(view -> finish());
 	generateNewRouteButton.setOnClickListener(view -> {
-	    generateAnotherPauseRoute();
-	    selectedRouteIndex = 1;
-	    updateSelectedRoute();
+            generateAnotherPauseRoute();
+            selectedRouteIndex = generatedRouteCounter % 2 == 0 ? 2 : 1;
+            updateSelectedRoute();
 
 	    Toast.makeText(
 	            this,
@@ -145,12 +165,18 @@ public class BreakSuggestionActivity extends AppCompatActivity {
                 selectedRouteType = routeOneType;
                 selectedLatitude = routeOneLatitude;
                 selectedLongitude = routeOneLongitude;
-            } else {
+            } else if (selectedRouteIndex == 1) {
                 selectedRouteName = routeTwoName;
                 selectedWalkingTime = routeTwoWalkingTimeMinutes;
                 selectedRouteType = routeTwoType;
                 selectedLatitude = routeTwoLatitude;
                 selectedLongitude = routeTwoLongitude;
+            } else {
+                selectedRouteName = routeThreeName;
+                selectedWalkingTime = routeThreeWalkingTimeMinutes;
+                selectedRouteType = routeThreeType;
+                selectedLatitude = routeThreeLatitude;
+                selectedLongitude = routeThreeLongitude;
             }
 
             if (selectedLatitude == 0.0 && selectedLongitude == 0.0) {
@@ -322,6 +348,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         }
 
         setSecondPauseRoute();
+        setThirdPauseRoute();
     }
 
     private void showControllerFallbackRoute() {
@@ -355,25 +382,43 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 	    );
 	    routeTwoTypeText.setText("Pausenroute");
 	}
-	private void generateAnotherPauseRoute() {
-        routeTwoName = "Neue Pausenroute";
-        routeTwoWalkingTimeMinutes = 10;
-        routeTwoType = "PAUSE_ROUTE";
+
+    private void setThirdPauseRoute() {
+        routeThreeName = "Weitere Pausenroute";
+        routeThreeWalkingTimeMinutes = 10;
+        routeThreeType = "PAUSE_ROUTE";
+
+        if (routeOneLatitude != 0.0 || routeOneLongitude != 0.0) {
+            routeThreeLatitude = routeOneLatitude - 0.0030;
+            routeThreeLongitude = routeOneLongitude + 0.0030;
+        } else {
+            routeThreeLatitude = 0.0;
+            routeThreeLongitude = 0.0;
+        }
+
+        routeThreeNameText.setText("Weitere Pausenroute");
+        routeThreeInfoText.setText(
+                routeThreeWalkingTimeMinutes
+                        + " Min gesamt · "
+                        + getRouteUsageText(routeThreeName, routeThreeLatitude, routeThreeLongitude)
+        );
+        routeThreeTypeText.setText("Pausenroute");
+    }
+
+    private void generateAnotherPauseRoute() {
+        generatedRouteCounter++;
 
         double baseLatitude = routeOneLatitude;
         double baseLongitude = routeOneLongitude;
 
         if (baseLatitude == 0.0 && baseLongitude == 0.0) {
-            routeTwoLatitude = 0.0;
-            routeTwoLongitude = 0.0;
-
-            routeTwoNameText.setText("Neue Pausenroute");
-            routeTwoInfoText.setText("Standort wird benötigt, um eine neue Route zu erzeugen.");
-            routeTwoTypeText.setText("Pausenroute");
+            Toast.makeText(
+                    this,
+                    "Standort wird benötigt, um neue Routen zu erzeugen.",
+                    Toast.LENGTH_SHORT
+            ).show();
             return;
         }
-
-        generatedRouteCounter++;
 
         double[][] offsets = {
                 {0.0030, 0.0012},
@@ -390,16 +435,38 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
         int direction = generatedRouteCounter % offsets.length;
 
-        routeTwoLatitude = baseLatitude + offsets[direction][0];
-        routeTwoLongitude = baseLongitude + offsets[direction][1];
+        double newLatitude = baseLatitude + offsets[direction][0];
+        double newLongitude = baseLongitude + offsets[direction][1];
 
-        routeTwoNameText.setText("Neue Pausenroute " + generatedRouteCounter);
-        routeTwoInfoText.setText(
-                routeTwoWalkingTimeMinutes
-                        + " Min gesamt · "
-                        + getRouteUsageText(routeTwoName, routeTwoLatitude, routeTwoLongitude)
-        );
-        routeTwoTypeText.setText("Pausenroute");
+        if (generatedRouteCounter % 2 == 1) {
+            routeTwoName = "Pausenroute " + (generatedRouteCounter + 1);
+            routeTwoWalkingTimeMinutes = 10;
+            routeTwoType = "PAUSE_ROUTE";
+            routeTwoLatitude = newLatitude;
+            routeTwoLongitude = newLongitude;
+
+            routeTwoNameText.setText(routeTwoName);
+            routeTwoInfoText.setText(
+                    routeTwoWalkingTimeMinutes
+                            + " Min gesamt · "
+                            + getRouteUsageText(routeTwoName, routeTwoLatitude, routeTwoLongitude)
+            );
+            routeTwoTypeText.setText("Pausenroute");
+        } else {
+            routeThreeName = "Pausenroute " + (generatedRouteCounter + 1);
+            routeThreeWalkingTimeMinutes = 10;
+            routeThreeType = "PAUSE_ROUTE";
+            routeThreeLatitude = newLatitude;
+            routeThreeLongitude = newLongitude;
+
+            routeThreeNameText.setText(routeThreeName);
+            routeThreeInfoText.setText(
+                    routeThreeWalkingTimeMinutes
+                            + " Min gesamt · "
+                            + getRouteUsageText(routeThreeName, routeThreeLatitude, routeThreeLongitude)
+            );
+            routeThreeTypeText.setText("Pausenroute");
+        }
     }
 
     private String getRouteUsageText(
@@ -505,12 +572,16 @@ public class BreakSuggestionActivity extends AppCompatActivity {
     }
 
     private void updateSelectedRoute() {
+        routeOneCard.setBackgroundResource(R.drawable.bg_soft_card);
+        routeTwoCard.setBackgroundResource(R.drawable.bg_soft_card);
+        routeThreeCard.setBackgroundResource(R.drawable.bg_soft_card);
+
         if (selectedRouteIndex == 0) {
             routeOneCard.setBackgroundResource(R.drawable.bg_route_selected);
-            routeTwoCard.setBackgroundResource(R.drawable.bg_soft_card);
-        } else {
-            routeOneCard.setBackgroundResource(R.drawable.bg_soft_card);
+        } else if (selectedRouteIndex == 1) {
             routeTwoCard.setBackgroundResource(R.drawable.bg_route_selected);
+        } else {
+            routeThreeCard.setBackgroundResource(R.drawable.bg_route_selected);
         }
     }
 

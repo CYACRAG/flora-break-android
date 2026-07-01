@@ -253,6 +253,68 @@
                     android:textColor="#637568" />
             </LinearLayout>
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/routeThreeCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_soft_card"
+            android:padding="18dp"
+            android:elevation="3dp"
+            android:layout_marginBottom="26dp">
+
+            <TextView
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                android:gravity="center"
+                android:text="🌿"
+                android:textSize="26sp"
+                android:background="@drawable/bg_green_pill"
+                android:layout_marginEnd="16dp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/routeThreeNameText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Weitere Pausenroute"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:layout_marginBottom="6dp" />
+
+                <TextView
+                    android:id="@+id/routeThreeTypeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pausenroute"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#2F6B45"
+                    android:background="@drawable/bg_green_pill"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/routeThreeInfoText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Weitere Route in deiner Nähe"
+                    android:textSize="14sp"
+                    android:textColor="#637568" />
+            </LinearLayout>
+        </LinearLayout>
+
 	<Button
 	    android:id="@+id/generateNewRouteButton"
 	    android:layout_width="match_parent"
