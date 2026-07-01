@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.graphics.Shader;
 import android.graphics.SweepGradient;
 import android.util.AttributeSet;
 import android.view.View;
@@ -17,7 +16,7 @@ public class StressGaugeView extends View {
     private final Paint progressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint thumbPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    private float stressScore = 7.6f;
+    private float stressScore = 0f;
     private final float maxScore = 10f;
 
     public StressGaugeView(Context context) {
@@ -39,19 +38,30 @@ public class StressGaugeView extends View {
         basePaint.setStyle(Paint.Style.STROKE);
         basePaint.setStrokeCap(Paint.Cap.ROUND);
         basePaint.setStrokeWidth(22f);
-        basePaint.setColor(Color.parseColor("#F3E8EA"));
+        basePaint.setColor(Color.parseColor("#E6ECE7"));
 
         progressPaint.setStyle(Paint.Style.STROKE);
         progressPaint.setStrokeCap(Paint.Cap.ROUND);
         progressPaint.setStrokeWidth(22f);
 
         thumbPaint.setStyle(Paint.Style.FILL);
-        thumbPaint.setColor(Color.parseColor("#FF3B3B"));
+        updateThumbColor();
     }
 
     public void setStressScore(float value) {
         stressScore = Math.max(0f, Math.min(value, maxScore));
+        updateThumbColor();
         invalidate();
+    }
+
+    private void updateThumbColor() {
+        if (stressScore <= 3f) {
+            thumbPaint.setColor(Color.parseColor("#2F9E44"));
+        } else if (stressScore <= 6f) {
+            thumbPaint.setColor(Color.parseColor("#F2B84B"));
+        } else {
+            thumbPaint.setColor(Color.parseColor("#E8787E"));
+        }
     }
 
     @Override
@@ -76,15 +86,13 @@ public class StressGaugeView extends View {
         float totalSweep = 240f;
         float progressSweep = (stressScore / maxScore) * totalSweep;
 
-        // Blasser kompletter Hintergrundbogen
         canvas.drawArc(arcRect, startAngle, totalSweep, false, basePaint);
 
-        // Farbverlauf für aktiven Teil
         int[] colors = {
-                Color.parseColor("#5DBB00"),
-                Color.parseColor("#E5D200"),
+                Color.parseColor("#2F9E44"),
+                Color.parseColor("#F2B84B"),
                 Color.parseColor("#FF8A00"),
-                Color.parseColor("#FF3B3B")
+                Color.parseColor("#E8787E")
         };
 
         float[] positions = {0f, 0.45f, 0.75f, 1f};
@@ -97,7 +105,6 @@ public class StressGaugeView extends View {
 
         canvas.drawArc(arcRect, startAngle, progressSweep, false, progressPaint);
 
-        // Punkt am aktuellen Wert
         double angleRad = Math.toRadians(startAngle + progressSweep);
         float thumbX = (float) (cx + radius * Math.cos(angleRad));
         float thumbY = (float) (cy + radius * Math.sin(angleRad));

@@ -10,7 +10,6 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <!-- Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="70dp"
@@ -37,7 +36,6 @@
                 android:layout_marginStart="14dp" />
         </LinearLayout>
 
-        <!-- Stress Card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -47,45 +45,38 @@
             android:elevation="4dp"
             android:layout_marginBottom="24dp">
 
-            <!-- Obere Zeile -->
-            <LinearLayout
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="18dp">
+                android:text="Stress-Level"
+                android:textSize="19sp"
+                android:textStyle="bold"
+                android:textColor="#06140C"
+                android:gravity="center"
+                android:layout_marginBottom="8dp" />
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Stress-Level"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#06140C" />
-
-                <TextView
-                    android:id="@+id/suggestionStressLabelText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sehr gestresst"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="#E8787E"
-                    android:background="@drawable/bg_warning_pill"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp" />
-
-            </LinearLayout>
+            <TextView
+                android:id="@+id/suggestionStressLabelText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sehr gestresst"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#E8787E"
+                android:background="@drawable/bg_warning_pill"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="8dp" />
 
             <TextView
                 android:id="@+id/suggestionStressScoreText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="7.6"
-                android:textSize="50sp"
+                android:text="8"
+                android:textSize="52sp"
                 android:textStyle="bold"
                 android:textColor="#E8787E"
                 android:layout_gravity="center"
@@ -113,10 +104,10 @@
                     android:background="@drawable/bg_stress_gradient_bar" />
 
                 <View
+                    android:id="@+id/stressMarkerView"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_gravity="start|center_vertical"
-                    android:layout_marginStart="178dp"
                     android:background="@drawable/bg_stress_marker" />
 
             </FrameLayout>
@@ -132,7 +123,6 @@
 
         </LinearLayout>
 
-        <!-- Section Title -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -140,9 +130,8 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="#06140C"
-            android:layout_marginBottom="4dp" />
+            android:layout_marginBottom="10dp" />
 
-        <!-- Route 1 Card -->
         <LinearLayout
             android:id="@+id/routeOneCard"
             android:layout_width="match_parent"
@@ -198,23 +187,12 @@
                     android:id="@+id/routeOneInfoText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="📍 380 m   ⏱ 18 Min"
+                    android:text="7 Min hin · 14 Min gesamt"
                     android:textSize="14sp"
                     android:textColor="#637568" />
             </LinearLayout>
-
-            <TextView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:gravity="center"
-                android:text="✓"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:backgroundTint="#2F6B45" />
         </LinearLayout>
 
-        <!-- Route 2 Card -->
         <LinearLayout
             android:id="@+id/routeTwoCard"
             android:layout_width="match_parent"
@@ -230,7 +208,7 @@
                 android:layout_width="58dp"
                 android:layout_height="58dp"
                 android:gravity="center"
-                android:text="🏙️"
+                android:text="🚶"
                 android:textSize="26sp"
                 android:background="@drawable/bg_warning_pill"
                 android:layout_marginEnd="16dp" />
@@ -270,21 +248,12 @@
                     android:id="@+id/routeTwoInfoText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="📍 520 m   ⏱ 20 Min"
+                    android:text="Alternative aktive Pause in deiner Nähe"
                     android:textSize="14sp"
                     android:textColor="#637568" />
             </LinearLayout>
-
-            <TextView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:gravity="center"
-                android:text="›"
-                android:textSize="28sp"
-                android:textColor="#9AAC9F" />
         </LinearLayout>
 
-        <!-- Start Button -->
         <Button
             android:id="@+id/startBreakButton"
             android:layout_width="match_parent"

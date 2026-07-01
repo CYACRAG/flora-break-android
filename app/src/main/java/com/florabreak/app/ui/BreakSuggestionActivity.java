@@ -2,7 +2,9 @@ package com.florabreak.app.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +27,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
     private TextView suggestionStressScoreText;
     private TextView suggestionStressLabelText;
+    private View stressMarkerView;
 
     private TextView routeOneNameText;
     private TextView routeOneInfoText;
@@ -82,6 +85,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
         suggestionStressScoreText = findViewById(R.id.suggestionStressScoreText);
         suggestionStressLabelText = findViewById(R.id.suggestionStressLabelText);
+        stressMarkerView = findViewById(R.id.stressMarkerView);
 
         routeOneNameText = findViewById(R.id.routeOneNameText);
         routeOneInfoText = findViewById(R.id.routeOneInfoText);
@@ -172,6 +176,28 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         suggestionStressLabelText.setText(
                 currentStressLabel + " · " + recommendation.getTitle()
         );
+
+        updateStressMarker(currentStressScore);
+    }
+
+    private void updateStressMarker(int stressScore) {
+        if (stressMarkerView == null) {
+            return;
+        }
+
+        stressMarkerView.post(() -> {
+            int barWidth = dp(240);
+            int markerWidth = dp(18);
+
+            float ratio = Math.max(0f, Math.min(10f, stressScore)) / 10f;
+            int marginStart = Math.round(ratio * (barWidth - markerWidth));
+
+            FrameLayout.LayoutParams params =
+                    (FrameLayout.LayoutParams) stressMarkerView.getLayoutParams();
+
+            params.leftMargin = marginStart;
+            stressMarkerView.setLayoutParams(params);
+        });
     }
 
     private void loadRealMapsRoutes() {
@@ -224,10 +250,13 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             return;
         }
 
+        int oneWayMinutes = Math.max(1, routeResult.getWalkingTimeMinutes());
+        int totalMinutes = oneWayMinutes * 2;
+
         routeOneName = routeResult.getDestinationName();
         routeOneLatitude = routeResult.getLatitude();
         routeOneLongitude = routeResult.getLongitude();
-        routeOneWalkingTimeMinutes = Math.max(1, routeResult.getWalkingTimeMinutes() * 2);
+        routeOneWalkingTimeMinutes = totalMinutes;
 
         boolean hasCoordinates = !(routeOneLatitude == 0.0 && routeOneLongitude == 0.0);
 
@@ -236,11 +265,11 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
             routeOneNameText.setText("Parkroute empfohlen");
             routeOneInfoText.setText(
-                    "Ca. "
-                            + (routeResult.getWalkingTimeMinutes() * 2)
-                            + " Minuten einfacher Weg bis "
+                    oneWayMinutes
+                            + " Min hin · "
+                            + totalMinutes
+                            + " Min gesamt bis "
                             + routeResult.getDestinationName()
-                            + " und zurück."
             );
             routeOneTypeText.setText("Grünfläche");
         } else if (hasCoordinates && usedRealRoute && routeResult.isReachable()) {
@@ -248,22 +277,22 @@ public class BreakSuggestionActivity extends AppCompatActivity {
 
             routeOneNameText.setText("Urban Walk empfohlen");
             routeOneInfoText.setText(
-                    "Ca. "
-                            + (routeResult.getWalkingTimeMinutes() * 2)
-                            + " Minuten einfacher Weg bis "
+                    oneWayMinutes
+                            + " Min hin · "
+                            + totalMinutes
+                            + " Min gesamt bis "
                             + routeResult.getDestinationName()
-                            + " und zurück."
             );
             routeOneTypeText.setText("Aktive Route");
         } else if (hasCoordinates && usedRealRoute) {
             routeOneType = "LONG_ROUTE";
 
-            routeOneNameText.setText("Längere Route gefunden");
+            routeOneNameText.setText("Route zu lang");
             routeOneInfoText.setText(
-                    routeResult.getDestinationName()
-                            + " ist ca. "
-                            + (routeResult.getWalkingTimeMinutes() * 2)
-                            + " Minuten lang. Für eine kurze Pause empfiehlt Flora Break eher einen Urban Walk."
+                    oneWayMinutes
+                            + " Min hin · "
+                            + totalMinutes
+                            + " Min gesamt. Flora Break empfiehlt stattdessen eine kurze Alternative."
             );
             routeOneTypeText.setText("Zu lang");
         } else {
@@ -281,7 +310,7 @@ public class BreakSuggestionActivity extends AppCompatActivity {
         routeTwoLongitude = routeOneLongitude;
 
         routeTwoNameText.setText("Kurzer Urban Walk");
-        routeTwoInfoText.setText("Alternative aktive Pause in deiner Umgebung. Nutzt bei Bedarf dasselbe Kartenziel.");
+        routeTwoInfoText.setText("Alternative aktive Pause in deiner Umgebung.");
         routeTwoTypeText.setText("Alternative");
     }
 
@@ -313,5 +342,9 @@ public class BreakSuggestionActivity extends AppCompatActivity {
             routeOneCard.setBackgroundResource(R.drawable.bg_soft_card);
             routeTwoCard.setBackgroundResource(R.drawable.bg_route_selected);
         }
+    }
+
+    private int dp(int value) {
+        return (int) (value * getResources().getDisplayMetrics().density);
     }
 }

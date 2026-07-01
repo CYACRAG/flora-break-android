@@ -2,17 +2,16 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F4F7F3">
+    android:background="@drawable/bg_feedback_forest">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Navigation Header -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="118dp"
+            android:layout_height="128dp"
             android:orientation="vertical"
             android:background="#2F6B45"
             android:paddingStart="20dp"
@@ -20,155 +19,94 @@
             android:paddingTop="22dp"
             android:paddingBottom="14dp">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/navigationMainText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:text="Flora Break läuft"
+                android:textSize="27sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF" />
 
-                <TextView
-                    android:layout_width="54dp"
-                    android:layout_height="54dp"
-                    android:gravity="center"
-                    android:text="↱"
-                    android:textSize="38sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    android:layout_marginEnd="14dp" />
+            <TextView
+                android:id="@+id/navigationSubText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Atme durch und bewege dich bewusst."
+                android:textSize="15sp"
+                android:textColor="#DCEBDE"
+                android:layout_marginTop="4dp" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/navigationMainText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="In 100 m"
-                        android:textSize="32sp"
-                        android:textStyle="bold"
-                        android:textColor="#FFFFFF" />
-
-                    <TextView
-                        android:id="@+id/navigationSubText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="rechts in den Parkweg"
-                        android:textSize="15sp"
-                        android:textColor="#DCEBDE" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
+            <TextView
+                android:id="@+id/activeStressText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Stress beim Start: 8/10"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="8dp" />
         </LinearLayout>
 
-        <!-- Map-Bereich als Hauptfokus -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="#E8E5DA">
+            android:padding="20dp">
 
-            <!-- Kartenflächen -->
-            <View
-                android:layout_width="170dp"
-                android:layout_height="120dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="44dp"
-                android:background="#D6E8C9" />
-
-            <View
-                android:layout_width="155dp"
-                android:layout_height="100dp"
-                android:layout_marginStart="184dp"
-                android:layout_marginTop="92dp"
-                android:background="#CFE4C1" />
-
-            <View
-                android:layout_width="120dp"
-                android:layout_height="70dp"
-                android:layout_marginStart="118dp"
-                android:layout_marginTop="210dp"
-                android:background="#A7D9E8" />
-
-            <!-- Straßen -->
-            <View
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="12dp"
-                android:layout_marginTop="180dp"
-                android:rotation="-25"
-                android:background="#FFFFFF" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="10dp"
-                android:layout_marginTop="260dp"
-                android:rotation="28"
-                android:background="#FFFFFF" />
-
-            <!-- Routen-Platzhalter -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="140dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
                 android:gravity="center"
-                android:text="● ━━━━━━━ ● ━━━━━━━ ●"
-                android:textSize="26sp"
-                android:textColor="#2F6B45"
-                android:rotation="-22" />
-
-            <!-- aktueller Standort -->
-            <TextView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="●"
-                android:textSize="34sp"
-                android:textColor="#E8787E"
-                android:background="@drawable/bg_warning_pill" />
-
-            <!-- Zielchip -->
-            <TextView
-                android:id="@+id/selectedRouteNameText"
-                android:layout_width="wrap_content"
-                android:layout_height="42dp"
-                android:layout_marginStart="22dp"
-                android:layout_marginTop="18dp"
-                android:gravity="center"
-                android:text="📍 Grünfläche in der Nähe"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#06140C"
-                android:background="@drawable/bg_soft_card"
-                android:elevation="4dp"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp" />
-
-            <!-- Streckenbeweis Kamera-Placeholder -->
-            <TextView
-                android:id="@+id/proofCameraPlaceholder"
-                android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:layout_gravity="end|bottom"
-                android:layout_marginEnd="18dp"
-                android:layout_marginBottom="18dp"
-                android:gravity="center"
-                android:text="📷 Streckenbeweis"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#06140C"
                 android:background="@drawable/bg_soft_card"
                 android:elevation="5dp"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp" />
+                android:padding="22dp">
 
+                <TextView
+                    android:layout_width="82dp"
+                    android:layout_height="82dp"
+                    android:gravity="center"
+                    android:text="🌲"
+                    android:textSize="46sp"
+                    android:background="@drawable/bg_green_pill"
+                    android:layout_marginBottom="16dp" />
+
+                <TextView
+                    android:id="@+id/selectedRouteNameText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📍 Ruhige Route"
+                    android:textSize="19sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:gravity="center"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Öffne Google Maps für die Navigation. Flora Break begleitet deine Pause im Hintergrund."
+                    android:textSize="14sp"
+                    android:textColor="#637568"
+                    android:gravity="center"
+                    android:layout_marginBottom="22dp" />
+
+                <TextView
+                    android:id="@+id/proofCameraPlaceholder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="46dp"
+                    android:gravity="center"
+                    android:text="📷 Streckenbeweis aufnehmen"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#06140C"
+                    android:background="@drawable/bg_green_pill"
+                    android:paddingStart="18dp"
+                    android:paddingEnd="18dp" />
+            </LinearLayout>
         </FrameLayout>
 
-        <!-- Bottom Sheet kompakt -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -179,7 +117,6 @@
             android:paddingTop="14dp"
             android:paddingBottom="34dp">
 
-            <!-- Timer und Restzeit -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="78dp"
@@ -212,7 +149,6 @@
                         android:text="Pausendauer"
                         android:textSize="12sp"
                         android:textColor="#637568" />
-
                 </LinearLayout>
 
                 <LinearLayout
@@ -229,7 +165,7 @@
                         android:id="@+id/remainingTimeText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="18 Min"
+                        android:text="14 Min"
                         android:textSize="24sp"
                         android:textStyle="bold"
                         android:textColor="#173522" />
@@ -237,15 +173,12 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="bis zum Ziel"
+                        android:text="Gesamtweg"
                         android:textSize="12sp"
                         android:textColor="#637568" />
-
                 </LinearLayout>
-
             </LinearLayout>
 
-            <!-- Distanz kompakt -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -261,7 +194,7 @@
                     android:layout_width="42dp"
                     android:layout_height="42dp"
                     android:gravity="center"
-                    android:text="📍"
+                    android:text="🌿"
                     android:textSize="20sp"
                     android:background="@drawable/bg_green_pill"
                     android:layout_marginEnd="14dp" />
@@ -270,7 +203,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Zurückgelegte Distanz"
+                    android:text="Pausenstatus"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="#06140C" />
@@ -279,12 +212,12 @@
                     android:id="@+id/distanceText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0.00 km"
+                    android:text="Aktiv"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#2F6B45" />
-
             </LinearLayout>
+
             <Button
                 android:id="@+id/openMapsButton"
                 android:layout_width="match_parent"
@@ -295,7 +228,7 @@
                 android:textColor="#2F6B45"
                 android:backgroundTint="#EEF4EE"
                 android:layout_marginBottom="10dp" />
-            <!-- Finish Button -->
+
             <Button
                 android:id="@+id/finishBreakButton"
                 android:layout_width="match_parent"
@@ -305,9 +238,6 @@
                 android:textStyle="bold"
                 android:textColor="#FFFFFF"
                 android:backgroundTint="#2F6B45" />
-
         </LinearLayout>
-
     </LinearLayout>
-
 </FrameLayout>

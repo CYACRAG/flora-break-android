@@ -31,7 +31,7 @@ public class ActiveBreakActivity extends AppCompatActivity {
     private TextView remainingTimeText;
     private TextView distanceText;
     private TextView proofCameraPlaceholder;
-
+    private TextView activeStressText;
     private Button openMapsButton;
     private Button finishBreakButton;
 
@@ -95,7 +95,7 @@ public class ActiveBreakActivity extends AppCompatActivity {
         navigationSubText = findViewById(R.id.navigationSubText);
         remainingTimeText = findViewById(R.id.remainingTimeText);
         distanceText = findViewById(R.id.distanceText);
-
+	activeStressText = findViewById(R.id.activeStressText);
         finishBreakButton = findViewById(R.id.finishBreakButton);
         proofCameraPlaceholder = findViewById(R.id.proofCameraPlaceholder);
         openMapsButton = findViewById(R.id.openMapsButton);
@@ -174,8 +174,7 @@ public class ActiveBreakActivity extends AppCompatActivity {
             navigationSubText.setText("Route: " + selectedRouteName);
             distanceText.setText("—");
         }
-	String currentSubText = navigationSubText.getText().toString();
-	navigationSubText.setText(currentSubText + "\nStress beim Start: " + stressScore + "/10 · " + stressLabel);
+	activeStressText.setText("Stress beim Start: " + stressScore + "/10 · " + stressLabel);
     }
 
     private void setupButtons() {
