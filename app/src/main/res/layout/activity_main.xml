@@ -22,12 +22,13 @@
             android:gravity="center_vertical"
             android:layout_marginBottom="18dp">
 
-            <TextView
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:gravity="center"
-                android:text="🌱"
-                android:textSize="30sp" />
+            <ImageView
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:padding="6dp"
+                android:src="@drawable/flora_break_logo"
+                android:background="@drawable/bg_green_pill"
+                android:contentDescription="Flora Break Logo" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -276,7 +277,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="↗"
+                    android:text="◷"
                     android:textSize="20sp"
                     android:textColor="#8A8D96" />
 
@@ -299,7 +300,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="▮▮"
+                    android:text="▥"
                     android:textSize="18sp"
                     android:textColor="#8A8D96" />
 
@@ -322,7 +323,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="◠"
+                    android:text="◎"
                     android:textSize="20sp"
                     android:textColor="#8A8D96" />
 
