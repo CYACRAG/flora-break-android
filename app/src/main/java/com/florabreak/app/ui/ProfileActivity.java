@@ -203,7 +203,7 @@ public class ProfileActivity extends AppCompatActivity {
             );
         } else {
             healthConnectStatusText.setText(
-                    "Health Connect ist auf diesem Gerät nicht verfügbar. Für den Prototyp wird der Demo-Modus genutzt."
+                    "Health Connect ist auf diesem Gerät nicht verfügbar. Flora Break nutzt deshalb den Demo-Modus."
             );
         }
     }
