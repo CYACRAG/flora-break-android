@@ -223,7 +223,7 @@
                     android:id="@+id/routeTwoNameText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ruhiger Urban Walk"
+                    android:text="Weitere Pausenroute"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#06140C"
@@ -233,7 +233,7 @@
                     android:id="@+id/routeTwoTypeText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Alternative Route"
+                    android:text="Pausenroute"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="#B56A00"
@@ -248,7 +248,7 @@
                     android:id="@+id/routeTwoInfoText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Alternative aktive Pause in deiner Nähe"
+                    android:text="Weitere Pausenroute in deiner Nähe"
                     android:textSize="14sp"
                     android:textColor="#637568" />
             </LinearLayout>
