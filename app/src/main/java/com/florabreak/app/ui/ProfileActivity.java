@@ -437,29 +437,28 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void updateDemoPreviewText() {
-        double currentHrv = getCurrentHrvFromSlider();
-        double normalHrv = getNormalHrvFromSlider();
+	    boolean demoEnabled = demoModeSwitch.isChecked();
 
-        double ratio = 0.0;
+	    double currentHrv = getCurrentHrvFromSlider();
+	    double normalHrv = getNormalHrvFromSlider();
+	    int heartRate = getHeartRateFromSlider();
 
-        if (normalHrv > 0) {
-            ratio = currentHrv / normalHrv;
-        }
+	    String preview;
 
-        String preview;
+	    if (!demoEnabled) {
+	        preview = "Demo-Modus aus: später kann Health Connect echte HRV- und Pulswerte liefern.";
+	    } else if (currentHrv >= normalHrv && heartRate <= 80) {
+	        preview = "Vorschau: niedriger Stressbereich. Die aktuelle HRV liegt im normalen Bereich.";
+	    } else if (currentHrv >= normalHrv && heartRate <= 95) {
+	        preview = "Vorschau: eher niedriger bis mittlerer Stressbereich. HRV ist stabil, Puls leicht erhöht.";
+	    } else if (currentHrv < normalHrv && heartRate <= 100) {
+	        preview = "Vorschau: mittlerer bis hoher Stressbereich. Die aktuelle HRV liegt unter dem Normalwert.";
+	    } else {
+	        preview = "Vorschau: hoher Stressbereich. Niedrige HRV und erhöhter Puls sprechen für Belastung.";
+	    }
 
-        if (!demoModeSwitch.isChecked()) {
-            preview = "Demo-Modus aus: später kann Health Connect verwendet werden.";
-        } else if (ratio < 1.1) {
-            preview = "Vorschau: niedriger Stressbereich.";
-        } else if (ratio < 1.2) {
-            preview = "Vorschau: mittlerer Stressbereich.";
-        } else {
-            preview = "Vorschau: hoher Stressbereich, Pause wahrscheinlich.";
-        }
-
-        demoStressPreviewText.setText(preview);
-    }
+	    demoStressPreviewText.setText(preview);
+	}
 
     private double getCurrentHrvFromSlider() {
         return HRV_MIN + currentHrvSeekBar.getProgress();

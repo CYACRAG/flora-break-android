@@ -148,7 +148,7 @@ public class ActiveBreakActivity extends AppCompatActivity {
 
     private void updateRouteUi() {
         selectedRouteNameText.setText("📍 " + selectedRouteName);
-	navigationMainText.setText("Stress beim Start: " + stressScore + "/10 · " + stressLabel);
+	navigationMainText.setText("Flora Break läuft");
 
         if (selectedWalkingTimeMinutes > 0) {
             remainingTimeText.setText(selectedWalkingTimeMinutes + " Min");
@@ -157,20 +157,20 @@ public class ActiveBreakActivity extends AppCompatActivity {
         }
 
         if ("REAL_URBAN_WALK".equals(selectedRouteType)) {
-            navigationMainText.setText("Urban Walk aktiv");
+            navigationMainText.setText("Pausenroute aktiv");
             navigationSubText.setText("Route bis " + selectedRouteName);
             distanceText.setText("Route aktiv");
         } else if ("REAL_ROUTE_TOO_FAR".equals(selectedRouteType)) {
-            navigationMainText.setText("Längere Route aktiv");
+            navigationMainText.setText("Pausenroute aktiv");
             navigationSubText.setText("Gehe deine ausgewählte Route bis " + selectedRouteName);
             distanceText.setText("Route aktiv");
         } else if ("FALLBACK_URBAN_WALK".equals(selectedRouteType)
                 || "FALLBACK_ROUTE_INFO".equals(selectedRouteType)) {
-            navigationMainText.setText("Urban Walk aktiv");
+            navigationMainText.setText("Pausenroute aktiv");
             navigationSubText.setText("Gehe deine ausgewählte Route bis " + selectedRouteName);
             distanceText.setText("Aktive Pause");
         } else {
-            navigationMainText.setText("Pause aktiv");
+            navigationMainText.setText("Flora Break läuft");
             navigationSubText.setText("Route: " + selectedRouteName);
             distanceText.setText("—");
         }
