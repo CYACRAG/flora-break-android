@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -24,14 +25,6 @@ import com.florabreak.app.maps.DeviceLocationService;
 import com.florabreak.app.model.DemoStressSettings;
 import com.florabreak.app.model.UserProfile;
 
-/**
- * Profil-Screen für Flora Break.
- *
- * Enthält:
- * - Profilanzeige
- * - Demo-Regler für Stressdaten
- * - Arbeitsort speichern für Maps-Routen
- */
 public class ProfileActivity extends AppCompatActivity {
 
     private static final int HRV_MIN = 30;
@@ -48,6 +41,14 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView profileNameText;
     private TextView workTimeText;
     private TextView workloadText;
+
+    private EditText profileNameInput;
+    private EditText profileAgeInput;
+    private EditText profileHeightInput;
+    private EditText profileWeightInput;
+    private EditText workStartInput;
+    private EditText workEndInput;
+    private EditText subjectiveStressInput;
 
     private TextView healthConnectStatusText;
     private TextView stressBaselineText;
@@ -102,6 +103,14 @@ public class ProfileActivity extends AppCompatActivity {
         workTimeText = findViewById(R.id.workTimeText);
         workloadText = findViewById(R.id.workloadText);
 
+        profileNameInput = findViewById(R.id.profileNameInput);
+        profileAgeInput = findViewById(R.id.profileAgeInput);
+        profileHeightInput = findViewById(R.id.profileHeightInput);
+        profileWeightInput = findViewById(R.id.profileWeightInput);
+        workStartInput = findViewById(R.id.workStartInput);
+        workEndInput = findViewById(R.id.workEndInput);
+        subjectiveStressInput = findViewById(R.id.subjectiveStressInput);
+
         healthConnectStatusText = findViewById(R.id.healthConnectStatusText);
         stressBaselineText = findViewById(R.id.stressBaselineText);
 
@@ -124,12 +133,28 @@ public class ProfileActivity extends AppCompatActivity {
         UserProfile profile = profileRepository.getProfile();
 
         String displayName = profile.getName();
-
         if (displayName == null || displayName.trim().isEmpty()) {
             displayName = "Flora Nutzer";
         }
 
         profileNameText.setText(displayName);
+        profileNameInput.setText(profile.getName());
+
+        if (profile.getAge() > 0) {
+            profileAgeInput.setText(String.valueOf(profile.getAge()));
+        }
+
+        if (profile.getHeightCm() > 0) {
+            profileHeightInput.setText(String.valueOf(profile.getHeightCm()));
+        }
+
+        if (profile.getWeightKg() > 0) {
+            profileWeightInput.setText(String.valueOf(profile.getWeightKg()));
+        }
+
+        workStartInput.setText(profile.getWorkStartTime());
+        workEndInput.setText(profile.getWorkEndTime());
+        subjectiveStressInput.setText(String.valueOf(profile.getSubjectiveStressLevel()));
 
         workTimeText.setText(
                 "Arbeitszeit: "
@@ -231,21 +256,23 @@ public class ProfileActivity extends AppCompatActivity {
 
         demoModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> saveDemoSettings());
 
-	editProfileButton.setOnClickListener(view -> {
-	    saveDemoSettings();
-	    saveProfileCompleted();
+        editProfileButton.setOnClickListener(view -> {
+            saveDemoSettings();
+            saveProfileFromInputs();
 
-	    Toast.makeText(this, "Profil gespeichert", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Profil gespeichert", Toast.LENGTH_SHORT).show();
 
-	    boolean firstSetup = getIntent().getBooleanExtra("firstSetup", false);
+            boolean firstSetup = getIntent().getBooleanExtra("firstSetup", false);
 
-	    if (firstSetup) {
-	        Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
-	        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	        startActivity(intent);
-	        finish();
-	    }
-	});
+            if (firstSetup) {
+                Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            } else {
+                loadProfileIntoUi();
+            }
+        });
     }
 
     private void setupWorkLocationButtons() {
@@ -311,28 +338,70 @@ public class ProfileActivity extends AppCompatActivity {
         return fineLocationGranted || coarseLocationGranted;
     }
 
-	private void saveProfileCompleted() {
-	    UserProfile oldProfile = profileRepository.getProfile();
+    private void saveProfileFromInputs() {
+        UserProfile oldProfile = profileRepository.getProfile();
 
-	    UserProfile updatedProfile = new UserProfile(
-	            oldProfile.getName() == null || oldProfile.getName().trim().isEmpty()
-	                    ? "Flora Nutzer"
-	                    : oldProfile.getName(),
-	            oldProfile.getAge(),
-	            oldProfile.getHeightCm(),
-	            oldProfile.getWeightKg(),
-	            oldProfile.getWorkStartTime(),
-	            oldProfile.getWorkEndTime(),
-	            oldProfile.getSubjectiveStressLevel(),
-	            oldProfile.getWorkLocationName(),
-	            oldProfile.getWorkLatitude(),
-	            oldProfile.getWorkLongitude(),
-	            oldProfile.isWorkLocationSaved(),
-	            true
-	    );
+        String name = getTextOrFallback(profileNameInput, "Flora Nutzer");
+        int age = getIntOrFallback(profileAgeInput, 0);
+        int height = getIntOrFallback(profileHeightInput, 0);
+        int weight = getIntOrFallback(profileWeightInput, 0);
+        String workStart = getTextOrFallback(workStartInput, "09:00");
+        String workEnd = getTextOrFallback(workEndInput, "17:00");
+        int subjectiveStress = clamp(getIntOrFallback(subjectiveStressInput, 3), 1, 10);
 
-	    profileRepository.saveProfile(updatedProfile);
-	}
+        UserProfile updatedProfile = new UserProfile(
+                name,
+                age,
+                height,
+                weight,
+                workStart,
+                workEnd,
+                subjectiveStress,
+                oldProfile.getWorkLocationName(),
+                oldProfile.getWorkLatitude(),
+                oldProfile.getWorkLongitude(),
+                oldProfile.isWorkLocationSaved(),
+                true
+        );
+
+        profileRepository.saveProfile(updatedProfile);
+    }
+
+    private String getTextOrFallback(EditText editText, String fallback) {
+        String value = editText.getText().toString().trim();
+
+        if (value.isEmpty()) {
+            return fallback;
+        }
+
+        return value;
+    }
+
+    private int getIntOrFallback(EditText editText, int fallback) {
+        try {
+            String value = editText.getText().toString().trim();
+
+            if (value.isEmpty()) {
+                return fallback;
+            }
+
+            return Integer.parseInt(value);
+        } catch (NumberFormatException exception) {
+            return fallback;
+        }
+    }
+
+    private int clamp(int value, int min, int max) {
+        if (value < min) {
+            return min;
+        }
+
+        if (value > max) {
+            return max;
+        }
+
+        return value;
+    }
 
     private void saveDemoSettings() {
         DemoStressSettings newSettings = new DemoStressSettings(
@@ -419,9 +488,9 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         navStatsFromProfile.setOnClickListener(view -> {
-	    Intent intent = new Intent(ProfileActivity.this, StatsActivity.class);
-	    startActivity(intent);
-	});
+            Intent intent = new Intent(ProfileActivity.this, StatsActivity.class);
+            startActivity(intent);
+        });
     }
 
     @Override

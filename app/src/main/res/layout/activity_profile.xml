@@ -272,7 +272,89 @@
                     android:textColor="#06140C"
                     android:layout_marginBottom="14dp" />
 
-                <!-- Später aus Profil-Datenbank -->
+	        <EditText
+		    android:id="@+id/profileNameInput"
+		    android:layout_width="match_parent"
+		    android:layout_height="48dp"
+		    android:hint="Name oder Nickname"
+		    android:inputType="textPersonName"
+		    android:textSize="14sp"
+		    android:textColor="#06140C"
+		    android:textColorHint="#637568"
+		    android:backgroundTint="#2F6B45"
+		    android:layout_marginBottom="10dp" />
+
+		<EditText
+		    android:id="@+id/profileAgeInput"
+		    android:layout_width="match_parent"
+		    android:layout_height="48dp"
+		    android:hint="Alter"
+		    android:inputType="number"
+		    android:textSize="14sp"
+		    android:textColor="#06140C"
+		    android:textColorHint="#637568"
+		    android:backgroundTint="#2F6B45"
+		    android:layout_marginBottom="10dp" />
+
+		<EditText
+		    android:id="@+id/profileHeightInput"
+		    android:layout_width="match_parent"
+		    android:layout_height="48dp"
+		    android:hint="Größe in cm"
+		    android:inputType="number"
+		    android:textSize="14sp"
+		    android:textColor="#06140C"
+		    android:textColorHint="#637568"
+		    android:backgroundTint="#2F6B45"
+		    android:layout_marginBottom="10dp" />
+
+		<EditText
+		    android:id="@+id/profileWeightInput"
+		    android:layout_width="match_parent"
+		    android:layout_height="48dp"
+		    android:hint="Gewicht in kg"
+		    android:inputType="number"
+		    android:textSize="14sp"
+		    android:textColor="#06140C"
+		    android:textColorHint="#637568"
+		    android:backgroundTint="#2F6B45"
+		    android:layout_marginBottom="10dp" />
+
+		<EditText
+		    android:id="@+id/workStartInput"
+		    android:layout_width="match_parent"
+		    android:layout_height="48dp"
+		    android:hint="Arbeitsbeginn, z.B. 09:00"
+		    android:inputType="time"
+		    android:textSize="14sp"
+		    android:textColor="#06140C"
+		    android:textColorHint="#637568"
+		    android:backgroundTint="#2F6B45"
+		    android:layout_marginBottom="10dp" />
+
+		<EditText
+		    android:id="@+id/workEndInput"
+		    android:layout_width="match_parent"
+		    android:layout_height="48dp"
+		    android:hint="Arbeitsende, z.B. 17:00"
+		    android:inputType="time"
+		    android:textSize="14sp"
+		    android:textColor="#06140C"
+		    android:textColorHint="#637568"
+		    android:backgroundTint="#2F6B45"
+		    android:layout_marginBottom="10dp" />
+
+		<EditText
+		    android:id="@+id/subjectiveStressInput"
+		    android:layout_width="match_parent"
+		    android:layout_height="48dp"
+		    android:hint="Job-Stress-Level 1–10"
+		    android:inputType="number"
+		    android:textSize="14sp"
+		    android:textColor="#06140C"
+		    android:textColorHint="#637568"
+		    android:backgroundTint="#2F6B45"
+		    android:layout_marginBottom="14dp" />
                 <TextView
                     android:id="@+id/workTimeText"
                     android:layout_width="match_parent"
