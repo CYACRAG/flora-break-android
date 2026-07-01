@@ -26,6 +26,9 @@ public class RealMapsBreakService {
         );
     }
 
+    private static final double MAX_DISTANCE_TO_WORK_METERS = 700.0;
+    private static final double MAX_REASONABLE_DESTINATION_DISTANCE_METERS = 3000.0;
+
     private final RealMapsRouteProvider realMapsRouteProvider;
     private final RouteCacheRepository routeCacheRepository;
     private final DeviceLocationService deviceLocationService;
@@ -41,26 +44,54 @@ public class RealMapsBreakService {
     public void getBreakDecision(@NonNull BreakDecisionCallback callback) {
         UserProfile profile = profileRepository.getProfile();
 
-        if (profile.isWorkLocationSaved()) {
+        deviceLocationService.getCurrentLocation((currentLatitude, currentLongitude, isRealLocation) -> {
+			if (!isRealLocation || (currentLatitude == 0.0 && currentLongitude == 0.0)) {
+			    RouteResult routeResult = new RouteResult(
+			            "Standort nicht verfügbar",
+			            0.0,
+			            0.0,
+			            0,
+			            false
+			    );
+
+			    callback.onBreakDecisionReady(
+			            "Standort benötigt",
+			            "Flora Break braucht deinen aktuellen Standort, um eine Grünfläche oder einen Urban Walk in deiner Nähe vorzuschlagen.",
+			            routeResult,
+			            false,
+			            false,
+			            false
+			    );
+			    return;
+			}
+            if (profile.isWorkLocationSaved() && isRealLocation) {
+                double distanceToWork = calculateDistanceMeters(
+                        currentLatitude,
+                        currentLongitude,
+                        profile.getWorkLatitude(),
+                        profile.getWorkLongitude()
+                );
+
+                if (distanceToWork <= MAX_DISTANCE_TO_WORK_METERS) {
+                    handleLocationForRoute(
+                            profile.getWorkLatitude(),
+                            profile.getWorkLongitude(),
+                            true,
+                            true,
+                            callback
+                    );
+                    return;
+                }
+            }
+
             handleLocationForRoute(
-                    profile.getWorkLatitude(),
-                    profile.getWorkLongitude(),
-                    true,
-                    true,
+                    currentLatitude,
+                    currentLongitude,
+                    isRealLocation,
+                    false,
                     callback
             );
-            return;
-        }
-
-        deviceLocationService.getCurrentLocation((latitude, longitude, isRealLocation) ->
-                handleLocationForRoute(
-                        latitude,
-                        longitude,
-                        isRealLocation,
-                        false,
-                        callback
-                )
-        );
+        });
     }
 
     private void handleLocationForRoute(
@@ -85,23 +116,27 @@ public class RealMapsBreakService {
         List<CachedRoute> cachedRoutes =
                 routeCacheRepository.getRoutesForLocation(locationKey);
 
-        if (!cachedRoutes.isEmpty()) {
-            CachedRoute cachedRoute = cachedRoutes.get(0);
+        CachedRoute validCachedRoute = findValidCachedRoute(
+                cachedRoutes,
+                latitude,
+                longitude
+        );
 
+        if (validCachedRoute != null) {
             RouteResult routeResult = new RouteResult(
-                    cachedRoute.getDestinationName(),
-                    cachedRoute.getDestinationLatitude(),
-                    cachedRoute.getDestinationLongitude(),
-                    cachedRoute.getOneWayWalkingTimeMinutes(),
-                    cachedRoute.isReachableWithinLimit()
+                    validCachedRoute.getDestinationName(),
+                    validCachedRoute.getDestinationLatitude(),
+                    validCachedRoute.getDestinationLongitude(),
+                    validCachedRoute.getOneWayWalkingTimeMinutes(),
+                    validCachedRoute.isReachableWithinLimit()
             );
 
             callback.onBreakDecisionReady(
-                    cachedRoute.getTitle(),
-                    buildUserTextFromCachedRoute(cachedRoute, usedWorkLocation),
+                    validCachedRoute.getTitle(),
+                    buildUserTextFromCachedRoute(validCachedRoute, usedWorkLocation),
                     routeResult,
                     isRealLocation,
-                    cachedRoute.isParkRoute(),
+                    validCachedRoute.isParkRoute(),
                     false
             );
 
@@ -109,9 +144,9 @@ public class RealMapsBreakService {
         }
 
         realMapsRouteProvider.getRecommendedWalkingRouteFromLocation(
-		latitude,
-		longitude,
-		isRealLocation,
+                latitude,
+                longitude,
+                isRealLocation,
                 (routeResult, usedRealLocation, foundRealPlace, usedRealRoute) -> {
                     CachedRoute cachedRoute = createCachedRouteFromResult(
                             routeResult,
@@ -133,6 +168,31 @@ public class RealMapsBreakService {
                     );
                 }
         );
+    }
+
+    private CachedRoute findValidCachedRoute(
+            List<CachedRoute> cachedRoutes,
+            double startLatitude,
+            double startLongitude
+    ) {
+        if (cachedRoutes == null || cachedRoutes.isEmpty()) {
+            return null;
+        }
+
+        for (CachedRoute route : cachedRoutes) {
+            double distanceToDestination = calculateDistanceMeters(
+                    startLatitude,
+                    startLongitude,
+                    route.getDestinationLatitude(),
+                    route.getDestinationLongitude()
+            );
+
+            if (distanceToDestination <= MAX_REASONABLE_DESTINATION_DISTANCE_METERS) {
+                return route;
+            }
+        }
+
+        return null;
     }
 
     private CachedRoute createCachedRouteFromResult(
@@ -188,7 +248,7 @@ public class RealMapsBreakService {
                     + " und zurück.";
         }
 
-        return "Es wurde keine passende Grünfläche innerhalb von 20 Minuten Gesamtweg gefunden. "
+        return "Es wurde keine benannte Grünfläche innerhalb von 20 Minuten Gesamtweg gefunden. "
                 + "Flora Break empfiehlt deshalb einen kurzen Urban Walk "
                 + locationText
                 + ".";
@@ -199,5 +259,29 @@ public class RealMapsBreakService {
         double roundedLongitude = Math.round(longitude * 100.0) / 100.0;
 
         return roundedLatitude + "_" + roundedLongitude;
+    }
+
+    private double calculateDistanceMeters(
+            double startLatitude,
+            double startLongitude,
+            double endLatitude,
+            double endLongitude
+    ) {
+        double earthRadiusMeters = 6371000.0;
+
+        double startLatRad = Math.toRadians(startLatitude);
+        double endLatRad = Math.toRadians(endLatitude);
+        double deltaLat = Math.toRadians(endLatitude - startLatitude);
+        double deltaLon = Math.toRadians(endLongitude - startLongitude);
+
+        double a = Math.sin(deltaLat / 2.0) * Math.sin(deltaLat / 2.0)
+                + Math.cos(startLatRad)
+                * Math.cos(endLatRad)
+                * Math.sin(deltaLon / 2.0)
+                * Math.sin(deltaLon / 2.0);
+
+        double c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0 - a));
+
+        return earthRadiusMeters * c;
     }
 }

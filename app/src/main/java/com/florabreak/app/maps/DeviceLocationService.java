@@ -8,8 +8,10 @@ import android.location.Location;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.location.CancellationTokenSource;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 
 public class DeviceLocationService {
 
@@ -20,16 +22,61 @@ public class DeviceLocationService {
     private final Context context;
     private final FusedLocationProviderClient fusedLocationClient;
 
-    // Fallback: Köln Innenstadt, falls Emulator/Standort nicht verfügbar ist
-    private static final double FALLBACK_LATITUDE = 50.9375;
-    private static final double FALLBACK_LONGITUDE = 6.9603;
-
     public DeviceLocationService(@NonNull Context context) {
         this.context = context.getApplicationContext();
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
     }
 
     public void getCurrentLocation(@NonNull LocationCallback callback) {
+        if (!hasLocationPermission()) {
+            callback.onLocationReady(0.0, 0.0, false);
+            return;
+        }
+
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        callback.onLocationReady(
+                                location.getLatitude(),
+                                location.getLongitude(),
+                                true
+                        );
+                    } else {
+                        requestFreshLocation(callback);
+                    }
+                })
+                .addOnFailureListener(error -> requestFreshLocation(callback));
+    }
+
+    private void requestFreshLocation(@NonNull LocationCallback callback) {
+        if (!hasLocationPermission()) {
+            callback.onLocationReady(0.0, 0.0, false);
+            return;
+        }
+
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+        fusedLocationClient.getCurrentLocation(
+                        Priority.PRIORITY_HIGH_ACCURACY,
+                        cancellationTokenSource.getToken()
+                )
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        callback.onLocationReady(
+                                location.getLatitude(),
+                                location.getLongitude(),
+                                true
+                        );
+                    } else {
+                        callback.onLocationReady(0.0, 0.0, false);
+                    }
+                })
+                .addOnFailureListener(error ->
+                        callback.onLocationReady(0.0, 0.0, false)
+                );
+    }
+
+    private boolean hasLocationPermission() {
         boolean fineLocationGranted = ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -40,33 +87,12 @@ public class DeviceLocationService {
                 Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED;
 
-        if (!fineLocationGranted && !coarseLocationGranted) {
-            callback.onLocationReady(FALLBACK_LATITUDE, FALLBACK_LONGITUDE, false);
-            return;
-        }
-
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(location -> handleLocation(location, callback))
-                .addOnFailureListener(error ->
-                        callback.onLocationReady(FALLBACK_LATITUDE, FALLBACK_LONGITUDE, false)
-                );
+        return fineLocationGranted || coarseLocationGranted;
     }
 
-    private void handleLocation(Location location, LocationCallback callback) {
-        if (location == null) {
-            callback.onLocationReady(FALLBACK_LATITUDE, FALLBACK_LONGITUDE, false);
-            return;
-        }
-
-        callback.onLocationReady(
-                location.getLatitude(),
-                location.getLongitude(),
-                true
-        );
-    }
     public String createLocationKey(double latitude, double longitude, boolean isRealLocation) {
         if (!isRealLocation) {
-            return "demo_location";
+            return "no_real_location";
         }
 
         double roundedLatitude = Math.round(latitude * 100.0) / 100.0;
@@ -76,6 +102,10 @@ public class DeviceLocationService {
     }
 
     public boolean isFallbackLocation(double latitude, double longitude) {
-        return latitude == FALLBACK_LATITUDE && longitude == FALLBACK_LONGITUDE;
+        return !isValidLocation(latitude, longitude);
+    }
+
+    public boolean isValidLocation(double latitude, double longitude) {
+        return !(latitude == 0.0 && longitude == 0.0);
     }
 }
