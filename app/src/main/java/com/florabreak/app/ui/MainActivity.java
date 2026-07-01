@@ -6,7 +6,18 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import com.florabreak.app.data.repository.ProfileRepository;
 import com.florabreak.app.R;
@@ -19,6 +30,12 @@ import com.florabreak.app.model.StressResult;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String STRESS_ALERT_CHANNEL_ID = "flora_stress_alert_channel";
+	private static final String PREF_STRESS_ALERTS = "flora_stress_alerts";
+	private static final String KEY_LAST_STRESS_ALERT = "last_stress_alert";
+	private static final int STRESS_ALERT_NOTIFICATION_ID = 2030;
+	private static final int STRESS_NOTIFICATION_PERMISSION_REQUEST_CODE = 45;
+	private static final long STRESS_ALERT_COOLDOWN_MS = 2L * 60L * 60L * 1000L;
     private Button showBreakButton;
     private Button refreshButton;
 
@@ -124,6 +141,8 @@ public class MainActivity extends AppCompatActivity {
         stressGaugeView.setStressScore(stressScore);
         stressScoreText.setText(String.valueOf(stressScore));
         stressLabelText.setText(stressResult.getLabel());
+
+		maybeShowStressAlertNotification(stressResult);
     }
 
     private void updateRecentBreaks() {
@@ -173,5 +192,101 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return stars.toString();
-    }
+	    }
+	private void maybeShowStressAlertNotification(StressResult stressResult) {
+	    if (stressResult == null) {
+	        return;
+	    }
+
+	    if (stressResult.getScore() < 6) {
+	        return;
+	    }
+
+	    if (!canShowStressAlertNow()) {
+	        return;
+	    }
+
+	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+	        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+	                != PackageManager.PERMISSION_GRANTED) {
+	            ActivityCompat.requestPermissions(
+	                    this,
+	                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
+	                    STRESS_NOTIFICATION_PERMISSION_REQUEST_CODE
+	            );
+	            return;
+	        }
+	    }
+
+	    showStressAlertNotification(stressResult);
+	    saveStressAlertTimestamp();
+	}
+
+	private boolean canShowStressAlertNow() {
+	    SharedPreferences preferences = getSharedPreferences(PREF_STRESS_ALERTS, Context.MODE_PRIVATE);
+	    long lastAlertTimestamp = preferences.getLong(KEY_LAST_STRESS_ALERT, 0L);
+	    long now = System.currentTimeMillis();
+
+	    return now - lastAlertTimestamp >= STRESS_ALERT_COOLDOWN_MS;
+	}
+
+	private void saveStressAlertTimestamp() {
+	    SharedPreferences preferences = getSharedPreferences(PREF_STRESS_ALERTS, Context.MODE_PRIVATE);
+	    preferences.edit()
+	            .putLong(KEY_LAST_STRESS_ALERT, System.currentTimeMillis())
+	            .apply();
+	}
+
+	private void showStressAlertNotification(StressResult stressResult) {
+	    createStressAlertChannel();
+
+	    Intent openBreakSuggestionIntent = new Intent(this, BreakSuggestionActivity.class);
+	    openBreakSuggestionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+	    PendingIntent pendingIntent = PendingIntent.getActivity(
+	            this,
+	            STRESS_ALERT_NOTIFICATION_ID,
+	            openBreakSuggestionIntent,
+	            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+	    );
+
+	    String text = "Dein Stresslevel liegt bei "
+	            + stressResult.getScore()
+	            + "/10. Starte eine kurze Flora Break.";
+
+	    NotificationCompat.Builder builder =
+	            new NotificationCompat.Builder(this, STRESS_ALERT_CHANNEL_ID)
+	                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+	                    .setContentTitle("Flora Break empfiehlt eine Pause")
+	                    .setContentText(text)
+	                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+	                    .setAutoCancel(true)
+	                    .setContentIntent(pendingIntent);
+
+	    NotificationManager notificationManager =
+	            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+	    if (notificationManager != null) {
+	        notificationManager.notify(STRESS_ALERT_NOTIFICATION_ID, builder.build());
+	    }
+	}
+
+	private void createStressAlertChannel() {
+	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+	        NotificationChannel channel = new NotificationChannel(
+	                STRESS_ALERT_CHANNEL_ID,
+	                "Flora Break Stresswarnungen",
+	                NotificationManager.IMPORTANCE_HIGH
+	        );
+
+	        channel.setDescription("Benachrichtigt bei erhöhtem Stresslevel über eine empfohlene Pause.");
+
+	        NotificationManager notificationManager =
+	                getSystemService(NotificationManager.class);
+
+	        if (notificationManager != null) {
+	            notificationManager.createNotificationChannel(channel);
+	        }
+	    }
+	}
 }
