@@ -10,13 +10,22 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.florabreak.app.R;
+import com.florabreak.app.data.local.BreakEntity;
 import com.florabreak.app.data.repository.BreakSessionRepository;
+import com.florabreak.app.data.repository.DemoStressSettingsRepository;
+import com.florabreak.app.model.DemoStressSettings;
 
 public class BreakFeedbackActivity extends AppCompatActivity {
 
     private TextView backToBreakButton;
     private Button saveBreakButton;
     private Button backHomeButton;
+
+    private TextView feedbackDurationText;
+    private TextView feedbackDistanceText;
+    private TextView feedbackStressChangeText;
+    private TextView stressBeforeText;
+    private TextView stressAfterText;
 
     private TextView star1;
     private TextView star2;
@@ -29,7 +38,11 @@ public class BreakFeedbackActivity extends AppCompatActivity {
     private long breakSessionId = -1L;
     private int elapsedDurationMinutes = 5;
 
+    private int stressBefore = 0;
+    private int stressAfter = 4;
+
     private BreakSessionRepository breakSessionRepository;
+    private DemoStressSettingsRepository demoStressSettingsRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +50,11 @@ public class BreakFeedbackActivity extends AppCompatActivity {
         setContentView(R.layout.activity_break_feedback);
 
         breakSessionRepository = new BreakSessionRepository(this);
+        demoStressSettingsRepository = new DemoStressSettingsRepository(this);
 
         readIntentData();
         bindViews();
+        loadBreakSummary();
         setupRatingStars();
         setupButtons();
     }
@@ -58,6 +73,12 @@ public class BreakFeedbackActivity extends AppCompatActivity {
         saveBreakButton = findViewById(R.id.saveBreakButton);
         backHomeButton = findViewById(R.id.backHomeButton);
 
+        feedbackDurationText = findViewById(R.id.feedbackDurationText);
+        feedbackDistanceText = findViewById(R.id.feedbackDistanceText);
+        feedbackStressChangeText = findViewById(R.id.feedbackStressChangeText);
+        stressBeforeText = findViewById(R.id.stressBeforeText);
+        stressAfterText = findViewById(R.id.stressAfterText);
+
         star1 = findViewById(R.id.star1);
         star2 = findViewById(R.id.star2);
         star3 = findViewById(R.id.star3);
@@ -65,6 +86,53 @@ public class BreakFeedbackActivity extends AppCompatActivity {
         star5 = findViewById(R.id.star5);
 
         ratingHintText = findViewById(R.id.ratingHintText);
+    }
+
+    private void loadBreakSummary() {
+        BreakEntity breakEntity = null;
+
+        if (breakSessionId > 0) {
+            breakEntity = breakSessionRepository.getBreakById(breakSessionId);
+        }
+
+        if (breakEntity != null) {
+            stressBefore = breakEntity.stressScore;
+        } else {
+            stressBefore = 0;
+        }
+
+        stressAfter = calculateStressAfterPause(stressBefore);
+
+        feedbackDurationText.setText(String.valueOf(elapsedDurationMinutes));
+        feedbackDistanceText.setText("—");
+
+        int change = stressAfter - stressBefore;
+
+        if (change < 0) {
+            feedbackStressChangeText.setText(String.valueOf(change));
+        } else if (change > 0) {
+            feedbackStressChangeText.setText("+" + change);
+        } else {
+            feedbackStressChangeText.setText("0");
+        }
+
+        stressBeforeText.setText("Vorher: " + stressBefore);
+        stressAfterText.setText("Nachher: " + stressAfter);
+    }
+
+    private int calculateStressAfterPause(int before) {
+        DemoStressSettings settings = demoStressSettingsRepository.getSettings();
+
+        if (settings.isDemoModeEnabled()) {
+            return 4;
+        }
+
+        // Später im echten Betrieb: nach der Pause Health Connect erneut abfragen.
+        if (before <= 0) {
+            return 0;
+        }
+
+        return Math.max(0, before - 2);
     }
 
     private void setupRatingStars() {

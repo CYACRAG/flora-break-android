@@ -52,7 +52,7 @@ public class NearbyGreenSpaceService {
             @NonNull GreenSpaceCallback callback
     ) {
         if (!placesAvailable || placesClient == null) {
-            useFallbackGreenSpace(callback);
+            useNearbyUrbanWalkTarget(userLatitude, userLongitude, callback);
             return;
         }
 
@@ -81,7 +81,7 @@ public class NearbyGreenSpaceService {
                     List<Place> places = response.getPlaces();
 
                     if (places == null || places.isEmpty()) {
-                        useFallbackGreenSpace(callback);
+                        useNearbyUrbanWalkTarget(userLatitude, userLongitude, callback);
                         return;
                     }
 
@@ -89,7 +89,7 @@ public class NearbyGreenSpaceService {
                     LatLng placeLocation = firstPlace.getLocation();
 
                     if (placeLocation == null) {
-                        useFallbackGreenSpace(callback);
+                        useNearbyUrbanWalkTarget(userLatitude, userLongitude, callback);
                         return;
                     }
 
@@ -106,15 +106,23 @@ public class NearbyGreenSpaceService {
                             true
                     );
                 })
-                .addOnFailureListener(error -> useFallbackGreenSpace(callback));
+                .addOnFailureListener(error ->
+                        useNearbyUrbanWalkTarget(userLatitude, userLongitude, callback)
+                );
     }
 
-    private void useFallbackGreenSpace(@NonNull GreenSpaceCallback callback) {
-        // Fallback: neutrale Urban Walk Route
+    private void useNearbyUrbanWalkTarget(
+            double userLatitude,
+            double userLongitude,
+            @NonNull GreenSpaceCallback callback
+    ) {
+        double targetLatitude = userLatitude + 0.0030;
+        double targetLongitude = userLongitude + 0.0030;
+
         callback.onGreenSpaceFound(
-                "Urban Walk Umgebung",
-                50.9473,
-                6.9828,
+                "Urban Walk in deiner Nähe",
+                targetLatitude,
+                targetLongitude,
                 false
         );
     }

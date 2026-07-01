@@ -40,6 +40,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/homeDateText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Montag, 8. Juni 2026"
@@ -48,6 +49,7 @@
             android:layout_marginBottom="8dp" />
 
         <TextView
+            android:id="@+id/homeGreetingText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Hallo Lisa 👋"
@@ -166,6 +168,7 @@
                 android:textColor="#111111" />
 
             <TextView
+                android:id="@+id/viewAllBreaksText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Alle ansehen"
@@ -174,6 +177,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/recentBreakCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"

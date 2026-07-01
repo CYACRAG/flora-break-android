@@ -1,47 +1,59 @@
 package com.florabreak.app.ui;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatActivity;
-import com.florabreak.app.data.repository.ProfileRepository;
+
 import com.florabreak.app.R;
 import com.florabreak.app.data.FloraBreakController;
 import com.florabreak.app.data.FloraBreakControllerFactory;
 import com.florabreak.app.data.local.BreakEntity;
 import com.florabreak.app.data.repository.BreakSessionRepository;
+import com.florabreak.app.data.repository.ProfileRepository;
 import com.florabreak.app.model.FloraBreakSessionResult;
 import com.florabreak.app.model.StressResult;
+import com.florabreak.app.model.UserProfile;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String STRESS_ALERT_CHANNEL_ID = "flora_stress_alert_channel";
-	private static final String PREF_STRESS_ALERTS = "flora_stress_alerts";
-	private static final String KEY_LAST_STRESS_ALERT = "last_stress_alert";
-	private static final int STRESS_ALERT_NOTIFICATION_ID = 2030;
-	private static final int STRESS_NOTIFICATION_PERMISSION_REQUEST_CODE = 45;
-	private static final long STRESS_ALERT_COOLDOWN_MS = 2L * 60L * 60L * 1000L;
+    private static final String PREF_STRESS_ALERTS = "flora_stress_alerts";
+    private static final String KEY_LAST_STRESS_ALERT = "last_stress_alert";
+    private static final int STRESS_ALERT_NOTIFICATION_ID = 2030;
+    private static final int STRESS_NOTIFICATION_PERMISSION_REQUEST_CODE = 45;
+    private static final long STRESS_ALERT_COOLDOWN_MS = 2L * 60L * 60L * 1000L;
+
     private Button showBreakButton;
     private Button refreshButton;
 
     private LinearLayout navHistoryButton;
     private LinearLayout navStatsButton;
     private LinearLayout navProfileButton;
+    private LinearLayout recentBreakCard;
+
+    private TextView homeDateText;
+    private TextView homeGreetingText;
+    private TextView viewAllBreaksText;
 
     private TextView stressScoreText;
     private TextView stressLabelText;
@@ -49,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView recentBreaksText;
 
     private StressGaugeView stressGaugeView;
+
     private ProfileRepository profileRepository;
     private FloraBreakController floraBreakController;
     private BreakSessionRepository breakSessionRepository;
@@ -56,27 +69,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        profileRepository = new ProfileRepository(this);
+
+        if (!profileRepository.isProfileCompleted()) {
+            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+            intent.putExtra("firstSetup", true);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_main);
-
-	profileRepository = new ProfileRepository(this);
-
-	if (!profileRepository.isProfileCompleted()) {
-	    Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-	    intent.putExtra("firstSetup", true);
-	    startActivity(intent);
-	    finish();
-	    return;
-	}
 
         floraBreakController = FloraBreakControllerFactory.create(this);
         breakSessionRepository = new BreakSessionRepository(this);
 
         bindViews();
         setupNavigation();
+        updateHeader();
         updateStressFromController();
         updateRecentBreaks();
 
         refreshButton.setOnClickListener(view -> {
+            updateHeader();
             updateStressFromController();
             updateRecentBreaks();
             Toast.makeText(this, "Stressdaten wurden aktualisiert", Toast.LENGTH_SHORT).show();
@@ -87,14 +103,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        floraBreakController = FloraBreakControllerFactory.create(this);
-        updateStressFromController();
-        updateRecentBreaks();
+        if (floraBreakController != null && breakSessionRepository != null) {
+            floraBreakController = FloraBreakControllerFactory.create(this);
+            updateHeader();
+            updateStressFromController();
+            updateRecentBreaks();
+        }
     }
 
     private void bindViews() {
         showBreakButton = findViewById(R.id.showBreakButton);
         refreshButton = findViewById(R.id.refreshButton);
+
+        homeDateText = findViewById(R.id.homeDateText);
+        homeGreetingText = findViewById(R.id.homeGreetingText);
+        viewAllBreaksText = findViewById(R.id.viewAllBreaksText);
+        recentBreakCard = findViewById(R.id.recentBreakCard);
 
         stressGaugeView = findViewById(R.id.stressGaugeView);
         stressScoreText = findViewById(R.id.stressScoreText);
@@ -114,20 +138,45 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        navHistoryButton.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
-            startActivity(intent);
-        });
-
-        navStatsButton.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, StatsActivity.class);
-            startActivity(intent);
-        });
+        navHistoryButton.setOnClickListener(view -> openHistory());
+        navStatsButton.setOnClickListener(view -> openStats());
 
         navProfileButton.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
             startActivity(intent);
         });
+
+        viewAllBreaksText.setOnClickListener(view -> openHistory());
+        recentBreakCard.setOnClickListener(view -> openHistory());
+        recentBreakTitleText.setOnClickListener(view -> openHistory());
+        recentBreaksText.setOnClickListener(view -> openHistory());
+    }
+
+    private void openHistory() {
+        Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+        startActivity(intent);
+    }
+
+    private void openStats() {
+        Intent intent = new Intent(MainActivity.this, StatsActivity.class);
+        startActivity(intent);
+    }
+
+    private void updateHeader() {
+        UserProfile profile = profileRepository.getProfile();
+
+        String name = profile.getName();
+
+        if (name == null || name.trim().isEmpty()) {
+            name = "Flora Nutzer";
+        }
+
+        homeGreetingText.setText("Hallo " + name + " 👋");
+
+        SimpleDateFormat dateFormat =
+                new SimpleDateFormat("EEEE, d. MMMM yyyy", Locale.GERMANY);
+
+        homeDateText.setText(dateFormat.format(new Date()));
     }
 
     private void updateStressFromController() {
@@ -142,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
         stressScoreText.setText(String.valueOf(stressScore));
         stressLabelText.setText(stressResult.getLabel());
 
-		maybeShowStressAlertNotification(stressResult);
+        maybeShowStressAlertNotification(stressResult);
     }
 
     private void updateRecentBreaks() {
@@ -192,101 +241,102 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return stars.toString();
-	    }
-	private void maybeShowStressAlertNotification(StressResult stressResult) {
-	    if (stressResult == null) {
-	        return;
-	    }
+    }
 
-	    if (stressResult.getScore() < 6) {
-	        return;
-	    }
+    private void maybeShowStressAlertNotification(StressResult stressResult) {
+        if (stressResult == null) {
+            return;
+        }
 
-	    if (!canShowStressAlertNow()) {
-	        return;
-	    }
+        if (stressResult.getScore() < 6) {
+            return;
+        }
 
-	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-	        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-	                != PackageManager.PERMISSION_GRANTED) {
-	            ActivityCompat.requestPermissions(
-	                    this,
-	                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
-	                    STRESS_NOTIFICATION_PERMISSION_REQUEST_CODE
-	            );
-	            return;
-	        }
-	    }
+        if (!canShowStressAlertNow()) {
+            return;
+        }
 
-	    showStressAlertNotification(stressResult);
-	    saveStressAlertTimestamp();
-	}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        STRESS_NOTIFICATION_PERMISSION_REQUEST_CODE
+                );
+                return;
+            }
+        }
 
-	private boolean canShowStressAlertNow() {
-	    SharedPreferences preferences = getSharedPreferences(PREF_STRESS_ALERTS, Context.MODE_PRIVATE);
-	    long lastAlertTimestamp = preferences.getLong(KEY_LAST_STRESS_ALERT, 0L);
-	    long now = System.currentTimeMillis();
+        showStressAlertNotification(stressResult);
+        saveStressAlertTimestamp();
+    }
 
-	    return now - lastAlertTimestamp >= STRESS_ALERT_COOLDOWN_MS;
-	}
+    private boolean canShowStressAlertNow() {
+        SharedPreferences preferences = getSharedPreferences(PREF_STRESS_ALERTS, Context.MODE_PRIVATE);
+        long lastAlertTimestamp = preferences.getLong(KEY_LAST_STRESS_ALERT, 0L);
+        long now = System.currentTimeMillis();
 
-	private void saveStressAlertTimestamp() {
-	    SharedPreferences preferences = getSharedPreferences(PREF_STRESS_ALERTS, Context.MODE_PRIVATE);
-	    preferences.edit()
-	            .putLong(KEY_LAST_STRESS_ALERT, System.currentTimeMillis())
-	            .apply();
-	}
+        return now - lastAlertTimestamp >= STRESS_ALERT_COOLDOWN_MS;
+    }
 
-	private void showStressAlertNotification(StressResult stressResult) {
-	    createStressAlertChannel();
+    private void saveStressAlertTimestamp() {
+        SharedPreferences preferences = getSharedPreferences(PREF_STRESS_ALERTS, Context.MODE_PRIVATE);
+        preferences.edit()
+                .putLong(KEY_LAST_STRESS_ALERT, System.currentTimeMillis())
+                .apply();
+    }
 
-	    Intent openBreakSuggestionIntent = new Intent(this, BreakSuggestionActivity.class);
-	    openBreakSuggestionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    private void showStressAlertNotification(StressResult stressResult) {
+        createStressAlertChannel();
 
-	    PendingIntent pendingIntent = PendingIntent.getActivity(
-	            this,
-	            STRESS_ALERT_NOTIFICATION_ID,
-	            openBreakSuggestionIntent,
-	            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-	    );
+        Intent openBreakSuggestionIntent = new Intent(this, BreakSuggestionActivity.class);
+        openBreakSuggestionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-	    String text = "Dein Stresslevel liegt bei "
-	            + stressResult.getScore()
-	            + "/10. Starte eine kurze Flora Break.";
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                STRESS_ALERT_NOTIFICATION_ID,
+                openBreakSuggestionIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
 
-	    NotificationCompat.Builder builder =
-	            new NotificationCompat.Builder(this, STRESS_ALERT_CHANNEL_ID)
-	                    .setSmallIcon(R.drawable.ic_launcher_foreground)
-	                    .setContentTitle("Flora Break empfiehlt eine Pause")
-	                    .setContentText(text)
-	                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-	                    .setAutoCancel(true)
-	                    .setContentIntent(pendingIntent);
+        String text = "Dein Stresslevel liegt bei "
+                + stressResult.getScore()
+                + "/10. Starte eine kurze Flora Break.";
 
-	    NotificationManager notificationManager =
-	            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this, STRESS_ALERT_CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setContentTitle("Flora Break empfiehlt eine Pause")
+                        .setContentText(text)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setAutoCancel(true)
+                        .setContentIntent(pendingIntent);
 
-	    if (notificationManager != null) {
-	        notificationManager.notify(STRESS_ALERT_NOTIFICATION_ID, builder.build());
-	    }
-	}
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-	private void createStressAlertChannel() {
-	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-	        NotificationChannel channel = new NotificationChannel(
-	                STRESS_ALERT_CHANNEL_ID,
-	                "Flora Break Stresswarnungen",
-	                NotificationManager.IMPORTANCE_HIGH
-	        );
+        if (notificationManager != null) {
+            notificationManager.notify(STRESS_ALERT_NOTIFICATION_ID, builder.build());
+        }
+    }
 
-	        channel.setDescription("Benachrichtigt bei erhöhtem Stresslevel über eine empfohlene Pause.");
+    private void createStressAlertChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    STRESS_ALERT_CHANNEL_ID,
+                    "Flora Break Stresswarnungen",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
 
-	        NotificationManager notificationManager =
-	                getSystemService(NotificationManager.class);
+            channel.setDescription("Benachrichtigt bei erhöhtem Stresslevel über eine empfohlene Pause.");
 
-	        if (notificationManager != null) {
-	            notificationManager.createNotificationChannel(channel);
-	        }
-	    }
-	}
+            NotificationManager notificationManager =
+                    getSystemService(NotificationManager.class);
+
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+    }
 }
